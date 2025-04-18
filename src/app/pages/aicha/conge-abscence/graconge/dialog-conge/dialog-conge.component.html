@@ -1,0 +1,54 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <button class="btn btn-success mb-2" (click)="openPDF()">Imprimer</button>
+    </div>
+    <div class="col-md-12" id="htmlData">
+
+      <div>
+        <p style="text-align: left">MINISTERE DE L'ENSEIGNEMENT SUPERIEUR<br/> ET DELA RECHERCHE SCIENTIFIQUE</p>
+      </div>
+      <div>
+        <p style="float: right">REPUBLIQUE DU MALI<br/>Un Peuple - Un But – Une Foi
+        </p>
+      </div>
+
+      <table style="width: 100%">
+        <tr>
+          <th style="width: 50%;text-align: left;font-weight: bold;">Secrétariat général SRH</th>
+          <th style="width: 50%;text-align: left;font-weight: bold;">RECTORAT</th>
+        </tr>
+      </table>
+
+     <hr style="width: 100%;height: 1px;background-color: #2f3d4a"/>
+      <div style="text-align: center">
+        DECISION Numéro :	   <span style="margin-right: 60px;margin-left: 60px;"></span>/ USSGB-R / SG<br/>
+        Portant mise en {{value.type}}
+      </div>
+
+
+      <p style="text-align: center;margin-top: 50px;font-weight: bold;">
+      Le Recteur décide :
+      </p>
+
+
+      <p style="text-align: left;margin-top: 60px;">
+      <b>Article 1er :</b> A compter du {{value.dateDepart | date:'dd-MM-yyyy'}} au {{value.dateRetour | date:'dd-MM-yyyy'}}, un congé de {{value.type}} d'une durée de {{value.duree}} est accordé à M/Mme {{value.user.nom}} {{value.user.prenom}},  au {{value?.personnelGRH?.personnelAdministratif?.division?.service?.departement?.nom}} à la {{value?.personnelGRH?.personnelAdministratif?.division?.service?.departement?.structure.nom}}.
+      Le service sera repris le {{this.getDateRetour() | date:'dd-MM-yyyy'}}.
+
+
+      <p style="text-align: left;;margin-top: 40px;margin-bottom: 40px;">
+      <b>Article 2e :</b> La présente décision qui prend effet pour compter de sa date de signature, sera enregistrée et communiquée partout où besoin sera.
+    </p>
+
+
+      <p style="text-align: right;margin-bottom: 30px;">
+        Bamako, le {{now | date:'dd-MM-yyyy' }}
+      </p>
+
+      <p style="text-align: center;margin-bottom: 40px;">
+        <b>Le Recteur</b>
+      </p>
+    </div>
+  </div>
+</div>

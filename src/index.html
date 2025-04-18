@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+ 
+<!-- for run in mac on Pierre -->
+<!-- nvm use v20.11.1 -->
+<!-- export NODE_OPTIONS=--openssl-legacy-provider -->
+
+
+<!-- Start in local -->
+ <!-- 
+ng serve
+
+note: cela lance selon le contenu du fichier environement.ts dans src/environements/
+ -->
+
+
+<!-- Start in production -->
+<!--
+// USTTB ==> FST
+ng serve --configuration=prod_usttb
+
+// USSGB ==> FSEG | FHG | IUDT
+ng serve --configuration=prod_ussgb
+
+// USJPB==> FSAP
+ng serve --configuration=prod_fsap
+-->
+
+
+<!-- Build -->
+<!--
+// USTTB ==> FST
+ng build --configuration=prod_usttb
+
+// USSGB ==> FSEG | FHG | IUDT
+ng build --configuration=prod_ussgb
+
+// USJPB==> FSAP
+ng build --configuration=prod_fsap
+-->
+<script>
+  window.addEventListener('message', (event) => {
+    if (event.origin === 'http://localhost:4200' && event.data.type === 'transferData') {
+      const receivedData = event.data.data;
+      sessionStorage.setItem('votre_clé', receivedData);
+    }
+  });
+</script>
+<head>
+  <meta charset="utf-8">
+  <title>Université</title>
+  <base href="./">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+  <app-root></app-root>
+  <script src="https://cdn.ckeditor.com/4.14.1/full/ckeditor.js"></script>
+</body>
+
+</html>

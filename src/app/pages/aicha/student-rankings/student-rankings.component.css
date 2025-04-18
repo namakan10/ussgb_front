@@ -1,0 +1,33 @@
+table{
+  width: 100%;
+}
+
+.ng-autocomplete{
+  width: 100%;
+}
+
+
+
+.multiple-fields {
+  display: flex !important;
+  flex-wrap: nowrap;
+  justify-content: space-between !important;
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100% !important;
+}
+
+.multiple-fields mat-form-field:not(:last-child) {
+  margin-right: 2%;
+}
+
+
+@media print
+{
+  .no-print, .no-print *
+  {
+    display: none !important;
+  }
+}

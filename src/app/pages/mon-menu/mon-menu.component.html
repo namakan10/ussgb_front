@@ -1,0 +1,161 @@
+
+<div class="row">
+<mat-card class="example-card"style="width:300px;height:200px">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Gestion des bâtiments</mat-card-title>
+      <mat-card-subtitle>{{structure['sigle']}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        <button mat-raised-button color="primary" class="btn btn-primary" (click)="afficheBatiments()">
+          <i class="fa fa-eye"></i>
+        <span>&nbsp;&nbsp;Afficher</span>
+        </button>    </p>
+    </mat-card-content>
+    <mat-card-actions>
+
+    </mat-card-actions>
+  </mat-card>
+
+<mat-card class="example-card"style="width:300px;height:200px">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Gestion des départements</mat-card-title>
+      <mat-card-subtitle>{{structure['sigle']}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        <button mat-raised-button color="primary" class="btn btn-primary" (click)="afficheDepartement()">
+          <i class="fa fa-eye"></i>
+        <span>&nbsp;&nbsp;Afficher</span>
+        </button>    </p>
+    </mat-card-content>
+    <mat-card-actions>
+
+    </mat-card-actions>
+  </mat-card>
+  <mat-card class="example-card"style="width:300px;height:200px" hidden>
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Gestion des équipements</mat-card-title>
+      <mat-card-subtitle>{{structure['sigle']}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        <button mat-raised-button color="primary" class="btn btn-primary" (click)="afficheEquipements()">
+          <i class="fa fa-eye"></i>
+        <span>&nbsp;&nbsp;Afficher</span>
+        </button>    </p>
+    </mat-card-content>
+    <mat-card-actions>
+
+    </mat-card-actions>
+  </mat-card>
+  <mat-card class="example-card"style="width:300px;height:200px">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Gestion des enseignants</mat-card-title>
+      <mat-card-subtitle>{{structure['sigle']}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        <button mat-raised-button color="primary" class="btn btn-primary" (click)="afficheEnseignants()">
+          <i class="fa fa-eye"></i>
+        <span>&nbsp;&nbsp;Afficher</span>
+        </button>    </p>
+    </mat-card-content>
+    <mat-card-actions>
+
+    </mat-card-actions>
+  </mat-card>
+  <mat-card class="example-card" style="width:300px;height:200px">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Gestion des filières {{univ_fil}}</mat-card-title>
+      <mat-card-subtitle>{{structure['sigle']}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        <button mat-raised-button color="primary" class="btn btn-primary" (click)="afficheFilieres()">
+          <i class="fa fa-eye"></i>
+        <span>&nbsp;&nbsp;Afficher</span>
+        </button>    </p>
+    </mat-card-content>
+    <mat-card-actions>
+
+    </mat-card-actions>
+  </mat-card>
+  <mat-card class="example-card" style="width:300px;height:200px">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Gestion des options {{univ_opt}}</mat-card-title>
+      <mat-card-subtitle>{{structure['sigle']}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        <button mat-raised-button color="primary" class="btn btn-primary" (click)="afficheOptions()">
+          <i class="fa fa-eye"></i>
+        <span>&nbsp;&nbsp;Afficher</span>
+        </button>    </p>
+    </mat-card-content>
+    <mat-card-actions>
+
+    </mat-card-actions>
+  </mat-card>
+  <mat-card class="example-card" style="width:300px;height:200px">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Gestion du personnel administratif</mat-card-title>
+      <mat-card-subtitle>{{structure['sigle']}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        <button mat-raised-button color="primary" class="btn btn-primary" (click)="affichePersonnel()">
+          <i class="fa fa-eye"></i>
+        <span>&nbsp;&nbsp;Afficher</span>
+        </button>    </p>
+    </mat-card-content>
+    <mat-card-actions>
+
+    </mat-card-actions>
+  </mat-card>
+  <mat-card class="example-card"style="width:300px;height:200px" hidden>
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Gestion des salles</mat-card-title>
+      <mat-card-subtitle>{{structure['sigle']}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        <button mat-raised-button color="primary" class="btn btn-primary" (click)="afficheSalle()">
+          <i class="fa fa-eye"></i>
+        <span>&nbsp;&nbsp;Afficher</span>
+        </button>    </p>
+    </mat-card-content>
+    <mat-card-actions>
+
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- ========================= AICHA ================================================= -->
+  <mat-card class="example-card"style="width:300px;height:200px" hidden>
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Gestion des congés</mat-card-title>
+      <mat-card-subtitle>{{structure['sigle']}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        <button mat-raised-button color="primary" class="btn btn-primary" (click)="afficheGestionConge()">
+          <i class="fa fa-eye"></i>
+          <span>&nbsp;&nbsp;Afficher</span>
+        </button>    </p>
+    </mat-card-content>
+    <mat-card-actions>
+
+    </mat-card-actions>
+  </mat-card>
+
+
+</div>

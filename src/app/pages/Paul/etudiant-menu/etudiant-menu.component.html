@@ -1,0 +1,155 @@
+
+<div class="mt-4 p-2">
+
+
+   src="{{_http}}{{etudiant.users.photo}}" width="100%" height="150" alt="" *ngIf="etudiant.users.photo !== null">
+  <img src="../../../../assets/images/profile.png" width="100%" height="230" alt="" *ngIf="etudiant.users.photo !== null">
+</div>
+<div class="example-action-buttons">
+<!--  <button mat-button (click)="accordion.openAll()">Expand All</button>-->
+<!--  <button mat-button (click)="accordion.closeAll()">Collapse All</button>-->
+</div>
+<!--<mat-accordion>-->
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span class="material-icons">perm_identity</span>
+        Espace étudiant
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div>
+      <button routerLink="/pages/etudiant/notes" routerLinkActive="selected" mat-button>
+        <span class="material-icons">gesture</span>
+        Mes notes
+      </button>
+    </div>
+
+    <div>
+      <button routerLink="/pages/etudiant/Parcours" routerLinkActive="selected" mat-button>
+        <span class="material-icons">gesture</span>
+        Mon parcours
+      </button>
+    </div>
+
+    <div>
+      <button (click)="updatePassword()" mat-button>
+        <span class="material-icons">password</span>
+        Changer mot de passe
+      </button>
+    </div>
+
+    <div>
+      <button routerLink="/pages/etudiant/reclamations" routerLinkActive="selected" mat-button>
+        <span class="material-icons">record_voice_over</span>
+        Mes réclamations
+      </button>
+    </div>
+
+    <div>
+      <button routerLink="/pages/etudiant/demandes" routerLinkActive="selected" mat-button>
+        <span class="material-icons">record_voice_over</span>
+        Demandes
+      </button>
+    </div>
+<!--    listPassage() {-->
+<!--    this.router.navigate(['/Liste_Passage']);-->
+<!--    }-->
+
+    <div>
+      <button routerLink="/pages/utilisateur/Liste_Passage" routerLinkActive="selected" mat-button>
+        <span class="material-icons">list</span>
+        Liste de passage
+      </button>
+    </div>
+
+    <div *ngIf="!ReInscriptionIsLaunched" class="bg-info">
+      <button routerLink="utilisateur/re-inscription" routerLinkActive="selected" mat-button>
+        <span class="material-icons">history_edu</span>
+        Ré-inscription
+      </button>
+    </div>
+
+<!--    <div>-->
+<!--      <button routerLink="/pages/utilisateur/payement" routerLinkActive="selected" mat-button>-->
+<!--        <span class="material-icons">savings</span>-->
+<!--        Payement des Frais-->
+<!--      </button>-->
+<!--    </div>-->
+
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span class="material-icons">markunread_mailbox</span>
+        Offre / sujet
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div>
+      <button routerLink="/pages/utilisateur/List_offre_entreprise" routerLinkActive="selected" mat-button>
+        <span class="material-icons">
+          record_voice_over
+        </span> Offres des entreprises
+      </button>
+    </div>
+
+<!--    <div>-->
+<!--      <button routerLink="/pages/etudiant/reclamations" routerLinkActive="selected" mat-button>-->
+<!--        <span class="material-icons">-->
+<!--          record_voice_over-->
+<!--        </span> Sujets de projet-->
+<!--      </button>-->
+<!--    </div>-->
+
+
+  </mat-expansion-panel>
+
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span class="material-icons"></span>
+        C.V
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+<!--    <div>-->
+<!--      <button routerLink="/pages/utilisateur/List_offre_entreprise" routerLinkActive="selected" mat-button>-->
+<!--          <span class="material-icons">-->
+<!--            record_voice_over-->
+<!--          </span> Charger mon CV-->
+<!--      </button>-->
+<!--    </div>-->
+
+    <div>
+      <button routerLink="/pages/etudiant/creation_cv" routerLinkActive="selected" mat-button>
+          <span class="material-icons">
+            record_voice_over
+          </span> Mon CV
+      </button>
+    </div>
+
+
+  </mat-expansion-panel>
+
+<!--  <mat-expansion-panel>-->
+<!--    <mat-expansion-panel-header>-->
+<!--      <mat-panel-title>-->
+<!--        Day of the trip-->
+<!--      </mat-panel-title>-->
+<!--      <mat-panel-description>-->
+<!--        Inform the date you wish to travel-->
+<!--        <mat-icon>date_range</mat-icon>-->
+<!--      </mat-panel-description>-->
+<!--    </mat-expansion-panel-header>-->
+
+<!--    <mat-form-field>-->
+<!--      <mat-label>Date</mat-label>-->
+<!--      <input matInput [matDatepicker]="picker" (focus)="picker.open()" readonly>-->
+<!--    </mat-form-field>-->
+<!--    <mat-datepicker #picker></mat-datepicker>-->
+<!--  </mat-expansion-panel>-->
+<!--</mat-accordion>-->
+

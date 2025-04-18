@@ -1,0 +1,16 @@
+.custom_Input{
+    padding-bottom: .5px;
+    border-bottom: 0.7px solid #cccccc;
+    border-left: 0.7px solid #cccccc;
+    border-right: 0.7px solid #cccccc;
+  }
+td {
+  text-align: center;
+
+  align-content: center;
+  justify-content: center;
+}
+
+.td_center {
+  align-self: center;
+}

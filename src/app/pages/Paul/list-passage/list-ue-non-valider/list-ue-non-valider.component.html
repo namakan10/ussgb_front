@@ -1,0 +1,110 @@
+
+
+  <div>
+      <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter2($event)" placeholder="Ex. Mia" #input>
+      </mat-form-field>
+
+      <div class="mat-elevation-z8">
+        <table class="table-hover" mat-table [dataSource]="dataSource2" matSort>
+
+          <!-- ID Column -->
+          <ng-container matColumnDef="num">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> numEtudiant </th>
+            <td mat-cell *matCellDef="let row"> {{row.numEtudiant}} </td>
+          </ng-container>
+
+          <!-- Progress Column -->
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom </th>
+            <td mat-cell *matCellDef="let row"> {{row.nom}} </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="prenom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Prénom </th>
+            <td mat-cell *matCellDef="let row"> {{row.prenom}} </td>
+          </ng-container>
+
+          <!-- Fruit Column -->
+          <ng-container matColumnDef="codeOption">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Code Option </th>
+            <td mat-cell *matCellDef="let row"> {{row.codeOption}} </td>
+          </ng-container>
+
+          <!-- Fruit Column -->
+          <ng-container matColumnDef="dette">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Dette </th>
+            <td mat-cell *matCellDef="let row"> {{row.hasOwnProperty('dette') ? row.dette : '-'}} </td>
+          </ng-container>
+          <!-- Fruit Column -->
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+            <td mat-cell *matCellDef="let row">
+              <button class="btn" (click)="Get_UENonEvaluee(row)"><i class="fa fa-eye text-info"></i></button>
+            </td>
+          </ng-container>
+
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+        </table>
+
+        <mat-paginator #paginator2
+                       [length]="length2"
+                       [pageSize]="pageSize2"
+                       [pageSizeOptions]="pageSizeOptions2">
+        </mat-paginator>
+
+      </div>
+    </div>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="uesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold text-center" id="exampleModalLabel">Les UEs non évalués {{checkIfNotNull(EtudiantSelected) ? 'de : '+EtudiantSelected.prenom+' '+EtudiantSelected.nom : ' '}}</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>Code ue</th>
+            <th>Nom ue</th>
+            <th *ngIf="!CheckIfAsRoles(['ROLE_SP'])">Note</th>
+            <th *ngIf="!CheckIfAsRoles(['ROLE_SP'])"></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let ue of Ues; let i = index">
+            <td>{{ue.codeUE}}</td>
+            <td>{{ue.nomUE}}</td>
+            <td *ngIf="!CheckIfAsRoles(['ROLE_SP'])">
+              <input type="text" id="noteToAttrib" name="noteToAttrib" (change)="AttributeNote(ue, $event)">
+            </td>
+            <td *ngIf="!CheckIfAsRoles(['ROLE_SP'])">
+               <span id="note_spinner{{ue.id}}" style="text-align: center;" hidden>
+                <img src="../../../../assets/gif/spinner.gif" width="25" alt="">
+                 veillez patienter ...
+               </span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

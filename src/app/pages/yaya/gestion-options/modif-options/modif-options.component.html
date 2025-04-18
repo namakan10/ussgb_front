@@ -1,0 +1,54 @@
+<div class="container-fluid" id="container-wrapper">
+  <div class="card mb-4">
+    <div class="card-body">
+      <form [formGroup]="modifOptionForm" (ngSubmit)="modifierOption(modifOptionForm)">
+        <div class="col-12">
+          <div class="login-bg">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="login-title">
+                  <h3>Modifier une option</h3><br>
+                </div>
+              </div>
+            </div>
+  <p>
+                <mat-label>Nom de l'option'</mat-label>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{Option['nom']}}</mat-label>
+                  <input type="text" formControlName="nom" matInput placeholder="Nom de l'option'">
+                  
+                  
+                </mat-form-field>
+              </p>
+              <p>
+                <mat-label>Code de l'option</mat-label>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{Option['codeOption']}}</mat-label>
+                  <input type="text" formControlName="codeOption" matInput placeholder="Code de l'option">
+                  
+                  
+                </mat-form-field>
+              </p>
+              <mat-label> Filiere </mat-label>
+              <mat-form-field appearance="fill">
+                <mat-label> {{filiere.nom}}</mat-label>
+                <mat-select id="filiere" formControlName="filiere">
+                  
+                  <mat-option value="{{filiere.id}}" *ngFor="let filiere of Filiere">{{filiere.nom}}</mat-option>
+  
+                </mat-select>
+              </mat-form-field>
+              
+              <div class="example-button-row" style="float: right;">
+                 
+                <button type="Submit" mat-raised-button color="primary">Enregistrer</button>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <button (click)="Annuler()" mat-raised-button color="warn">Annuler</button>
+                
+              </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

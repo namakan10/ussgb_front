@@ -1,0 +1,138 @@
+
+<div class="container col-5 shadow-sm p-1 text-center mb-2">
+  <h4>Gestion page Anonces ou actualités</h4>
+</div>
+
+<mat-card>
+    <div class="row" *ngIf="!showForm">
+      <div class="col-6">
+        <div class="col-7">
+          <label for="changeType">type annonce ou actualité </label>
+          <select class="custom_Input form-control" name="changeType" id="changeType" [(ngModel)]="typeActuChange" (change)="ChangetypeActu()">
+            <option value=""></option>
+            <option value="annonces">ANNONCE</option>
+            <option value="actualite">ACTU</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-6 text-right pr-2">
+        <button class="mb-2" (click)="addActu()" mat-raised-button color="primary">
+          <i class="fa fa-plus"></i>&nbsp;&nbsp;Ajouter une actualité ou annonce
+        </button>
+      </div>
+    </div>
+
+  <div class="text-center">
+       <span *ngIf="_spinner" style="text-align: center;">
+       <img src="../../../../assets/gif/spinner.gif" width="45" alt="">
+         Veuillez patienter ...
+       </span>
+  </div>
+
+  <mat-card-content>
+    <div class="row" *ngIf="!showForm">
+      <div class="col-md-4 p-2 shadow-sm" style="border-radius: 7px" *ngFor="let actu of campusPage">
+        <div>
+          <img src="../../../../../assets/images/annonce.jpeg" style="height: auto; width: 150px" alt="">
+        </div>
+        <div>
+          <div>
+            <h5 class="">{{actu.titre}}</h5>
+          </div>
+          <div style="border-bottom: 1px solid #cccccc">
+            <span class="badge badge-info">
+              {{actu.date}}
+            </span>
+          </div>
+          <div class="d-flex">
+            <button mat-menu-item (click)="EditActu(actu)">
+              <i class="fa fa-edit"></i>
+              <span>&nbsp;&nbsp;Modifier</span>
+            </button> |
+
+            <button class="text-danger" mat-menu-item (click)="DeleteActu(actu)">
+              <i class="fa fa-trash"></i>
+              <span>&nbsp;&nbsp;Supprimer</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <div class="container shadow-sm p-2" *ngIf="showForm">
+      <div class="text-right">
+<!--        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>-->
+        <button type="button" class="btn btn-secondary" (click)="closeForm()">Annuler</button>
+        <button type="button" class="btn btn-info" data-dismiss="modal"
+                [disabled]="typeActu ==='' || typeActu === null || typeActu === undefined ||
+titre ==='' || titre === null || titre === undefined || ckeditorContent ==='' || ckeditorContent === null || ckeditorContent === undefined"
+                (click)="submit()">
+          {{action ==='new' ? 'Ajouter' : 'Enregistrer les modification'}}</button>
+      </div>
+      <!--  <ckeditor [editor]="EditorCk" data="<p>Hello, world!</p>"></ckeditor>-->
+      <div class="mb-3">
+        <label for="typeActu">Type <span class="text-danger">*</span></label>
+        <select class="custom_Input" name="typeActu" id="typeActu" [(ngModel)]="typeActu">
+          <option value=""></option>
+          <option value="annonces">ANNONCE</option>
+          <option value="actualite">ACTU</option>
+        </select>
+        <div class="badge badge-danger"  *ngIf="typeActu ==='' || typeActu === null || typeActu === undefined"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="titre">Titre <span class="text-danger">*</span></label>
+        <input type="text" class="form-control custom_Input" id="titre" [(ngModel)]="titre">
+        <div class="badge badge-danger"  *ngIf="titre ==='' || titre === null || titre === undefined"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+      </div>
+
+
+
+      <div style="border-top: 1px solid #cccccc">
+        <div class="badge badge-danger"  *ngIf="ckeditorContent ==='' || ckeditorContent === null || ckeditorContent === undefined">
+          <i class="fa fa-info-circle"></i>
+          Contenu obligatoire
+        </div>
+        <ckeditor style="z-index: 100" fo
+                  [(ngModel)]="ckeditorContent">
+          <ckbutton [name]="'saveButton'"
+                    [command]="'saveCmd'"
+                    (click)="save($event)"
+                    [icon]="'save.png'"
+                    [label]="'Save Document'"
+                    [toolbar]="'clipboard,1'">
+          </ckbutton>
+        </ckeditor>
+      </div>
+
+    </div>
+
+
+  </mat-card-content>
+</mat-card>
+
+
+<!-- Modal -->
+<!--<div class="modal fade" id="ActuFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">-->
+<!--  <div class="modal-dialog modal-lg">-->
+<!--    <div class="modal-content">-->
+<!--      <div class="modal-header bg-info text-white">-->
+<!--        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">history_toggle_off</span> Actualité </h5>-->
+<!--        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>-->
+<!--      </div>-->
+<!--      <div class="modal-body">-->
+
+
+<!--     -->
+
+<!--      </div>-->
+<!--      <div class="modal-footer">-->
+<!--        -->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+

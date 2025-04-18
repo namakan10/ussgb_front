@@ -1,0 +1,53 @@
+
+
+
+
+<div class="container col-5 shadow-sm p-1 text-center mb-2">
+  <h4>Gestion Page campus</h4>
+</div>
+
+<mat-card>
+  <mat-card-header>
+    <button class="mb-2" (click)="submit()" mat-raised-button color="primary">
+    <i class="fa fa-plus"></i>&nbsp;&nbsp; Enregistrer les modifications
+  </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="container shadow-sm p-2">
+      <ckeditor
+        [(ngModel)]="ckeditorContent">
+        <ckbutton [name]="'saveButton'"
+                  [command]="'saveCmd'"
+                  (click)="save($event)"
+                  [icon]="'save.png'"
+                  [label]="'Save Document'"
+                  [toolbar]="'clipboard,1'">
+        </ckbutton>
+      </ckeditor>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+
+<!-- Modal -->
+<div class="modal fade" id="EvenementFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">history_toggle_off</span> Evènement</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+

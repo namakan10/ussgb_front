@@ -1,0 +1,188 @@
+
+<div class="container p-2">
+  <div class="p-2">
+    <h2 class="text-center">Conditions de passage</h2>
+  </div>
+
+  <div class="p-2 shadow-sm">
+    <button mat-raised-button color="accent" (click)="addCondition()">
+      <span class="material-icons">add</span> Nouvelle codition</button>
+  </div>
+
+  <mat-form-field>
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+  </mat-form-field>
+
+  <div class="mt-2">
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <!-- ID Column -->
+      <ng-container matColumnDef="annee">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Année </th>
+        <td mat-cell *matCellDef="let row"> {{row.anneeScolaire}} </td>
+      </ng-container>
+
+      <!-- Progress Column -->
+      <ng-container matColumnDef="semestre">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Semestre </th>
+        <td mat-cell *matCellDef="let row"> {{row.semestre}} </td>
+      </ng-container>
+
+  <!-- Progress Column -->
+      <ng-container matColumnDef="all">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Possède toutes les notes </th>
+        <td mat-cell *matCellDef="let row"> {{row.avoirToutesLesNotes ? 'oui' :  'non'}} </td>
+      </ng-container>
+
+      <!-- Progress Column -->
+      <ng-container matColumnDef="dMaxN">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Dette Max (nbr) </th>
+        <td mat-cell *matCellDef="let row"> {{row.dettesMax !== null ? row.dettesMax : '-'}} </td>
+      </ng-container>
+
+ <!-- Progress Column -->
+      <ng-container matColumnDef="dMaxP">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Dette Max (%) </th>
+        <td mat-cell *matCellDef="let row"> {{row.pourcentagesCreditRequis !== null ? row.pourcentagesCreditRequis+' %' : '-'}} </td>
+      </ng-container>
+
+
+      <!-- Fruit Column -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-raised-button color="accent" [matMenuTriggerFor]="menu">action</button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="modifCondition(row)"><i class="fa fa-edit text-info"></i> Modifier</button>
+            <button mat-menu-item (click)="delete_Condition(row)"><i class="fa fa-trash text-danger"></i> Supprimer</button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+      </tr>
+    </table>
+
+    <mat-paginator
+      [length]="length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions">
+
+    </mat-paginator>
+  </div>
+
+
+
+</div>
+
+
+
+
+
+<div class="modal fade" id="ContraintModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel">
+          <span class="material-icons">eco</span>
+          Nouvelle condition de passage
+        </h5>
+        <button type="button" class="text-white" mat-button data-dismiss="modal" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <form [formGroup]="ConditionForm" (ngSubmit)="action === 'creat' ? SaveCondition() : UpdateCondition()">
+        <div class="form-group">
+          <label for="anneeScolaire">Annee scolaire <span class="text-danger">*</span></label>
+<!--          <input type="text" class="form-control custom_Input" id="anneeScolaire" formControlName="">-->
+          <select   class="form-control custom_Input" id="anneeScolaire" formControlName="anneeScolaire">
+            <option value=""></option>
+            <option value="{{annee.anneeScolaire}}" *ngFor="let annee of structureAnnees">{{annee.anneeScolaire}}</option>
+          </select>
+          <div class="badge badge-danger"  *ngIf="ConditionForm.get('anneeScolaire').touched &&
+                    ConditionForm.get('anneeScolaire').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+        </div>
+
+        <div class="form-group">
+          <label for="anneeScolaire"></label>
+<!--          <input type="tel" class="form-control custom_Input" id="anneeScolaire" formControlName="">-->
+          <div class="alert alert-info">
+            <h6  class="text-center"> Possède toutes les notes ? <span class="text-danger">*</span> </h6>
+            <mat-radio-group aria-label="Select an option" formControlName="avoirToutesLesNotes">
+              <div class="text-center">
+                <mat-radio-button value="true">Oui</mat-radio-button>
+                <mat-radio-button value="false" class="ml-2" >Non</mat-radio-button>
+<!--                (click)="fonctionnaoireControl('non')"-->
+              </div>
+            </mat-radio-group>
+          </div>
+          <div class="badge badge-danger"  *ngIf="ConditionForm.get('avoirToutesLesNotes').touched &&
+                    ConditionForm.get('avoirToutesLesNotes').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+        </div>
+
+
+
+        <div class="form-group">
+          <label for="choix">format de dette : </label>
+          <select  id="choix" formControlName="choix" (change)="Chose_selected()">
+            <option value=""></option>
+            <option value="nbr">En nombre</option>
+            <option value="pourcentage">En pourcentage</option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="choix_Dette ==='nbr'">
+          <label for="dettesMax">Dettes Max <span class="text-danger">*</span></label>
+          <input type="tel" class="form-control custom_Input" id="dettesMax" formControlName="dettesMax">
+          <div class="badge badge-danger"  *ngIf="ConditionForm.get('dettesMax').touched &&
+                    ConditionForm.get('dettesMax').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire !  valeur numérique attendue</div>
+        </div>
+
+        <div class="form-group" *ngIf="choix_Dette ==='pourcentage'">
+          <label for="pourcentagesCreditRequis">Pourcentages crédit requis <span class="text-danger">*</span></label>
+          <input type="tel" class="form-control custom_Input" id="pourcentagesCreditRequis" formControlName="pourcentagesCreditRequis">
+          <div class="badge badge-danger"  *ngIf="ConditionForm.get('pourcentagesCreditRequis').touched &&
+                    ConditionForm.get('pourcentagesCreditRequis').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire !  valeur numérique attendue</div>
+        </div>
+
+        <div class="form-group">
+          <label for="semestre">Semestre <span class="text-danger">*</span></label>
+          <select   class="form-control custom_Input" id="semestre" formControlName="semestre">
+            <option value=""></option>
+<!--            <option value="1">S1</option>-->
+<!--            <option value="2">S2</option>-->
+            <option value="3">S3 (L2)</option>
+<!--            <option value="4">S4</option>-->
+            <option value="5">S5 (L3)</option>
+<!--            <option value="6">S6</option>-->
+          </select>
+          <div class="badge badge-danger"  *ngIf="ConditionForm.get('semestre').touched &&
+                    ConditionForm.get('semestre').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+        </div>
+
+        <div class="text-center p-1">
+             <span *ngIf="checkNum_spinner" style="text-align: center;">
+       <img src="../../../../assets/gif/spinner.gif" width="30" alt="">
+   </span>
+
+          <button type="submit" mat-raised-button color="accent" *ngIf="!checkNum_spinner" [disabled]="ConditionForm.invalid">{{action === 'creat' ? 'Ajouter' : 'Modifier'}} soumettre !</button>
+        </div>
+
+      </form>
+
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>

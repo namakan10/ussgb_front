@@ -1,0 +1,369 @@
+
+<h2 class="font-weight-bold text-center">Statistiques</h2>
+<div class="row">
+  <div class="col-3">
+    <mat-form-field appearance="fill">
+      <mat-label>Statistique sur : <span class="text-danger">*</span></mat-label>
+      <mat-select id="typeStat" [(ngModel)]="typeStat" (change)="StatTypeSelected()">
+        <mat-option value="INSCRIPTIONS">INSCRIPTIONS</mat-option>
+        <mat-option value="PAIEMENTS">PAIEMENTS</mat-option>
+        <mat-option value="REUSSITE">TAUX DE REUSSITE</mat-option>
+        <mat-option value="COURRIER" *ngIf="HasRole">COURRIER</mat-option>
+        <mat-option value="VALIDATIONS" *ngIf="HasRole">TAUX VALIDATIONS DES UEs</mat-option>
+        <mat-option value="EVALUATIONS" *ngIf="HasRole">EVALUATIONS</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="col-3" *ngIf="typeStat !== 'COURRIER' && typeStat !== 'VALIDATIONS' && typeStat !== 'EVALUATIONS' && typeStat !== null && typeStat !== undefined && typeStat !== ''">
+    <mat-form-field appearance="fill">
+      <mat-label>Annee Scolaire : <span class="text-danger">*</span></mat-label>
+      <mat-select id="annee" [(ngModel)]="anneeScolaire">
+        <mat-option value=""></mat-option>
+        <mat-option value="{{annees.anneeScolaire}}" *ngFor="let annees of StructureAnnees">{{annees.anneeScolaire}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+</div>
+
+<div *ngIf="typeStat !== 'COURRIER' && typeStat !== 'VALIDATIONS' && typeStat !== 'EVALUATIONS'">
+<div class="">
+<!--  POUR LES INSCRIPTIONS-->
+  <form [formGroup]="INSCRIPT_STAT_FORM" *ngIf="typeStat ==='INSCRIPTIONS' && anneeScolaire !== null && anneeScolaire !== undefined && anneeScolaire !== ''" (ngSubmit)="change()">
+    <button mat-mini-fab color="accent" class="mt-1 small" type="reset"><span class="material-icons">refresh</span></button>
+    <mat-radio-group aria-label="Select an option" formControlName="selected">
+          <div class="row">
+
+            <div class="col-2 p-2">
+              <div class="shadow-sm p-1 bg-white">
+                <mat-radio-button value="genre">Genre</mat-radio-button>
+              </div>
+            </div>
+
+            <div class="col-2 p-2">
+              <div class="shadow-sm p-1 bg-white">
+                <mat-radio-button value="age">Age</mat-radio-button>
+              </div>
+            </div>
+
+            <div class="col-2 p-2">
+              <div class="shadow-sm p-1 bg-white">
+                <mat-radio-button value="age_genre">Age & genre</mat-radio-button>
+              </div>
+            </div>
+
+            <div class="col-2 p-2">
+              <div class="shadow-sm p-1 bg-white">
+                <mat-radio-button value="age_niveau">Age & niveau</mat-radio-button>
+              </div>
+            </div>
+
+            <div class="col-2 p-2">
+              <div class="shadow-sm p-1 bg-white">
+                <mat-radio-button value="age_genre_niveau">Age,genre & niveau</mat-radio-button>
+              </div>
+            </div>
+
+            <div class="col-2 p-2">
+              <div class="shadow-sm p-1 bg-white">
+                <mat-radio-button value="niveau">Niveau</mat-radio-button>
+              </div>
+            </div>
+
+            <div class="col-2 p-2">
+              <div class="shadow-sm p-1 bg-white">
+                <mat-radio-button value="niveau_genre">Niveau & Genre</mat-radio-button>
+              </div>
+            </div>
+
+            <div class="col-2 p-2">
+              <div class="shadow-sm p-1 bg-white">
+                <mat-radio-button value="option">{{Univ_opt}}</mat-radio-button>
+              </div>
+            </div>
+
+            <div class="col-2 p-2">
+              <div class="shadow-sm p-1 bg-white">
+                <mat-radio-button value="option_genre">{{Univ_opt}} & Genre</mat-radio-button>
+              </div>
+            </div>
+
+            <div class="col-2 p-2">
+              <div class="shadow-sm p-1 bg-white">
+                <mat-radio-button value="filiere">{{Univ_fil}}</mat-radio-button>
+              </div>
+            </div>
+
+            <div class="col-2 p-2">
+              <div class="shadow-sm p-1 bg-white">
+                <mat-radio-button value="filiere_genre">{{Univ_fil}} & Genre</mat-radio-button>
+              </div>
+            </div>
+
+            <div class="col-2 p-2">
+              <div class="shadow-sm p-1 bg-white">
+                <mat-radio-button value="nationalite">Nationalité</mat-radio-button>
+              </div>
+            </div>
+
+          </div>
+    </mat-radio-group>
+
+      <div class="text-center p-2">
+           <span *ngIf="aff_spinner" style="text-align: center;">
+       <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+        </span>
+        <button mat-raised-button color="accent" [disabled]="INSCRIPT_STAT_FORM.invalid" *ngIf="!aff_spinner">Afficher <i class="fa fa-eye"></i></button>
+      </div>
+
+  </form>
+<!---->
+  <form [formGroup]="PAIEMENTS_STAT_FORM" *ngIf="typeStat ==='PAIEMENTS' && anneeScolaire !== null && anneeScolaire !== undefined && anneeScolaire !== ''" (ngSubmit)="change2()">
+    <button mat-mini-fab color="accent" class="mt-1 small" type="reset"><span class="material-icons">refresh</span></button>
+    <mat-radio-group aria-label="Select an option" formControlName="selected">
+      <div class="row" >
+
+        <div class="col-2 p-2">
+          <div class="shadow-sm p-1 bg-white">
+            <mat-radio-button value="global">Global</mat-radio-button>
+          </div>
+        </div>
+
+        <div class="col-2 p-2">
+          <div class="shadow-sm p-1 bg-white">
+            <mat-radio-button value="cursus">Cursus</mat-radio-button>
+          </div>
+        </div>
+
+
+        <div class="col-2 p-2">
+          <div class="shadow-sm p-1 bg-white">
+            <mat-radio-button value="pay_niveau">Niveau</mat-radio-button>
+          </div>
+        </div>
+
+        <div class="col-2 p-2">
+          <div class="shadow-sm p-1 bg-white">
+            <mat-radio-button value="motif">Motif</mat-radio-button>
+          </div>
+        </div>
+
+      </div>
+    </mat-radio-group>
+
+    <div class="text-center p-2">
+           <span *ngIf="aff_spinner" style="text-align: center;">
+       <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+        </span>
+      <button mat-raised-button color="accent" [disabled]="PAIEMENTS_STAT_FORM.invalid" *ngIf="!aff_spinner">Afficher <i class="fa fa-eye"></i></button>
+    </div>
+
+  </form>
+<!--  +++++ -->
+
+<!--  -->
+  <form [formGroup]="REUSSITE_STAT_FORM" *ngIf="typeStat ==='REUSSITE' && anneeScolaire !== null && anneeScolaire !== undefined && anneeScolaire !== ''" (ngSubmit)="Reussite_change()">
+    <button mat-mini-fab color="accent" class="mt-1 small" type="reset"><span class="material-icons">refresh</span></button>
+      <div class="row" >
+
+<!--        <div class="col p-2">-->
+<!--          <div class="form-group">-->
+<!--            <label for="anneeScol">Année <span class="text-danger">*</span></label>-->
+<!--            <select class="form-control custom_Input" id="anneeScol" formControlName="annee">-->
+<!--              <option value=""></option>-->
+<!--              <option value="{{annees.id}}" *ngFor="let annees of StructureAnnees">{{annees.anneeScolaire}}</option>-->
+<!--            </select>-->
+<!--          </div>-->
+<!--        </div>-->
+
+        <div class="col p-2">
+          <div class="form-group">
+            <label for="passerelle">Paserelle <span class="text-danger">*</span></label>
+            <select class="form-control custom_Input" id="passerelle" formControlName="passerelle">
+              <option value=""></option>
+              <option value="L1_VERS_L2">L1 - L2</option>
+              <option value="L2_VERS_L3">L2 - L3</option>
+              <option value="ADMIS_LICENCE">Admin Licence</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col p-2">
+          <div class="form-group">
+<!--            <label for="filID">{{Univ_fil}}</label>-->
+            <label for="filID">Filière</label>
+            <select class="form-control custom_Input" id="filID" formControlName="id_filiere">
+              <option value=""></option>
+              <option value="{{filiere.id}}" *ngFor="let filiere of Filieres">{{filiere.codeFiliere}} {{filiere.nom}}</option>
+            </select>
+          </div>
+        </div>
+
+
+        <div class="col p-2">
+          <div class="form-group">
+            <label for="genre">Genre</label>
+            <select class="form-control custom_Input" id="genre" formControlName="genre">
+              <option value=""></option>
+              <option value="true">Oui</option>
+              <option value="false">Non</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+    <div class="text-center p-2">
+           <span *ngIf="aff_spinner" style="text-align: center;">
+       <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+        </span>
+      <button type="submit" mat-raised-button color="accent" [disabled]="REUSSITE_STAT_FORM.invalid" *ngIf="!aff_spinner">Afficher <i class="fa fa-eye"></i></button>
+    </div>
+
+  </form>
+
+
+
+</div>
+
+
+<div class="container" *ngIf="PAIEMENTS_STAT_FORM.controls.selected.value === 'global' && textResult !== ''">
+  <div class="alert alert-info">
+    <h4 class="text-center font-weight-bold">
+      Le Montant total s'élève à :  {{textResult | number}} FCFA
+    </h4>
+  </div>
+</div>
+
+<mat-tab-group>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="example-tab-icon">waterfall_chart</mat-icon>
+      Format graphique
+    </ng-template>
+    <div id="chartContainer" style="height: 485px; width: 100%;"></div>
+
+
+    <div class="text-center p-2" *ngIf="showTable">
+      <button mat-raised-button color="accent" (click)="showTable = !showTable">Format tableau</button>
+    </div>
+
+
+    <div class="mt-3" *ngIf="showTable">
+      <div class="bg-white shadow-sm">
+        <div>
+          <div class="text-right p-2" *ngIf="showTable && anneeScolaire !== null && anneeScolaire !== undefined && anneeScolaire !== ''">
+          <span *ngIf="pdf_spinner" style="text-align: center;">
+            <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+          </span>
+            <button mat-raised-button color="accent" class="mr-2" (click)="exportpdf()" *ngIf="!pdf_spinner">Exporter En PDF</button>
+          </div>
+        </div >
+        <div id="export-doc">
+          <div class="p-3">
+            <div class="col-4 p-2 bg-info">
+              <h4 class="font-weight-bold text-white">{{user.structure.sigle}}: Statistiques sur les {{typeStat}} </h4>
+            </div>
+            <h3 class="text-center font-weight-bold">{{TableTile}}</h3>
+          </div>
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='age'|| INSCRIPT_STAT_FORM.value.selected==='age_genre_niveau' || INSCRIPT_STAT_FORM.value.selected==='age_genre' || INSCRIPT_STAT_FORM.value.selected==='age_niveau'" style="width: 20%">Age</th>
+              <th *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='option_genre' || INSCRIPT_STAT_FORM.value.selected==='genre' || INSCRIPT_STAT_FORM.value.selected==='filiere_genre' || INSCRIPT_STAT_FORM.value.selected==='age_genre_niveau' || INSCRIPT_STAT_FORM.value.selected==='niveau_genre' || INSCRIPT_STAT_FORM.value.selected==='age_genre'" style="width: 20%">Genre</th>
+              <th *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='niveau' || INSCRIPT_STAT_FORM.value.selected==='age_niveau' || INSCRIPT_STAT_FORM.value.selected ==='age_genre_niveau' || INSCRIPT_STAT_FORM.value.selected==='niveau_genre'" style="width: 20%">Niveau</th>
+              <th style="width: 20%" *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='filiere' || INSCRIPT_STAT_FORM.value.selected==='filiere_genre'">{{Univ_fil}}</th>
+              <th *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='option' || INSCRIPT_STAT_FORM.value.selected==='option_genre'" style="width: 20%">{{Univ_opt}}</th>
+              <th *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='nationalite'" style="width: 20%">{{Univ_opt}}</th>
+              <th *ngIf="typeStat === 'REUSSITE'" style="width: 20%">Statut</th>
+<!--              <th *ngIf="typeStat === 'PAIEMENTS' && PAIEMENTS_STAT_FORM.value.selected==='global'" style="width: 20%">Global</th>-->
+              <th *ngIf="typeStat === 'PAIEMENTS' && PAIEMENTS_STAT_FORM.value.selected==='motif'" style="width: 20%">Motif</th>
+              <th *ngIf="typeStat === 'PAIEMENTS' && PAIEMENTS_STAT_FORM.value.selected==='pay_niveau'" style="width: 20%">
+                <i class="fa fa-arrow-down" (click)="FilterBy('niveau', 'DESC')"></i>
+                Niveau
+                <i class="fa fa-arrow-up" (click)="FilterBy('niveau', 'ASC')"></i>
+              </th>
+              <th *ngIf="typeStat === 'PAIEMENTS' && PAIEMENTS_STAT_FORM.value.selected==='cursus'" style="width: 20%">Cursus</th>
+              <th style="width: 20%" *ngIf="PAIEMENTS_STAT_FORM.value.selected!=='global'">
+                <span *ngIf="typeStat === 'PAIEMENTS'">
+                  <i class="fa fa-arrow-down" (click)="FilterBy('montant', 'DESC')"></i>
+                  Montant(Fcfa)
+                  <i class="fa fa-arrow-up" (click)="FilterBy('montant', 'ASC')"></i> </span>
+                <span *ngIf="typeStat !== 'PAIEMENTS'">Nombre</span>
+              </th>
+              <th *ngIf="typeStat !== 'PAIEMENTS'" style="width: 20%">pourcentage %</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let don of dataSource; let i = index">
+              <td>{{i + 1}}</td>
+              <td *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='age'|| INSCRIPT_STAT_FORM.value.selected==='age_genre_niveau' || INSCRIPT_STAT_FORM.value.selected==='age_genre' || INSCRIPT_STAT_FORM.value.selected==='age_niveau'">{{don.age}}</td>
+              <td *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='option_genre' || INSCRIPT_STAT_FORM.value.selected==='genre' || INSCRIPT_STAT_FORM.value.selected==='filiere_genre' || INSCRIPT_STAT_FORM.value.selected==='age_genre_niveau' || INSCRIPT_STAT_FORM.value.selected==='niveau_genre' || INSCRIPT_STAT_FORM.value.selected==='age_genre'">{{don.genre}}</td>
+              <td *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='niveau' || INSCRIPT_STAT_FORM.value.selected ==='age_genre_niveau' || INSCRIPT_STAT_FORM.value.selected==='niveau_genre' || INSCRIPT_STAT_FORM.value.selected==='age_niveau'">{{don.niveau}}</td>
+              <td *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='filiere' || INSCRIPT_STAT_FORM.value.selected==='filiere_genre'">{{don.filiere}}</td>
+              <td *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='option' || INSCRIPT_STAT_FORM.value.selected==='option_genre'">{{don.option}}</td>
+              <td *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='nationalite'">{{don.nationalite}}</td>
+              <td *ngIf="typeStat === 'REUSSITE'">{{don.label}}</td>
+<!--              <th *ngIf="typeStat === 'PAIEMENTS' && PAIEMENTS_STAT_FORM.value.selected==='global'" style="width: 20%">{{don.global}}</th>-->
+              <th *ngIf="typeStat === 'PAIEMENTS' && PAIEMENTS_STAT_FORM.value.selected==='pay_niveau'" style="width: 20%">{{don.niveau}}</th>
+              <th *ngIf="typeStat === 'PAIEMENTS' && PAIEMENTS_STAT_FORM.value.selected==='cursus'" style="width: 20%">{{don.cursus}}</th>
+              <th *ngIf="typeStat === 'PAIEMENTS' && PAIEMENTS_STAT_FORM.value.selected==='motif'" style="width: 20%">{{don.motif}}</th>
+              <td *ngIf="PAIEMENTS_STAT_FORM.value.selected!=='global'">{{don.hasOwnProperty('nombre') ? don.nombre : formatMoneyNumeric(don.montant)}}</td>
+              <td *ngIf="typeStat !== 'PAIEMENTS'">
+                {{don.pourcentage}} %
+
+                <span class="badge badge-secondary" *ngIf="don.levelPourcent === 100">
+                  {{don.niveau}} => {{don.levelPourcent}} %
+                </span>
+              </td>
+            </tr>
+
+
+            <tr>
+              <th>Total</th>
+              <th *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='age'|| INSCRIPT_STAT_FORM.value.selected==='age_genre_niveau' || INSCRIPT_STAT_FORM.value.selected==='age_genre' || INSCRIPT_STAT_FORM.value.selected==='age_niveau'" style="width: 20%"></th>
+              <th *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='option_genre' || INSCRIPT_STAT_FORM.value.selected==='genre' || INSCRIPT_STAT_FORM.value.selected==='filiere_genre' || INSCRIPT_STAT_FORM.value.selected==='age_genre_niveau' || INSCRIPT_STAT_FORM.value.selected==='niveau_genre' || INSCRIPT_STAT_FORM.value.selected==='age_genre'" style="width: 20%"></th>
+              <th *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='niveau' || INSCRIPT_STAT_FORM.value.selected==='age_niveau' || INSCRIPT_STAT_FORM.value.selected ==='age_genre_niveau' || INSCRIPT_STAT_FORM.value.selected==='niveau_genre'" style="width: 20%"></th>
+              <th style="width: 20%" *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='filiere' || INSCRIPT_STAT_FORM.value.selected==='filiere_genre'"></th>
+              <th *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='option' || INSCRIPT_STAT_FORM.value.selected==='option_genre'" style="width: 20%"></th>
+              <th *ngIf="typeStat !== 'PAIEMENTS' && INSCRIPT_STAT_FORM.value.selected==='nationalite'" style="width: 20%"></th>
+              <th *ngIf="typeStat === 'REUSSITE'" style="width: 20%"></th>
+              <th *ngIf="typeStat === 'PAIEMENTS' && PAIEMENTS_STAT_FORM.value.selected==='motif'" style="width: 20%"></th>
+              <th *ngIf="typeStat === 'PAIEMENTS' && PAIEMENTS_STAT_FORM.value.selected==='pay_niveau'" style="width: 20%"></th>
+              <th *ngIf="typeStat === 'PAIEMENTS' && PAIEMENTS_STAT_FORM.value.selected==='cursus'" style="width: 20%"></th>
+              <th style="width: 20%" *ngIf="PAIEMENTS_STAT_FORM.value.selected!=='global'"> {{typeStat === 'PAIEMENTS' ? formatMoneyNumeric(TotalM) : TotalN}} </th>
+              <th *ngIf="typeStat !== 'PAIEMENTS'" style="width: 20%">{{TotalP}} % </th>
+            </tr>
+
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </mat-tab>
+
+<!--  <mat-tab>-->
+<!--    <ng-template mat-tab-label>-->
+<!--      <mat-icon class="example-tab-icon">table_chart</mat-icon>-->
+<!--      Format tableau-->
+<!--    </ng-template>-->
+
+<!--    -->
+<!--  </mat-tab>-->
+
+</mat-tab-group>
+<div class="container bg-white shadow-sm">
+
+</div>
+</div>
+
+<!--<app-courrier.ta *ngIf="typeStat === 'COURRIER'"></app-courrier.ta>-->
+<app-courrier class="tatistique" *ngIf="typeStat === 'COURRIER'"></app-courrier>
+
+<app-validation class="tatistique" *ngIf="typeStat === 'VALIDATIONS'"></app-validation>
+
+<app-evaluation class="tatistique" *ngIf="typeStat === 'EVALUATIONS'"></app-evaluation>
+

@@ -1,0 +1,171 @@
+
+<div class="container col-5 shadow-sm p-1 text-center mb-2">
+  <h4>Autres Gestions</h4>
+</div>
+
+
+<mat-card>
+  <mat-card-content>
+    <div class="container shadow-sm p-3" style="height: 230px; overflow: auto; border-radius: 7px">
+      <h5>Images défilantes</h5>
+      <div class="mb-2">
+        <input type="file" class="form-control" (change)="addSlidePicture($event)">
+
+      </div>
+      <div class="row d-flex justify-content-center">
+        <div class="col-3 p-2 shadow-sm m-2 text-center" *ngFor="let slide of homePageImageSlide">
+          <img src="{{_http}}{{slide.contenu}}" style="width: 160px; height: 140px" alt="">
+          <div>
+            <button class="btn btn-block btn-sm btn-danger" (click)="deleteImage(slide)"> <i class="fa fa-trash"></i> </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </mat-card-content>
+</mat-card>
+
+
+<!-- ====== =====-->
+<mat-card>
+  <mat-card-content>
+    <div class="container mt-4 shadow-sm p-2">
+      <div class="container shadow-sm p-3" style="height: 430px; overflow: auto; border-radius: 7px">
+        <div class="row">
+            <h5 class="text-center">Image accueil</h5>
+            <input type="file" class="form-control" (change)="changePicture($event)">
+            <div class="mt-3">
+              <img src="{{_http}}{{homePageImage}}" style="width: 490px; height: 310px" alt="">
+
+<!--              <h6>{{_http}}</h6>-->
+            </div>
+          </div>
+          <div class="col-6">
+            <h5 class="text-center">Texte à propos</h5>
+            <div class="text">
+              <button class="mb-2" (click)="homeSubmit()" mat-raised-button color="primary">
+                <i class="fa fa-plus"></i>&nbsp;&nbsp; Enregistrer les modification
+              </button>
+            </div>
+            <div class="container shadow-sm p-2">
+              <ckeditor
+                [(ngModel)]="ckeditorContent">
+                <ckbutton [name]="'saveButton'"
+                          [command]="'saveCmd'"
+                          (click)="save($event)"
+                          [icon]="'save.png'"
+                          [label]="'Save Document'"
+                          [toolbar]="'clipboard,1'">
+                </ckbutton>
+              </ckeditor>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  </mat-card-content>
+</mat-card>
+<!-- ====== =====-->
+
+
+<mat-card>
+  <mat-card-content>
+
+    <div class="container mt-4 shadow-sm p-2">
+      <h3 class="text-center">Statistiques clés</h3>
+      <button class="mb-2" (click)="add()" mat-raised-button color="primary">
+        <i class="fa fa-plus"></i>&nbsp;&nbsp; Ajouter
+      </button>
+      <div class="container shadow-sm p-3" style="height: 230px; overflow: auto; border-radius: 7px">
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <td>Titre</td>
+            <td>Nombre</td>
+            <td></td>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let state of Statistiques">
+            <td>{{state.titre}}</td>
+            <td>{{state.contenu}}</td>
+            <td>
+              <button class="text-info btn" (click)="edit(state)" >
+                <i class="fa fa-edit"></i>
+              </button>
+              <button class="btn" (click)="delete(state)">
+                <i class="fa fa-trash text-danger"></i>
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    </mat-card-content>
+<mat-card>
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="StatistiqueFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">history_toggle_off</span> Statique clé page accueil</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <div>
+          <div class="col">
+            <label for="titre">Titre <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom_Input" id="titre" [(ngModel)]="titre">
+            <div class="badge badge-danger"  *ngIf="titre === '' || titre === undefined"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+          <div class="col">
+            <label for="nombre">Nombre <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom_Input" id="nombre" [(ngModel)]="nombre">
+            <div class="badge badge-danger"  *ngIf="nombre === '' || nombre === undefined"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" (click)="submit()">
+          {{action ==='new' ? 'Ajouter' : 'Modifier'}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal2 -->
+<div class="modal fade" id="slideFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel2"><span class="material-icons">history_toggle_off</span> Statique clé page accueil</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <div>
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" (click)="submit()">
+          {{action ==='new' ? 'Ajouter' : 'Modifier'}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

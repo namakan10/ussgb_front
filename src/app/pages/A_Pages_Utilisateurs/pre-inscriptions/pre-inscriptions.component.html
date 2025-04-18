@@ -1,0 +1,46 @@
+
+
+<!-- <mat-card>
+  <mat-card-header>
+
+  </mat-card-header>
+
+  <mat-card-content> -->
+    <h3 class="ml-3">{{univ_inst}}</h3>
+    <div class="container col-10">
+      <div class="row mt-3 center">
+        <div class="col-4 mt-4 p-2" *ngFor="let struc of contentStructures">
+
+          <div class="container">
+            <mat-card class="example-card">
+              <mat-card-header>
+                <div mat-card-avatar class="example-header-image"></div>
+                <mat-card-title>
+                  <h4 class="text-center">{{struc.sigle}}</h4>
+                </mat-card-title>
+                {{struc.nom}}
+              </mat-card-header>
+              <img mat-card-image src="https://{{struc.logo}}" style="width: 100%" alt="structure Logo" *ngIf="struc.logo !== null && struc.sigle !== 'FHG'">
+<!--              <img mat-card-image src="../../../../assets/images/ussgb_U.jpg" style="width: 100%" alt="structure Logo" *ngIf="struc.logo !== null && struc.sigle === 'FHG'">-->
+              <mat-card-content class="text-center">
+                {{struc.type}}
+                <h1 >
+                  {{struc.sigle === 'FHG'?_TimeDecompteFHG:struc.sigle === 'IUG'?_TimeDecompteIUG:struc.sigle === 'IUDT'?_TimeDecompteIUDT:_TimeDecompteFSEG}}
+                </h1>
+                <!-- <p class="text-danger">
+                  {{_TimeDecompteFHG === null?'No_':_TimeDecompteIUG === null?'No_':_TimeDecompteIUDT === null?'No_':_TimeDecompteFSEG === null? 'No_':''}}
+                </p> -->
+              </mat-card-content>
+              <mat-card-actions>
+                <button class="btn btn-outline-secondary btn-block" (click)="checkStructureAnnee(struc.id, struc.sigle, struc.type, struc.logo)">
+                  {{struc.type === 'Institut'? 'postuler': 'pré-inscrire'}}
+                </button>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  <!-- </mat-card-content>
+</mat-card> -->

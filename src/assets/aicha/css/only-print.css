@@ -1,0 +1,361 @@
+/*CARD DESIGN*/
+.card-container {
+  margin: auto;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: relative;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+}
+
+.number-container-pro {
+  position: absolute;
+  left: 49%;
+  top: 38.58%;
+  color: red;
+  font-family: aggressive !important;
+  font-size: 7pt !important;
+  font-weight: bold;
+}
+
+.number-container-white {
+  position: absolute;
+  left: 51%;
+  top: 38.1%;
+  color: red;
+  font-family: aggressive !important;
+  font-size: 7pt !important;
+  font-weight: bold;
+}
+
+.number-container-yellow {
+  position: absolute;
+  left: 51%;
+  top: 37.5%;
+  color: red;
+  font-family: aggressive !important;
+  font-size: 7pt !important;
+  font-weight: bold;
+}
+.number-container-green {
+  position: absolute;
+  left: 51%;
+  top: 37.5%;
+  color: red;
+  font-family: aggressive !important;
+  font-size: 7pt !important;
+  font-weight: bold;
+}
+
+.info-container {
+  position: absolute;
+}
+
+.green-info-container {
+  left: 4.7%;
+  top: 43.9%;
+  height: 52%;
+  width: 56%;
+}
+
+
+.yellow-info-container {
+  left: 4.7%;
+  top: 43.9%;
+  height: 52%;
+  width: 56%;
+}
+
+
+.white-info-container {
+  left: 4.7%;
+  top: 44.5%;
+  height: 52%;
+  width: 56%;
+}
+
+
+.cpc-info-container {
+  left: 4.2%;
+  top: 45.5%;
+  height: 52%;
+  width: 56.2%;
+}
+
+.info-container table {
+  height: 100%;
+  width: 100%;
+}
+
+.left-info {
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.right-info {
+  position: absolute;
+  height: 100%;
+  width: 47%;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.signature-container {
+  position: absolute;
+  left: 57%;
+  bottom: 3.9%;
+  height: 1.64cm;
+  width: 1.64cm;
+}
+
+.picture-container-green {
+  position: absolute;
+  right: 1%;
+  bottom: 2.4%;
+  height: 58.5%;
+  width: 29.3%;
+  border-radius: 10%;
+  background: white !important;
+}
+.picture-container-yellow {
+  position: absolute;
+  right: 1%;
+  bottom: 2.4%;
+  height: 58.4%;
+  width: 29.3%;
+  border-radius: 10%;
+}
+.picture-container-white {
+  position: absolute;
+  right: 1%;
+  bottom: 2.4%;
+  height: 57.6%;
+  width: 29.3%;
+  border-radius: 10%;
+}
+.picture-container-pro {
+  position: absolute;
+  border-radius: 10%;
+  right: 1%;
+  bottom: 2.6%;
+  height: 57%;
+  width: 29.2%;
+}
+
+.picture-container img {
+  height: 100%;
+  width: 100%;
+  border-radius: 10%;
+  background: white !important;
+  /*border: 1px solid gray;*/
+}
+
+.signature-container img {
+  height: 100%;
+  width: 100%;
+  border-radius: 10%;
+}
+
+.card-separator {
+  height: 200px;
+  width: 100%;
+}
+
+
+.alligner {
+  position: absolute;
+  text-align: right;
+  color: black;
+  font-weight: bolder;
+}
+
+.title td {
+  height: 25%;
+  font-size: 4.5pt !important;
+  vertical-align: bottom;
+}
+
+.title-rep td {
+  height: 25%;
+  vertical-align: top;
+  font-size: 5.5pt !important;
+  font-family: aggressive !important;
+}
+.title-rep2 td {
+  height: 25%;
+  vertical-align: top;
+  font-size: 4pt !important;
+  font-family: aggressive !important;
+}
+
+@font-face {
+  font-family: aggressive;
+  src: url('src/assets/aicha/css/fontsets/aicha/css/font/AGGRESSIVE.otf');
+}
+
+@font-face {
+  font-family: arial;
+  src: url("src/assets/aicha/css/fontsets/aicha/css/font/Arial.ttf");
+}
+
+@font-face {
+  font-family: arial-black;
+  src: url("src/assets/aicha/css/fontsets/aicha/css/font/arial-black.ttf");
+}
+
+.qrcode-container {
+  position: absolute;
+  left: 40%;
+  top: 10%;
+  width: 17%;
+  height: 30%;
+}
+
+.num-container {
+  position: absolute;
+  left: 40%;
+  top: 42%;
+  width: 17%;
+  height: 30%;
+  text-align: center;
+  font-family: aggressive !important;
+  font-size: 7pt !important;
+  font-weight: bold;
+}
+
+.qrcode-container img {
+  width: 100%;
+  height: 100%;
+}
+
+.contact-container {
+  position: absolute;
+  left: 3.3%;
+  top: 69%;
+  right: 3.3%;
+  text-align: center;
+  font-family: aggressive !important;
+  font-size: 6pt !important;
+  /*color: red !important;*/
+}
+
+.addresse-container {
+  position: absolute;
+  left: 3.3%;
+  top: 57%;
+  right: 3.3%;
+  text-align: center;
+  font-family: aggressive !important;
+  font-size: 4pt !important;
+}
+
+.alert-container {
+  position: absolute;
+  left: 3.3%;
+  top: 88%;
+  right: 3.3%;
+  font-size: 5pt !important;
+  font-family: Arial !important;
+  text-align: center;
+}
+
+
+mat-dialog-container {
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+.top-position {
+  position: absolute;
+  top: 0;
+}
+
+.full-width {
+  width: 100% !important;
+}
+
+.tp-box {
+  position: relative;
+  margin: 0 !important;
+}
+
+.bshadow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+textarea {
+  margin-top: 15px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 250px;
+  opacity: .5;
+}
+
+ngx-qrcode {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+canvas {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.picture-container {
+  background: white !important;
+}
+
+/* BACKGROUNDS*/
+/*
+.green-container {
+  background-image: url('~assets/img/cards/green.jpg') !important;
+}
+
+.yellow-container {
+  background-image: url('~assets/img/cards/yellow.jpg') !important;
+}
+
+.white-container {
+  background-image: url('~assets/img/cards/white.jpg') !important;
+}
+
+.cpc-container {
+  background-image: url('~assets/img/cards/cpc.jpg') !important;
+}
+
+
+.green-back-container {
+  background-image: url('~assets/img/cards/green-back.jpg') !important;
+}
+
+.yellow-back-container {
+  background-image: url('~assets/img/cards/yellow-back.jpg') !important;
+}
+
+
+.white-back-container {
+  background-image: url('~assets/img/cards/white-back.jpg') !important;
+}
+
+
+.cpc-back-container {
+  background-image: url('~assets/img/cards/cpc-back.jpg') !important;
+}
+*/
+
+
+/*.printer {*/
+/*  font-size: 3pt !important;*/
+/*}*/

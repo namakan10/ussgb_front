@@ -1,0 +1,84 @@
+
+<h1 class="text-center mt-2 mb-3">NOMBRE D'ETUDIANTS PAR GROUPE</h1>
+
+<div class="container col-4 p-3" *ngIf="!exist">
+    <div class="container bg-white p-2">
+        <button mat-raised-button color="primary" (click)="FORM_ACTION_MANAGER('creat')" *ngIf="!exist">Ajouter un paramètre</button>
+    </div>
+</div>
+
+<div class="container col-4 p-3" *ngIf="exist">
+    <div class class="container bg-white p-2">
+        <div class="text-right">
+            <button class="btn" (click)="DELETE_PARAM(list_params.id)">
+                <span class="material-icons text-right mr-2 text-danger">
+                    close
+                </span>
+            </button>
+
+        </div>
+        <hr>
+        <h1 class="text-center">
+            <span class="material-icons">
+                groups
+                </span>
+        </h1>
+        <h6 class="text-center"><span class="badge badge-ligth">Nombre d'étudiants / groupe</span></h6>
+        <h2 class="text-center">{{list_params.nbreEtudiantGroupe}}</h2>
+        <div class="mt-2">
+            <span *ngIf="_spinner2" style="text-align: center;">
+                <img src="../../../../assets/gif/spinner.gif" width="25" alt="">
+                <span>Veuillez patienter s'il vous plaît ...</span>
+            </span>
+
+            <div class="text-center">
+                <button mat-raised-button color="primary" (click)="FULL_FORM_FOR_UPDATE(list_params.id,list_params.nbreEtudiantGroupe);FORM_ACTION_MANAGER('modif')" *ngIf="!_spinner2">Modifier</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal RECLAMATION -->
+<div class="modal fade" id="ParametreFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Formulaire</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            <form [formGroup]="Parametre_Form" (ngSubmit)="creat_action?CREAT_PARAMETRE():UPDATE_PARAMETRE()">
+
+
+                <div class="form-group">
+                    <label for="nom">Nombre d'étudiants / groupe:  <span class="text-danger">*</span></label>
+                   <input type="tel" class="form-control custom_Input" formControlName="nbreEtudiantGroupe">
+                  </div>
+
+                  <div class="badge badge-danger"  *ngIf="Parametre_Form.get('nbreEtudiantGroupe').touched &&
+                                                  Parametre_Form.get('nbreEtudiantGroupe').invalid">Champ obligatoire</div>
+
+              <div class="text-right p-1">
+
+                <span *ngIf="_spinner" style="text-align: center;">
+                    <img src="../../../../assets/gif/spinner.gif" width="25" alt="">
+                    <span>Veuillez patienter s'il vous plaît ...</span>
+                </span>
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="Parametre_Form.invalid" *ngIf="!_spinner">
+                  <i class="fa fa-save"></i> valider
+                </button>
+              </div>
+            </form>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>

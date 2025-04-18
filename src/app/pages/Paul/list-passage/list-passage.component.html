@@ -1,0 +1,414 @@
+
+
+<div class="container p-2">
+  <h2 class="text-center">LISTES DE PASSAGE </h2>
+
+  <div class="p-2">
+    <form [formGroup]="SeachForm" (ngSubmit)="SearchList()" *ngIf="!searchF">
+      <div class="row">
+
+        <div class="col">
+          <label for="anneeScolaire">Année scolaire <span class="text-danger">*</span></label>
+          <select class="form-control custom_Input" id="anneeScolaire" formControlName="anneeScolaire">
+            <option value=""></option>
+            <option value="{{annee.anneeScolaire}}" *ngFor="let annee of structureAnnees">{{annee.anneeScolaire}}</option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label for="type">type de liste <span class="text-danger">*</span></label>
+          <select class="form-control custom_Input" id="type" formControlName="type">
+            <option value=""></option>
+
+            <optgroup label="------GENERALE-----" *ngIf="!searchDrop">
+              <option value="Admis licence">Admis en Licence</option>
+            </optgroup>
+
+            <optgroup label="------SANS DETTES-----" *ngIf="!searchDrop">
+              <option value="Admis sans dettes L2">Admis sans dettes L2</option>
+              <option value="Admis sans dettes L3">Admis sans dettes L3</option>
+            </optgroup>
+
+            <optgroup label="--------DETTES---------" *ngIf="!searchDrop">
+              <option value="Admis avec dettes L2">Admis avec dettes L2</option>
+              <option value="Admis avec dettes L3">Admis avec dettes L3</option>
+            </optgroup>
+
+            <optgroup label="------REDOUBLANTS-----" *ngIf="!searchDrop">
+                <option value="Redoublant L1">Redoublant L1</option>
+                <option value="Redoublant L2">Redoublant L2</option>
+                <option value="Redoublant L3">Redoublant L3</option>
+            </optgroup>
+
+            <optgroup label="----NOTES MANQUANTES---" *ngIf="searchDrop">
+              <option value="note manquantes l1">Notes manquantes L1</option>
+              <option value="note manquantes l2">Notes manquantes L2</option>
+              <option value="note manquantes l3">Notes manquantes L3</option>
+            </optgroup>
+
+
+
+          </select>
+        </div>
+
+        <div class="col">
+          <label for="_fil">Code {{univ_fil}} <span class="text-danger"></span></label>
+          <input type="text" class="form-control custom_Input" id="_fil" formControlName="filiere">
+        </div>
+
+        <div class="col">
+          <label for="numEtudiant">Num étudiant <span class="text-danger"></span></label>
+          <input type="text" class="form-control custom_Input" id="numEtudiant" formControlName="num_etudiant">
+        </div>
+
+      </div>
+      <div class="text-right mt-1">
+        <span *ngIf="_spinner" style="text-align: center;">
+         <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+        </span>
+
+        <button type="submit" mat-raised-button color="accent" [disabled]="SeachForm.invalid" *ngIf="!_spinner">
+          <span class="material-icons">search</span> Recherche</button>
+
+
+      </div>
+    </form>
+  </div>
+
+
+
+  <div class="mt-3">
+    <h2 class="mt-1">{{this.SeachForm.controls.type.value}}</h2>
+  </div>
+</div>
+
+<mat-tab-group animationDuration="2000ms" (selectedTabChange)="tabClick($event)">
+  <mat-tab hidden>
+    <ng-template mat-tab-label>
+      <mat-icon class="list">list </mat-icon>
+      Listes de Passage
+    </ng-template>
+
+    <div class="container p-2 mt-2">
+      <div class="row">
+        <div class="col-sm-6 col-md-6 col-lg-6">
+          <mat-form-field>
+            <mat-label>Filtre</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6">
+          <button type="button" (click)="exportexcel()" class="btn btn-success">Exporter en Excel</button>|
+          <button type="button" (click)="exportpdf()" class="btn btn-success">Exporter en Pdf</button> |
+          <button class="btn btn-sm btn-outline-info" (click)="entete = !entete ">
+            <i class="fa fa-eye-slash text-secondary" *ngIf="entete"></i>
+            <i class="fa fa-eye text-info" *ngIf="!entete"></i>
+          </button>
+          <span *ngIf="spinner" style="text-align: center;">
+               <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+          </span>
+        </div>
+      </div>
+
+<!--      <div><h3 class="text-center">{{this.FileTitre}}</h3></div>-->
+      <div class="mat-elevation-z8" id="excel-table">
+        <table class="table-hover" mat-table [dataSource]="dataSource" matSort>
+          <ng-container matColumnDef="entete">
+            <th mat-header-cell *matHeaderCellDef colspan="13" mat-sort-header>
+              <!--            ====================-->
+              <!--            EN TÊTE-->
+              <!--            ====================-->
+              <div class="row" *ngIf="entete">
+                <div class="col-sm-8">
+                  <div>{{univ_Minist}}</div>
+
+                  <div>
+                    -------------------------
+                  </div>
+                  <div>
+                    {{univName}}
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div style="text-align: end;">
+                    REPUBLIQUE DU MALI
+                    <div style="font-size: 15px;">
+                      Un Peuple - Un But - Une Foi
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-sm-3" style="text-align: center; ">
+                  <br>
+                  <img src="{{_asset_image}}" alt="" width="170" height="auto">
+                </div>
+                <div class="col-sm-6 pt-1">
+                  <div style="padding-left: 30px; padding-right: 30px;">
+                    <div style="font-size: 20px; text-align: center; text-transform: uppercase; border-bottom: black solid 5px; border-top: black solid 5px; "> {{user.structure.nom}}</div>
+                  </div>
+                </div>
+                <div class="col-sm-3 pt-2" style="text-align: center; " *ngIf="user.structure.logo != undefined">
+                  <img src="{{_http}}{{user.structure.logo}}" class="structLogo" style="background-size: cover;" alt="" width="170" height="auto">
+                  <!--          <img src="{{https_photo}}{{user.structure.logo}}" id="structLogo" style="background-size: cover;" alt="" width="170" height="auto">-->
+                </div>
+
+                <!--                  <div class="col-sm-12" style="text-align: center;">-->
+                <!--                    <span style="font-size: 15px; font-weight: normal;">{{user.structure.adresse}}</span>-->
+                <!--                  </div>-->
+                <h3> {{this.FileTitre}}</h3>
+              </div>
+              <!--            ====================-->
+              <!--          END  EN TÊTE-->
+              <!--            ====================-->
+
+            </th>
+            <!--              <td mat-cell *matCellDef="let row" style="padding: 5px"> {{ row.numEtudiant}} </td>-->
+          </ng-container>
+          <!-- ID Column -->
+          <ng-container matColumnDef="num">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> N° étudiant </th>
+            <td mat-cell *matCellDef="let row"> {{row.numEtudiant}} </td>
+          </ng-container>
+
+          <!-- ID Column -->
+          <ng-container matColumnDef="numMat">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> N° matricule </th>
+            <td mat-cell *matCellDef="let row"> {{row.numMatricule}} </td>
+          </ng-container>
+
+          <!-- Progress Column -->
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom </th>
+            <td mat-cell *matCellDef="let row"> {{row.nom}} </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="prenom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Prénom </th>
+            <td mat-cell *matCellDef="let row"> {{row.prenom}} </td>
+          </ng-container>
+
+
+          <!-- ID Column -->
+          <ng-container matColumnDef="genre">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Genre </th>
+            <td mat-cell *matCellDef="let row"> {{row.genre}} </td>
+          </ng-container>
+
+          <!-- ID Column -->
+          <ng-container matColumnDef="dateNaissance">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date naissance </th>
+            <td mat-cell *matCellDef="let row"> {{row.dateDeNaissance}} </td>
+          </ng-container>
+
+          <!-- ID Column -->
+          <ng-container matColumnDef="lieuNaissance">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Lieu naissance </th>
+            <td mat-cell *matCellDef="let row"> {{row.lieuDeNaissance}} </td>
+          </ng-container>
+
+          <!-- Fruit Column -->
+          <ng-container matColumnDef="typeCandidat">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Type candidat </th>
+            <td mat-cell *matCellDef="let row"> {{row.typeCandidat}} </td>
+          </ng-container>
+
+
+          <!-- Fruit Column -->
+          <ng-container matColumnDef="niveau">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Niveau </th>
+            <td mat-cell *matCellDef="let row"> {{row.niveau}} </td>
+          </ng-container>
+
+
+          <!-- Fruit Column -->
+          <ng-container matColumnDef="codeOption">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Code Option </th>
+            <td mat-cell *matCellDef="let row"> {{row.codeOption}} </td>
+          </ng-container>
+
+          <!-- Fruit Column -->
+          <ng-container matColumnDef="dette">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Dette </th>
+            <td mat-cell *matCellDef="let row"> {{row.hasOwnProperty('dette') ? row.dette : '-'}} </td>
+          </ng-container>
+
+          <!-- Fruit Column -->
+          <ng-container matColumnDef="resultat">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Résultat </th>
+            <td mat-cell *matCellDef="let row" class="small" style="font-size: 13px">
+              {{SeachForm.get('type').value.includes('Admis') ? 'ADMIS' : 'RECALE'}}
+            </td>
+          </ng-container>
+
+          <!-- Header row second group -->
+          <ng-container matColumnDef="titre">
+            <th mat-header-cell *matHeaderCellDef [attr.colspan]="5">
+              <h3 class="text-center">{{this.FileTitre}}</h3>
+            </th>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['entete']"></tr>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator #paginator
+          [length]="length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions">
+
+        </mat-paginator>
+      </div>
+
+
+    </div>
+
+  </mat-tab>
+<!-- 2 -->
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="example-tab-icon text-info">rule </mat-icon>
+      Etutiant avec note(s) manquante(s)
+    </ng-template>
+
+
+    <div class="container p-2 mt-2">
+      <app-list-ue-non-valider
+        [searchBody]="searchBody"
+        [changing]="changingValue"
+        (stopSpinner)="_spinner = !_spinner"
+      ></app-list-ue-non-valider>
+
+    </div>
+
+  </mat-tab>
+
+
+<!--  <mat-tab>-->
+<!--    <ng-template mat-tab-label>-->
+<!--      <mat-icon class="example-tab-icon text-danger">edit_off</mat-icon>-->
+<!--      Etudiant n'ayant pas Evalués dans les UEs-->
+<!--    </ng-template>-->
+
+<!--    <div class="container col-4 p-2">-->
+<!--        <div class="p-2">-->
+<!--          <div class="form-group">-->
+<!--            <label for="numEtudiant2">Num étudiant <span class="text-danger"></span></label>-->
+<!--            <input type="text" class="form-control custom_Input" [(ngModel)]="numEtudiant2" id="numEtudiant2">-->
+<!--          </div>-->
+<!--          <div class="text-center">-->
+<!--               <span *ngIf="_Numspinner" style="text-align: center;">-->
+<!--                <img src="../../../../assets/gif/spinner.gif" width="65" alt="">-->
+<!--               </span>-->
+<!--            <button mat-raised-button color="accent" [disabled]="!checkIfNotNull(numEtudiant2)" (click)="Get_UENonEvaluee()" *ngIf="!_Numspinner">Valider</button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="container p-2 mt-2">-->
+<!--      <mat-form-field>-->
+<!--        <mat-label>Filter</mat-label>-->
+<!--        <input matInput (keyup)="applyFilter3($event)" placeholder="Ex. Mia" #input>-->
+<!--      </mat-form-field>-->
+
+<!--      <div class="mat-elevation-z8">-->
+<!--        <table class="table-hover" mat-table [dataSource]="dataSource3" matSort>-->
+
+<!--          &lt;!&ndash; ID Column &ndash;&gt;-->
+<!--          <ng-container matColumnDef="num">-->
+<!--            <th mat-header-cell *matHeaderCellDef mat-sort-header> numEtudiant </th>-->
+<!--            <td mat-cell *matCellDef="let row"> {{row.numEtudiant}} </td>-->
+<!--          </ng-container>-->
+
+<!--          &lt;!&ndash; Progress Column &ndash;&gt;-->
+<!--          <ng-container matColumnDef="nom">-->
+<!--            <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom </th>-->
+<!--            <td mat-cell *matCellDef="let row"> {{row.nom}} </td>-->
+<!--          </ng-container>-->
+
+<!--          &lt;!&ndash; Name Column &ndash;&gt;-->
+<!--          <ng-container matColumnDef="prenom">-->
+<!--            <th mat-header-cell *matHeaderCellDef mat-sort-header> Prénom </th>-->
+<!--            <td mat-cell *matCellDef="let row"> {{row.prenom}} </td>-->
+<!--          </ng-container>-->
+
+<!--          &lt;!&ndash; Fruit Column &ndash;&gt;-->
+<!--          <ng-container matColumnDef="codeOption">-->
+<!--            <th mat-header-cell *matHeaderCellDef mat-sort-header> Code Option </th>-->
+<!--            <td mat-cell *matCellDef="let row"> {{row.codeOption}} </td>-->
+<!--          </ng-container>-->
+
+<!--          &lt;!&ndash; Fruit Column &ndash;&gt;-->
+<!--          <ng-container matColumnDef="action">-->
+<!--            <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>-->
+<!--            <td mat-cell *matCellDef="let row">-->
+<!--              <button class="btn" (click)="ShowUes(row)"><i class="fa fa-eye text-info"></i></button>-->
+<!--            </td>-->
+<!--          </ng-container>-->
+
+
+<!--          <tr mat-header-row *matHeaderRowDef="displayedColumns3"></tr>-->
+<!--          <tr mat-row *matRowDef="let row; columns: displayedColumns3;"></tr>-->
+<!--        </table>-->
+
+<!--        <mat-paginator-->
+<!--          [length]="length"-->
+<!--          [pageSize]="pageSize"-->
+<!--          [pageSizeOptions]="pageSizeOptions">-->
+
+<!--        </mat-paginator>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--  </mat-tab>-->
+
+
+</mat-tab-group>
+
+<!-- Modal -->
+<div class="modal fade" id="uesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold text-center" id="exampleModalLabel">Les UEs non évalués {{checkIfNotNull(EtudiantSelected) ? 'de : '+EtudiantSelected.prenom+' '+EtudiantSelected.nom : ' '}}</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Code ue</th>
+              <th>Nom ue</th>
+              <th *ngIf="!CheckIfAsRoles(['ROLE_SP'])">Note</th>
+              <th *ngIf="!CheckIfAsRoles(['ROLE_SP'])"></th>
+            </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let ue of Ues; let i = index">
+            <td>{{ue.codeUE}}</td>
+            <td>{{ue.nomUE}}</td>
+            <td *ngIf="!CheckIfAsRoles(['ROLE_SP'])">
+              <input type="text" id="noteToAttrib" name="noteToAttrib" (change)="AttributeNote(ue, $event)">
+            </td>
+            <td *ngIf="!CheckIfAsRoles(['ROLE_SP'])">
+               <span id="note_spinner{{ue.id}}" style="text-align: center;" hidden>
+                <img src="../../../../assets/gif/spinner.gif" width="25" alt="">
+                 veillez patienter ...
+               </span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

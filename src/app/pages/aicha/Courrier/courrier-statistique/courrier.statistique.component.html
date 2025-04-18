@@ -1,0 +1,62 @@
+<p-toast [style]="{marginTop: '80px'}" position="top-right"></p-toast>
+
+<p-panel>
+  <p-header>
+    <div class="ui-helper-clearfix">
+      <span class="ui-panel-title" style="font-size:16px;display:inline-block;margin-top:2px">Statistiques des courriers</span>
+      <button class="btn btn-sm btn-outline-primary" type="button" style="float: right;" (click)="initData(this.structureId)">
+        <em class="fa fa-refresh"></em> Actualiser
+      </button>
+    </div>
+  </p-header>
+
+
+  <div>
+    <p-fieldset legend="FITRES STATISTIQUES">
+      <table>
+        <tr>
+          <td style="width: 70%">
+            <mat-form-field appearance="fill">
+              <mat-label>Service</mat-label>
+              <mat-select (selectionChange)="setAnnee($event.value)" placeholder="Selectionnez une année" [(ngModel)]="anneeScolaire">
+                <mat-option value="{{annees.anneeScolaire}}" *ngFor="let annees of anneeScolaires">{{annees.anneeScolaire}}</mat-option>
+
+                <!--                <mat-option *ngFor="let d of anneeScolaires; index as i;" [value]="d">{{d}}</mat-option>-->
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td style="width: 30%;padding-left: 5px;">
+            <mat-checkbox class="example-margin" value="true" [(ngModel)]="global" (change)="setGlobal($event.checked)">Global</mat-checkbox>
+            <mat-checkbox class="example-margin" value="true" [(ngModel)]="mois" (change)="setMois($event.checked)">Mois</mat-checkbox>
+            <mat-checkbox class="example-margin" value="true" [(ngModel)]="statut" (change)="setStatut($event.checked)">Statut traitement</mat-checkbox>
+          </td>
+        </tr>
+      </table>
+    </p-fieldset>
+
+    <p-fieldset legend="Statistiques des courriers par année : {{anneeScolaire}}">
+      <table>
+        <tr>
+          <td>
+            <p-chart type="pie" [data]="pieData"></p-chart>
+          </td>
+          <td>
+            <p-chart type="doughnut" [data]="doughnutData"></p-chart>
+          </td>
+        </tr>
+      </table>
+    </p-fieldset>
+
+    <p-fieldset legend="Statistiques des courriers par mois">
+      <p-chart type="bar" [data]="barreData"></p-chart>
+    </p-fieldset>
+
+    <p-fieldset legend="Statistiques des courriers par mois">
+      <p-chart type="line" [data]="lineData"></p-chart>
+    </p-fieldset>
+
+  </div>
+
+
+
+</p-panel>

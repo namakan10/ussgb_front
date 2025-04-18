@@ -1,0 +1,131 @@
+<mat-dialog-content>
+      <div class="col">
+        <div id="face" style="border-radius: 1em 1em; height: 353px; width: 543px;background: url('assets/images/carte/body.PNG');background-repeat:no-repeat;background-position: center; background-color: white;color: black; border: 7px solid #1a1a27;">
+          <div style="height: 90px">
+            <table style="width: 100%;height: 100px">
+              <tbody>
+              <tr>
+                <td style="width: 220px;text-align: center;">
+                  <img style="border-top-left-radius: 1em; border-top-right-radius: 1em;height: 60px;width: 60px;float: left;" [src]="_http+user.structure.logo" alt="">
+                  <p style="color: #0a0a0a;font-size: 12px;font-weight: bold;">{{user.structure.nom  | uppercase}}<br/>{{user.structure.sigle  | uppercase}}</p>
+                </td>
+                <td style="text-align: end;">
+                  <p style="text-align: center;font-weight: bold;font-size: 11px;margin-left: 70px;padding-right:0.5em;">
+                    REPUBLIQUE DU MALI<br/>Un Peuple - Un But - Une Foi
+                    <br/>
+                    ............................................................
+                    <br/>
+                    MINISTERE DE L'ENSEIGNEMENT SUPERIEUR<br/>ET DE LA RECHERCHE SCIENTIFIQUE
+                  </p>
+                </td>
+              </tr>
+              <tbody>
+            </table>
+          </div>
+          <table style="width: 100%;">
+            <tbody>
+            <tr>
+              <td style="width: 160px;text-align: center;">
+                <img style="height: 160px;width: 135px;margin-bottom: 2px;" src="{{select.user.photo ? parseImage(select.user.photo): '../assets/images/carte/profile.png'}}" crossorigin="anonymous" alt="user photo">
+              </td>
+              <td>
+                <div style="margin-left: 15px;height: 180px;">
+                  <p style="text-align: start;font-size: 16px;font-weight: bold;">CARTE D'IDENTITE PROFESSIONNELLE</p>
+
+                  <table style="width: 100%;font-size: 12px;margin-bottom: 50px;font-weight: bold;">
+                    <tbody>
+                    <tr>
+                      <td style="width: 125px;text-align: start"><div>N° Matricule</div></td>
+                      <td style="text-align: start"><div>: {{select.user.numMatricule}}</div></td>
+                    </tr>
+                    <tr>
+                      <td style="width: 125px;text-align: start"><div>Nom</div></td>
+                      <td style="text-align: start"><div class="text-uppercase">: {{select.nom}}</div></td>
+                    </tr>
+                    <tr>
+                      <td style="width: 125px;text-align: start"><div>Prénom</div></td>
+                      <td style="text-align: start"><div>: {{select.prenom}}</div></td>
+                    </tr>
+                    <tr>
+                      <td style="width: 125px;text-align: start"><div>Date de naissance</div></td>
+                      <td style="text-align: start"><div>: {{select.user.dateDeNaissance | date: "dd-MM-yyyy"}}</div></td>
+                    </tr>
+                    <tr>
+                      <td style="width: 125px;text-align: start"><div>Lieu de naissance</div></td>
+                      <td style="text-align: start"><div>: {{select.user.lieuDeNaissance}}</div></td>
+                    </tr>
+                    <tr>
+                      <td style="width: 125px;text-align: start"><div>Nationalité</div></td>
+                      <td style="text-align: start"><div>: {{select.nationalite}}</div></td>
+                    </tr>
+                    <tr>
+                      <td style="width: 125px;text-align: start"><div>Téléphone</div></td>
+                      <td style="text-align: start"><div>: {{select.user.telephone}}</div></td>
+                    </tr>
+                    <tr>
+                      <td style="width: 125px;text-align: start"><div>Profession</div></td>
+                      <td style="text-align: start"><div>: {{select.corps}}</div></td>
+                    </tr>
+                    <tr>
+                      <td style="width: 125px;text-align: start"><div>Fait le </div></td>
+                      <td style="text-align: start"><div>: {{ now | date: 'dd/MM/yyyy'}}</div></td>
+                    </tr>
+                    <tbody>
+                  </table>
+                </div>
+
+              </td>
+            </tr>
+            <tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col">
+        <div id="dos" style="border-radius: 1em 1em; height: 353px; width: 543px; background: white; border: 7px solid #1a1a27;">
+
+          <div style="text-align: center;font-weight: bold;text-align: center;font-size: 14px;margin-left: 5px;margin-right: 5px;">
+            <div style="color: #17a2b8;">Cette carte ne peut être utilisée que par le signataire autorisé.</div>
+            <div>En cas de découverte, veuillez déposer cette carte à la structure {{user.structure.sigle}}.<br/>
+              En cas de perte, l'intéressé est tenu d'informer le Service des Ressources Humaines de la structure {{user.structure.sigle}} en fournissant un certificat de perte.
+            </div>
+          </div>
+          <hr style="border: 1px solid #17a2b8;">
+          <div>
+            <div class="row" style="width: 100%;height: 120px;">
+              <table style="width: 100%;height: 120px;">
+                <tr style="height: 120px;">
+                  <td style="width: 25%;">
+                    <div style="margin: auto;height: 120px;width: 120px;text-align: center;display: flex;justify-content: center;">
+                      <img style="border-top-left-radius: 1em; border-top-right-radius: 1em;" height="80" width="80" src="{{_asset_image}}" alt="" style="margin-top: 30px;">
+                    </div>
+                  </td>
+                  <td style="width: 50%;">
+                    <div style="margin: auto;height: 120px;width: 120px;text-align: center;display: flex;justify-content: center;">
+                      <div style="height: 120px !important;">
+                        <qr-code [value]="select.user.numMatricule" [size]="120" [level]="'L'"></qr-code>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="width: 25%;">
+                    <div style="height: 120px;width: 120px;text-align: center;display: flex;justify-content: center;">
+                      <img style="border-top-left-radius: 1em; border-top-right-radius: 1em;" height="80" width="80" [src]="_http+user.structure.logo" alt="" crossorigin="anonymous" style="margin-top: 30px;">
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <hr style="border: 1px solid #17a2b8;">
+          <div style="color: black; text-align: center;font-size: 14px;font-weight: bold;margin-top: 20px;">
+            {{user.structure.adresse}}
+          </div>
+
+        </div>
+      </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Annuler</button>
+  <button mat-button color="primary" (click)="printCarte()">Imprimer</button>
+</mat-dialog-actions>
+

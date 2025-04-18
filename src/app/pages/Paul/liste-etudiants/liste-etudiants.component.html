@@ -1,0 +1,744 @@
+<div class="container">
+  <h3>Liste des Etudiants <span class="btn btn-info btn-sm" (click)="hideFields = ! hideFields"><i [className]="hideFields ? 'fa fa-eye' : 'fa fa-eye-slash'"></i></span></h3>
+</div>
+
+<div class="container">
+  <div class="text-right">
+    <span class="text-danger text-right mr-2">Niveau et {{univ_opt}} constituent la classe</span>
+  </div>
+  <div class="row" style="padding: 20px;" [hidden]="hideFields">
+
+<!--    <div class="col-sm-12 col-md-2 col-lg-2" *ngIf="_RECTORAT">-->
+<!--      <label for="structure">Structure <span class="text-danger">*</span></label>-->
+<!--      <select (change)="StructureChange($event)" class="form-control" name="structure" [(ngModel)]="structure" id="structure">-->
+<!--        <option value=""></option>-->
+<!--        <option *ngFor="let structure of Structures" [value]="structure.id">{{structure.sigle}}</option>-->
+<!--      </select>-->
+<!--    </div>-->
+
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <label for="annee_scolaire">Année scolaire <span class="text-danger">*</span></label>
+      <select (change)="changeAnnee($event)" class="form-control" [(ngModel)]="anneeSelected" name="annee_scolaire" id="annee_scolaire">
+        <option value=""></option>
+        <option *ngFor="let annee of anneeStructure" [value]="annee.anneeScolaire">{{annee.anneeScolaire}}</option>
+      </select>
+    </div>
+
+    <div class="col-sm-12 col-md-1 col-lg-1" *ngIf="champ === 'niveau' || champ === null">
+      <label for="niveau">Niveau<span class="text-danger">*</span></label>
+      <select  [(ngModel)]="niveau" class="form-control" name="niveau" id="niveau" aria-label="Default select example">
+        <option value=""></option>
+        <option value="all">Tout</option>
+        <option value="L1">L1</option>
+        <option value="L2">L2</option>
+        <option value="L3">L3</option>
+        <option value="M1">M1</option>
+        <option value="M2">M2</option>
+      </select>
+
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-6">
+      <div class="form-group mt-1">
+        <div class="ng-autocomplete form-group mt-1">
+          <label for="id_option">{{univ_opt}}</label>
+          <ng-autocomplete id="id_option"
+                           [data]="Options" [searchKeyword]="keyword"
+                           (selected)='OptionSelectEvent($event)'
+                           [itemTemplate]="itemTemplate"
+                           [notFoundTemplate]="notFoundTemplate">
+          </ng-autocomplete>
+
+          <ng-template #itemTemplate let-item>
+            <a [innerHTML]="item.nom"></a>
+          </ng-template>
+
+          <ng-template #notFoundTemplate let-notFound>
+            <div [innerHTML]="notFound">Pas de corespondance .</div>
+          </ng-template>
+        </div>
+      </div>
+      <br>
+    </div>
+
+    <div class="col-sm-2 col-md-3 col-lg-3">
+      <mat-form-field class="example-full-width">
+        <mat-label>Groupe </mat-label>
+        <input matInput [(ngModel)]="id_groupe" type="text"
+               name="id_groupe">
+      </mat-form-field>
+    </div>
+
+    <div class="col-sm-10 col-md-3 col-lg-3">
+      <mat-form-field class="example-full-width">
+        <mat-label>Prénom</mat-label>
+        <input matInput [(ngModel)]="prenom" type="text"
+               name="prenom">
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <mat-form-field class="example-full-width">
+        <mat-label>Nom</mat-label>
+        <input matInput [(ngModel)]="nom" type="text"
+               name="nom">
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <mat-form-field class="example-full-width">
+        <mat-label>Téléphone</mat-label>
+        <input matInput [(ngModel)]="telephone" type="number"
+               name="telephone">
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <mat-form-field class="example-full-width">
+        <mat-label>Num Etudiant</mat-label>
+        <input matInput [(ngModel)]="numEtudiant" type="text"
+               name="numEtudiant">
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-3 text-right">
+      <button [disabled]="!CheckIfIsNull(niveau) || !CheckIfIsNull(annee_scolaire)" (click)='Afficher()'
+              *ngIf="!spinner" mat-raised-button color="accent">
+        <mat-icon> search </mat-icon> Afficher</button>
+      <span *ngIf="spinner" style="text-align: right;">
+    <img style="position: absolute; margin-left: -100px;" src="assets/gif/spinner.gif" width="50" alt="">
+    veuillez patienter ...
+  </span>
+    </div>
+
+  <hr>
+</div>
+
+  <div class="row">
+    <div class="col-sm-12 col-md-8 col-lg-8 d-flex align-text-bottom">
+      <h5 class="">
+        <strong>
+          {{CheckIfIsNull(StructureSelected) ? StructureSelected.sigle+'/' : ''}}
+          {{CheckIfIsNull(anneeSelected) ? anneeSelected+'/' : ''}}
+          {{CheckIfIsNull(niveau) ? niveau+'/' : ''}}
+          {{CheckIfIsNull(OptionSelected) ? OptionSelected.filiere.codeFiliere+': '+OptionSelected.nom : ''}}
+
+        </strong>
+
+      </h5>
+    </div>
+    <div class="col-12">
+      <button type="button" (click)="exportexcel()" class="btn btn-success">Exporter en Excel</button>&nbsp;&nbsp;
+      <button type="button" (click)="expirationModal({})" class="btn btn-primary">Prolonger les dates d'expirations</button>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-4">
+      <mat-form-field>
+        <mat-label>FILTRE</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+      </mat-form-field>
+    </div>
+    <div class="col-12">
+
+      <div class="d-flex align-items-center" *ngIf="several">
+        <button mat-raised-button color="accent" (click)="InterneTranfertModal('several')">Transférer plusieurs étudiants</button>
+      </div>
+      <form>
+        <div id="excel-table">
+          <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+            
+            <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+
+          <ng-container matColumnDef="check">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <input type="checkbox" class="form-check-input" name="allSelector" (change)="isCheckedOrNot($event)">
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <input type="checkbox" class="ck"  name="check{{element.id}}"
+                     (change)="isCheckedOrNot($event)" value="{{element.id}}">
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="numEtudiant">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Num Etudiant</th>
+            <td mat-cell *matCellDef="let element"> {{element.numEtudiant}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="prenom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Prénom</th>
+            <td mat-cell *matCellDef="let element"> {{element.prenom}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+            <td mat-cell *matCellDef="let element"> {{element.nom}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="nationalite">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nationalité</th>
+            <td mat-cell *matCellDef="let element"> {{element.nationalite}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="telephone">
+            <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+            <td mat-cell *matCellDef="let element"> {{element.user.telephone}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="codeFiliere">
+            <th mat-header-cell *matHeaderCellDef>Code Filière</th>
+            <td mat-cell *matCellDef="let element"> {{element.filiere.codeFiliere}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="scolarite">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Scolarité</th>
+            <td mat-cell *matCellDef="let element"> {{element.scolarite}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="dateExpiration">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date d'expiration</th>
+            <td mat-cell *matCellDef="let element"> {{element.dateExpiration}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="etat">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Etat</th>
+            <td mat-cell *matCellDef="let element"> {{element.user.statut ? "Débloqué" : "Bloqué"}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-raised-button color="primary"
+                      [matMenuTriggerFor]="action">Action</button>
+              <mat-menu #action="matMenu">
+
+                <button mat-menu-item (click)="TransfertChoose(element)" *ngIf="!_RECTORAT">
+                  <span class="material-icons">transfer_within_a_station</span>
+                  <span>&nbsp;&nbsp;Transfert</span>
+                </button>
+                <button mat-menu-item (click)="getUeNotInCourse(element)" *ngIf="!_RECTORAT">
+                  <i class="fa fa-list"></i>
+                  <span>&nbsp;&nbsp;Ues non liées</span>
+                </button>
+
+                <button mat-menu-item (click)="LaunchEtudiantDataModif(element)" *ngIf="HasRoleRectoratAction && env === 'ussgb'">
+                  <i class="fa fa-edit text-info"></i>
+                  Modifier information
+                </button>
+
+                <button mat-menu-item (click)="EditEtudiants(element)" *ngIf="!_RECTORAT">
+                  <i class="fa fa-edit text-info"></i>
+                  Modifier statut/type
+                </button>
+
+                <button mat-menu-item
+                    (click)="expirationModal(element)" *ngIf="!_RECTORAT">
+                  <mat-icon>history</mat-icon> Prolonger la date d'expiration
+                </button>
+
+                <button mat-menu-item
+                    (click)="bloqueDebloquer(element.user.id, !element.user.statut)" *ngIf="!_RECTORAT">
+                  <mat-icon>{{element.user.statut ? "lock" : "lock_open"}}</mat-icon> {{element.user.statut ? "Bloquer" : "Débloquer"}}
+                </button>
+
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="loading">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Chargement des données...
+            </td>
+          </ng-container>
+          
+          <ng-container matColumnDef="noData">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Pas de données...
+            </td>
+          </ng-container>
+
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+      </form>
+
+      <mat-paginator
+        [length]="length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions">
+
+      </mat-paginator>
+    </div>
+  </div>
+
+
+
+<div class="modal" id="uesNotFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="exampleModalLabel">UEs non liées au parcours !</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <div *ngIf="CheckIfIsNull(EtudiantData)">
+          <h5><i class="fa fa-user-circle"></i> {{EtudiantData.prenom+" "+EtudiantData.nom}} :</h5>
+          <p><strong>{{EtudiantData.numEtudiant}}</strong></p>
+        </div>
+
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Année</th>
+              <th>Code UE</th>
+              <th>Note d'examen</th>
+              <th>Note final</th>
+              <th>Statut</th>
+              <th>action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ues of UesNotInCourse">
+              <td> {{ues.annee}}</td>
+              <td> {{ues.ue.codeUE}}</td>
+              <td> {{ues.noteExamen}}</td>
+              <td> {{ues.noteFinal}}</td>
+              <td> {{ues.statut}}</td>
+              <td>
+
+<!--                <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>-->
+<!--                <mat-menu #action="matMenu">-->
+<!--                  <button mat-menu-item (click)="showForm = true; fullEditForm(element)">-->
+<!--                    <i class="fa fa-edit"></i>-->
+<!--                    <span>&nbsp;&nbsp;Modifier</span>-->
+<!--                  </button>-->
+
+<!--                  <button mat-menu-item (click)="Delete_Evenement(element)">-->
+<!--                    <i class="fa fa-trash"></i>-->
+<!--                    <span>&nbsp;&nbsp;Supprimer</span>-->
+<!--                  </button>-->
+<!--                </mat-menu>-->
+
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--============EDIT ETUDIANT 1 ============-->
+  <!-- Modal Infomation Change -->
+  <div class="modal fade" id="etutiandInfoChangeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title font-weight-bold" id="examodalLabel"><strong><span class="material-icons">edit</span> Changement des données</strong></h5>
+          <button type="button" mat-button data-dismiss="modal" aria-label="Close">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+          <form [formGroup]="ChangeDataForm" (ngSubmit)="SaveEtudiantData()">
+
+            <div class="form-group">
+              <label for="nom">Nom <span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom_Input" id="nom" formControlName="nom">
+            </div>
+
+            <div class="form-group">
+              <label for="prenom">Prénom <span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom_Input" id="prenom" formControlName="prenom">
+            </div>
+
+            <div class="form-group">
+              <label for="numMatricule">num Matricule <span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom_Input" id="numMatricule" formControlName="numMatricule">
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email<span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom_Input" id="email" formControlName="email">
+            </div>
+
+            <div class="form-group">
+              <label for="dateDeNaissance">Date de naissance<span class="text-danger">*</span></label>
+              <input type="date" class="form-control custom_Input" id="dateDeNaissance" formControlName="dateDeNaissance">
+            </div>
+
+            <!--        <div class="form-group">-->
+            <!--          <label for="filiere">Filière<span class="text-danger">*</span></label>-->
+            <!--          <select id="filiere" class="form-control custom_Input" (change)="selectOptions($event)" formControlName="filiere">-->
+            <!--            <option value=""></option>-->
+            <!--            <option value="{{filiere.id}}" *ngFor="let filiere of Structure_Filieres">{{filiere.nom}} - ({{filiere.codeFiliere}})</option>-->
+            <!--          </select>-->
+            <!--        </div>-->
+
+            <!--        <div class="form-group">-->
+            <!--          <label for="option">Option<span class="text-danger">*</span></label>-->
+            <!--          <select id="option" class="form-control custom_Input" formControlName="option">-->
+            <!--            <option value=""></option>-->
+            <!--            <option value="{{option.id}}" *ngFor="let option of FiliereSelectOptions">{{option.nom}} - ({{option.codeOption}})</option>-->
+            <!--          </select>-->
+            <!--          <span *ngIf="Opt_spinner" style="text-align: center;">-->
+            <!--          <img src="../../../../../assets/gif/spinner.gif" width="30" alt="">-->
+            <!--        </span>-->
+            <!--        </div>-->
+
+            <div class="form-group">
+              <label for="nationalite">Nationalité <span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom_Input" id="nationalite" formControlName="nationalite">
+            </div>
+
+            <div class="form-group">
+              <label for="telephone">Téléphone <span class="text-danger">*</span></label>
+              <input type="tel" class="form-control custom_Input" id="telephone" formControlName="telephone">
+            </div>
+
+            <div class="form-group">
+              <label for="telephoneTuteur">téléphone tuteur <span class="text-danger">*</span></label>
+              <input type="tel" class="form-control custom_Input" id="telephoneTuteur" formControlName="telephoneTuteur">
+            </div>
+
+
+            <div class="form-group">
+              <label for="genre">Genre<span class="text-danger">*</span></label>
+              <select id="genre" class="form-control custom_Input" formControlName="genre">
+                <option value=""></option>
+                <option value="HOMME">homme</option>
+                <option value="FEMME">femme</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="lieuDeNaissance">Lieu de naissance<span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom_Input" id="lieuDeNaissance" formControlName="lieuDeNaissance">
+            </div>
+
+
+            <div class="form-group">
+              <label for="ville">Ville<span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom_Input" id="ville" formControlName="ville">
+            </div>
+
+            <div class="form-group">
+              <label for="quartier">Quartier<span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom_Input" id="quartier" formControlName="quartier">
+            </div>
+
+            <div class="form-group">
+              <label for="rue">Rue</label>
+              <input type="text" class="form-control custom_Input" id="rue" formControlName="rue">
+            </div>
+
+            <div class="form-group">
+              <label for="porte">Porte</label>
+              <input type="text" class="form-control custom_Input" id="porte" formControlName="porte">
+            </div>
+
+            <div class="text-center p-2">
+          <span *ngIf="modifSpinner" style="text-align: center;">
+          <img src="../../../../../assets/gif/spinner.gif" width="80" alt="">
+        </span>
+              <button type="submit" mat-raised-button color="primary" *ngIf="!modifSpinner">
+                <i class="fa fa-save"></i> Enregistrer
+              </button>
+            </div>
+
+
+          </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!--============EDIT ETUDIANT 2 ============-->
+<div class="modal" id="EditEtudiantModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="exampl">Modification des informations</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <form [formGroup]="EtudiantForm" (ngSubmit)="saveEtudiantChange()">
+        <div class="modal-body">
+
+        <div *ngIf="CheckIfIsNull(EtudiantEditData)">
+          <h5><i class="fa fa-user-circle"></i> {{EtudiantEditData.prenom+" "+EtudiantEditData.nom}} :</h5>
+          <p><strong>{{EtudiantEditData.numEtudiant}}</strong></p>
+        </div>
+
+
+          <div class="container">
+<!--            <div class="row">-->
+<!--              <div class="col-6">-->
+<!--                <img src="{{_http}}{{EtudiantEditData.user.photo}}" alt="">-->
+<!--              </div>-->
+<!--              <div class="col-6">-->
+<!--                <div class="form-group">-->
+<!--                  <label for="photo">Photo</label>-->
+<!--                  <input type="file" class="form-control-file">-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+            <div class="row">
+              <div class="col-6 p-3">
+                <div class="p-2 shadow-sm">
+                  <div class="form-group">
+                    <label for="typeCandidat">Statut</label>
+                    <select formControlName="typeCandidat" class="form-control" id="typeCandidat">
+                      <option value=""></option>
+                      <option value="REGULIER">REGULIER</option>
+                      <option value="MALIEN_DE_L_EXTERIEUR">MALIEN DE L'EXTERIEUR</option>
+                      <option value="TITRE">TITRE</option>
+                      <option value="CANDIDAT_LIBRE">CANDIDAT_LIBRE</option>
+                      <option value="ADMIS_PAR_TRANSFERT_DE_CREDIT">ADMIS_PAR_TRANSFERT_DE_CREDIT</option>
+                      <option value="ETRANGER_UEMOA">ETRANGER_UEMOA</option>
+                      <option value="ETRANGER_HORS_UEMOA">ETRANGER_HORS_UEMOA</option>
+                      <option value="MASTER_BOURSIER">MASTER_BOURSIER</option>
+                      <option value="MASTER">MASTER</option>
+                      <option value="ANY">ANY</option>
+                    </select>
+                  </div>
+
+                </div>
+              </div>
+              <div class="col-6 p-3">
+                <div class="p-2 shadow-sm">
+                  <div class="form-group">
+                    <label for="statut">Type de candidat</label>
+                    <select class="form-control" id="statut" formControlName="statut">
+                      <option value=""></option>
+                      <option value="L1">L1</option>
+                      <option value="L2">L2</option>
+                      <option value="L3">L3</option>
+
+                      <option value="REDOUBLANT_L1">REDOUBLANT L1</option>
+                      <option value="REDOUBLANT_L2">REDOUBLANT L2</option>
+                      <option value="REDOUBLANT_L3">REDOUBLANT L3</option>
+                      <option value="ADMIS_CREDIT_L2">ADMIS CREDIT L2</option>
+                      <option value="ADMIS_CREDIT_L3">ADMIS CREDIT L3</option>
+                      <option value="ADMIS_PURS_S3">ADMIS PURS S3</option>
+                      <option value="ADMIS_PURS_L2">ADMIS PURS L2</option>
+                      <option value="ADMIS_PURS_L3">ADMIS PURS L3</option>
+
+                      <option value="ADMIS_EQUIVALENCE_L2">ADMIS EQUIVALENCE L2</option>
+                      <option value="ADMIS_EQUIVALENCE_L3">ADMIS EQUIVALENCE L3</option>
+
+                      <option value="M1">M1</option>
+                      <option value="REDOUBLANT_M1">REDOUBLANT M1</option>
+                      <option value="REDOUBLANT_M2">REDOUBLANT M2</option>
+                      <option value="ADMIS_CREDIT_M2">ADMIS CREDIT M2</option>
+                      <option value="ADMIS_PURS_M2">ADMIS PURS M2</option>
+
+                      <option value="EXCLU">EXCLU</option>
+                      <option value="ABANDON">ABANDON</option>
+
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+        <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Enregistrer !</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--  ================== Interne TRANSFERT MODAL ================= -->
+  <div class="modal fade" id="InterneTranfertFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title font-weight-bold" id="InterneFormModallLabel"><span class="material-icons">transfer_within_a_station</span> Tranfert</h5>
+          <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="SingleEtudiantData !== undefined">
+            <h4>{{SingleEtudiantData !== undefined && SingleEtudiantData.numEtudiant+ " "+SingleEtudiantData.nom+" "+SingleEtudiantData.prenom}}</h4>
+            <hr>
+          </div>
+
+          <form [formGroup]="TransfertForm" (ngSubmit)="SaveTransfertData()">
+            <div class="form-group mt-1">
+              <div class="ng-autocomplete form-group mt-1">
+                <label for="optionTransfert"><strong>{{univ_opt}}</strong>
+                  <span class="text-danger">*</span> </label>
+                <ng-autocomplete formControlName="optionTransfert" id="optionTransfert"
+                                 [data]="Options" [searchKeyword]="keyword"
+                                 (selected)='TranfertOptionSelectEvent($event)'
+                                 [itemTemplate]="itemTemplate"
+                                 [notFoundTemplate]="notFoundTemplate">
+                </ng-autocomplete>
+
+                <ng-template #itemTemplate let-item>
+                  <a [innerHTML]="item.nom"></a>
+                </ng-template>
+
+                <ng-template #notFoundTemplate let-notFound>
+                  <div [innerHTML]="notFound">Pas de corespondance .</div>
+                </ng-template>
+
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+              <button type="submit" mat-raised-button color="primary" [disabled]="TransfertForm.invalid">Valider</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!--  ================== Externe TRANSFERT MODAL ================= -->
+  <div class="modal fade" id="ExterneTranfertFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title font-weight-bold" id="ExterneFormModallLabel"><span class="material-icons">transfer_within_a_station</span> Tranfert Externe</h5>
+          <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="SingleEtudiantData !== undefined">
+            <h4>{{SingleEtudiantData !== undefined && SingleEtudiantData.numEtudiant+ " "+SingleEtudiantData.nom+" "+SingleEtudiantData.prenom}}</h4>
+            <hr>
+          </div>
+
+          <form [formGroup]="ExterneTransfertForm" (ngSubmit)="ConfirmExterneTransferSave()">
+<!--            <div class="form-group mt-1">-->
+<!--              <select name="struc" id="struc" class="form-control custom_Input"-->
+<!--                      formControlName="arrivalStructure" (change)="structureChange($event)">-->
+<!--                <option value=""></option>-->
+<!--                <option value="{{struc.id}}" *ngFor="let struc of Structures">{{struc.sigle}}</option>-->
+<!--              </select>-->
+<!--            </div>-->
+            <div class="form-group mt-1">
+              <div class="ng-autocomplete form-group mt-1">
+                <label for="optionTransfert"><strong>{{univ_fil}}</strong>
+                  <span class="text-danger">*</span> </label>
+                <ng-autocomplete id="newStructureFiliere"
+                                 [data]="Filieres"
+                                 [searchKeyword]="fil_keyword"
+                                 (selected)='FiliereChange($event)'
+                                 [itemTemplate]="itemTemplate"
+                                 [notFoundTemplate]="notFoundTemplate">
+                </ng-autocomplete>
+
+                <ng-template #itemTemplate let-item>
+                  <a [innerHTML]="item.nom"></a>
+                </ng-template>
+
+                <ng-template #notFoundTemplate let-notFound>
+                  <div [innerHTML]="notFound">Pas de corespondance .</div>
+                </ng-template>
+
+              </div>
+            </div>
+
+            <div class="form-group mt-1">
+              <div class="ng-autocomplete form-group mt-1">
+                <label for="optionTransfert"><strong>{{univ_opt}}</strong>
+                  <span class="text-danger">*</span> </label>
+                <ng-autocomplete formControlName="newStructureoption" id="optionTransfert2"
+                                 [data]="OptionsOfFil" [searchKeyword]="keyword"
+                                 [itemTemplate]="itemTemplate"
+                                 [notFoundTemplate]="notFoundTemplate">
+                </ng-autocomplete>
+
+                <ng-template #itemTemplate let-item>
+                  <a [innerHTML]="item.nom"></a>
+                </ng-template>
+
+                <ng-template #notFoundTemplate let-notFound>
+                  <div [innerHTML]="notFound">Pas de corespondance .</div>
+                </ng-template>
+
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+              <button type="submit" mat-raised-button color="primary" [disabled]="ExterneTransfertForm.invalid">Valider</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  ================== Date Expiration MODAL ================= -->
+  <div class="modal fade" id="dateExpirationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title font-weight-bold" id="ExterneFormModallLabel">Prolongement de la date d'expiration</h5>
+          <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="EtudiantEditData !== undefined && EtudiantEditData.id !== undefined">
+            <h4>Pour l'étudiant(e): {{EtudiantEditData.prenom}} {{EtudiantEditData.nom}}</h4>
+          </div>
+          <div *ngIf="EtudiantEditData !== undefined && EtudiantEditData.id === undefined">
+            <h4>Pour la structure: {{user.structure.sigle}}</h4>
+          </div>
+          <hr>
+
+          <div class="container">
+            <div class="col-sm-12" *ngIf="EtudiantEditData !== undefined && EtudiantEditData.id === undefined">
+              <mat-form-field appearance="fill">
+                <mat-label>Année scolaire</mat-label>
+                <mat-select  [(ngModel)]="annee_scolaireF" name="annee_scolaire" aria-label="Default select example">
+                  <mat-option *ngFor="let annee of anneeStructure" [value]="annee.anneeScolaire">{{annee.anneeScolaire}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            
+            <div class="col-sm-12">
+              <mat-form-field class="example-full-width">
+                <mat-label>Date d'expiration</mat-label>
+                <input matInput [matDatepicker]="picker" [(ngModel)]="dateExpiration" type="text"
+                       name="datePreInscription">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+            </div>
+
+            <div class="modal-footer">
+              <span *ngIf="_spinner2" style="float: left;">
+                <img style="position: absolute; margin-left: -100px;" src="assets/gif/spinner.gif" width="50" alt="">
+                veuillez patienter ...
+              </span>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+              <button type="submit" (click)="ChangeDateExpiration()" mat-raised-button color="primary" [disabled]="dateExpiration === undefined">Valider</button>
+            </div>
+            
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+</div>

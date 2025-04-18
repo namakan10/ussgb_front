@@ -1,0 +1,133 @@
+<style>
+  ul{
+    float: right;
+    margin-right: 20px;
+  }
+  ul li a {
+    color: white;
+    font-size: 17px;
+    padding: 7px 13px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  a.active,a:hover{
+    background: #1b9bff;
+    transition: .5s;
+  }
+
+  ul li{
+    display: inline-block;
+    line-height: 80px;
+    margin: 0 5px;
+  }
+  .profile-pic{
+    height: 55px;
+    width: 55px;
+    border-radius: 50%;
+  }
+
+  .checkbtn{
+    font-size: 30px;
+    color: white;
+    float: right;
+    line-height: 80px;
+    margin-right: 40px;
+    cursor: pointer;
+    display: none;
+  }
+
+  #check{
+    display: none;
+  }
+
+  @media (max-width: 999px){
+    .checkbtn{
+      display: block;
+    }
+    ul{
+      position: fixed;
+      width: 100%;
+      height: 100vh;
+      background: #2c3e50;
+      top: 80px;
+      left: -100%;
+      text-align: center;
+      transition: all .5s;
+    }
+    ul li{
+      display: block;
+      margin: 50px 0;
+      line-height: 30px;
+    }
+    ul li a{
+      font-size: 20px;
+    }
+
+    li a:hover {
+      background: none;
+      color: #0082e6;
+    }
+    #check{
+      margin-top: 25px;
+      margin-right: 15px;
+      display: block;
+    }
+    #check:checked ~ ul{
+      left: 0;
+    }
+  }
+
+
+  @keyframes pulse {
+    from { transform: scale(1.85); }
+    50% { transform: scale(1); }
+    to { transform: scale(1.85); }
+  }
+
+  .fe-pulse {
+    animation-name: pulse;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+  }
+
+
+</style>
+<!-- ============================================================== -->
+<!-- Profile - style you can find in header.scss -->
+<!-- ============================================================== -->
+<!-- <a (click)="navigateHome()" class=" m-r-20 hidden-sm-up" mat-raised-button [color]="active ==='home'? 'warn':''"><mat-icon> home </mat-icon> Accueil</a> -->
+<input type="checkbox" class="fe-pulse" id="check">
+<ul>
+  <li routerLinkActive="activate" *ngIf="_RECTORAT">
+    <select name="struc" id="struc" class="form-control custom_Input"
+            [(ngModel)]="structure" (change)="structureChange($event)">
+      <option value="" selected>... Changer de structure ... </option>
+      <option value="{{struc.id}}" *ngFor="let struc of Structures">{{struc.sigle}}</option>
+    </select>
+  </li>
+
+  <li routerLinkActive="activate">
+    <a routerLink="/trombinoscope" class="text-white mt-2">
+      <span class="material-icons small"> contact_mail </span> Trombinoscope
+    </a>
+  </li>
+  <li>
+    <a [matMenuTriggerFor]="profile">
+      <img [src]="'http://'+user.users.photo" alt="user" class="profile-pic">
+    </a>
+  </li>
+</ul>
+<!-- <a style="cursor: pointer;" (click)="navigateHome()" [className]="active ==='home'? 'nav-link bg-warning m-r-20':'nav-link m-r-20'" mdbWavesEffect> <i class="fa fa-home" style="font-size: 20px;"></i> Accueil</a> -->
+
+<!--<button [matMenuTriggerFor]="profile" mat-icon-button class="m-r-5"> </button>-->
+<mat-menu #profile="matMenu" class="mymegamenu">
+    <!-- <button mat-menu-item>
+        <mat-icon>settings</mat-icon> Settings </button> -->
+    <button mat-menu-item [routerLink]="[ '/profil']">
+        <mat-icon> assignment_ind </mat-icon> Mon profil </button>
+    <!-- <button mat-menu-item>
+        <mat-icon>notifications_off</mat-icon> Disable notifications </button> -->
+    <button mat-menu-item (click)="deconnection()">
+        <mat-icon>exit_to_app</mat-icon> Déconnexion </button>
+</mat-menu>
+

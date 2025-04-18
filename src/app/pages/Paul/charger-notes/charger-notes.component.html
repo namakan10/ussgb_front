@@ -1,0 +1,216 @@
+<h2 class="text-center mb-4">chargement des notes</h2>
+<div
+  class="container col-8 p-3"
+  *ngIf="listNoteCalcule === null || listNoteCalcule.length <= 0"
+>
+  <div>
+    <div class="alert alert-warning">
+      <h6><strong>Recommander:</strong></h6>
+      Veuillez télécharger un exemplaire de fichier à charger en cliquant
+      <a href="../assets/exemple-note-chargement.xlsx">
+        ici <i class="fa fa-download"></i> fichier d'exemple pour charger les
+        notes</a
+      >
+      . La prémière ligne dans le fichier excel est un exemple, veuillez la
+      supprimer.
+    </div>
+  </div>
+
+  <!--NUM MATRICULE-->
+  <div
+    class="mb-3"
+    style="border-left: 1px solid #999595; border-top-left-radius: 7px"
+  >
+    <h4>
+      <i class="fa fa-dot-circle-o"></i>
+      <strong
+        >Assurer vous que le format du numéro d'étudiant (numEtudiant) soit respecter
+      </strong>
+    </h4>
+  </div>
+
+  <!--NOTE-->
+  <div
+    class="mb-3"
+    style="border-left: 1px solid #999595; border-top-left-radius: 7px"
+  >
+    <h4>
+      <i class="fa fa-dot-circle-o"></i>
+      <strong> Format de la note </strong>
+      <div>
+        Assurer vous que le format de la note insérée soit comme dans l'exemple.
+      </div>
+      <div><strong>exemple :</strong> 18 ou 18,5 ou 9 ou 9,5</div>
+      <div>NB: utiliser la virgule (,) et non le point (.)</div>
+    </h4>
+  </div>
+
+  <!--ANNEE SCOLAIRE-->
+  <div
+    class="mb-3"
+    style="border-left: 1px solid #999595; border-top-left-radius: 7px"
+  >
+    <h4>
+      <i class="fa fa-dot-circle-o"></i>
+      <strong>Format de l'année scolaire à respecter </strong>
+    </h4>
+    <div class="pl-3">
+      <div>annee1 - annee2</div>
+      <div><strong>exemple :</strong> 2020 - 2021</div>
+
+      <div class="text-danger">
+        <strong>NB: </strong>*Ne pas oublier l'espace entre le tiret(-) et les
+        années*
+      </div>
+    </div>
+  </div>
+
+  <!--NUM CodeUE-->
+  <div
+    class="mb-3"
+    style="border-left: 1px solid #999595; border-top-left-radius: 7px"
+  >
+    <h4>
+      <i class="fa fa-dot-circle-o"></i>
+      <strong
+        >Assurer vous que le format du code de l'UE soit respecter
+      </strong>
+    </h4>
+  </div>
+</div>
+
+<!-- chargement part -->
+<div class="container col-8 p-3">
+  <div>
+    <input
+      type="file"
+      class="form-control custom_Input"
+      [(ngModel)]="fichierInp"
+      (change)="FileSelect($event)"
+    />
+  </div>
+
+  <div class="text-center mt-3">
+    <button
+      mat-raised-button
+      color="accent"
+      [disabled]="!fileOk || _spinner"
+      (click)="Charger()"
+    >
+    <span *ngIf="_spinner" style="text-align: center;">
+      <img src="../../../../assets/gif/spinner.gif" width="30" alt="">
+  </span>
+      {{_spinner ? 'chargement ...': 'Charger'}}
+    </button>
+  </div>
+</div>
+
+<div *ngIf="listNoteCalcule != null && listNoteCalcule.length > 0">
+  <div class="col-12">
+    <button type="button" (click)="exportexcel()" class="btn btn-success">
+      Exporter en Excel
+    </button
+    >&nbsp;&nbsp;
+  </div>
+
+  <mat-form-field>
+    <mat-label>Filtrage</mat-label>
+    <input
+      matInput
+      (keyup)="applyFilter($event)"
+      placeholder="Tapez ici"
+      #input
+    />
+  </mat-form-field>
+  <div class="mat-elevation-z8" id="excel-table">
+    <table class="table-hover" mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="numEtudiant">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Numéro étudiant
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.etudiant.numEtudiant }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="prenom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Prénom</th>
+        <td mat-cell *matCellDef="let row">{{ row.etudiant.prenom }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+        <td mat-cell *matCellDef="let row">{{ row.etudiant.nom }}</td>
+      </ng-container>
+
+      <!-- <ng-container matColumnDef="date_de_naissance">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Date de naissance
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.dateDeNaissance | date : "dd-MM-yyyy" }}
+        </td>
+      </ng-container> -->
+
+      <ng-container matColumnDef="niveau">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Niveau</th>
+        <td mat-cell *matCellDef="let row">{{ row.etudiant.niveau }}</td>
+      </ng-container>
+
+      <!-- <ng-container matColumnDef="lieu_de_naissance">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Lieu de naissance
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.lieuDeNaissance }}
+        </td>
+      </ng-container> -->
+
+      <ng-container matColumnDef="noteDevoir">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Note Devoir</th>
+        <td mat-cell *matCellDef="let row">{{ row.noteDevoir }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="noteTP">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Notes TP</th>
+        <td mat-cell *matCellDef="let row">{{ row.noteTP }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="noteExamen">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Notes Examen</th>
+        <td mat-cell *matCellDef="let row">{{ row.noteExamen }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="noteFinal">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Note Finale</th>
+        <td mat-cell *matCellDef="let row">{{ row.noteFinal }}</td>
+      </ng-container>
+
+      <!-- <ng-container matColumnDef="groupe">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Groupe </th>
+          <td mat-cell *matCellDef="let row"> {{row.libelle}} </td>
+        </ng-container>-->
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+        <td mat-cell *matCellDef="let row">{{ this.replceStr(row.statut) }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">
+          <h2 style="text-align: center">
+            Oooops, Pas de données pour cette recherche
+          </h2>
+        </td>
+      </tr>
+    </table>
+    <mat-paginator
+      [length]="length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="afficher($event)"
+    >
+    </mat-paginator>
+  </div>
+</div>

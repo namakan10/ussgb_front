@@ -1,0 +1,127 @@
+<h2 class="text-center mt-2">DELIVRANCE DE DOCUMENT UNIVERSITAIRE</h2>
+<mat-card>
+  <h3 class="text-center mt-2 mb-3">CERTIFICAT DE FREQUENTATION</h3>
+  <div class="col-12">
+    <form [formGroup]="releve_SearchForm" (ngSubmit)="releve_SearchForm_Submit()">
+      <div class="row">
+        <div class="col-4">
+          <label for="numEtudiant">N° Etudiant:</label>
+          <input type="text" id="numEtudiant" [(ngModel)]="numEtudiant" class="form-control custom_Input" formControlName="numEtudiant">
+        </div>
+        <div class="col-4">
+          <label for="annee">Année Scolaire:</label>
+          <select id="annee" class="form-control custom_Input" formControlName="anneeScolaire">
+            <option value=""></option>
+            <option value="{{annee}}" *ngFor="let annee of Annees">{{annee}}</option>
+          </select>
+        </div>
+               <div class="col-4">
+                 <label for="Semestre">Semestre</label>
+                 <select id="Semestre" class="form-control custom_Input" formControlName="semestre">
+                   <option value=""></option>
+                   <option value="1">1</option>
+                   <option value="2">2</option>
+                   <option value="3">3</option>
+                   <option value="4">4</option>
+                   <option value="5">5</option>
+                   <option value="6">6</option>
+                 </select>
+               </div>
+        <div class="col text-left ml-2 pt-4">
+          <button type="submit" [disabled]="releve_SearchForm.invalid" mat-raised-button color="primary">Soumettre</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <hr>
+</mat-card>
+
+<div class="container text-center p-4" *ngIf="search_spinner">
+   <span style="text-align: center;">
+                    <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+                </span>
+</div>
+
+<div class="container center col-5 p-2" *ngIf="!doc_generated && !notFind">
+  <div class="bg-white p-4 shadow-sm text-center">
+    <h1 class="text-center" style="font-size: 20px">
+        <span class="material-icons">
+          find_in_page
+        </span>
+    </h1>
+    <h4>Renseignez les champs pour générer le Certificat de fréquentation!</h4>
+  </div>
+</div>
+
+<div class="container col-12" *ngIf="doc_generated">
+  <mat-card class="pt-4" id="export-doc">
+    <div class="container mt-2" style="font-weight: bold;">
+      <div class="col mt-3 text-center" style="font-weight: bold;">
+        <h2 class="font-weight-bold text-uppercase">{{univ_name}}</h2>
+        <h2 class="font-weight-bold">{{user.structure.nom}} ({{user.structure.sigle}})</h2>
+      </div>
+      <br>
+      <div class="container col-4 d-flex justify-content-center">
+        <img src="{{user.structure.logo}}" width="200"  alt="">
+      </div>
+      <br>
+
+      <h1 class="text-center font-weight-bold">CERTIFICAT DE FREQUENTATION</h1>
+      <br><br>
+      <h2>ANNEE UNIVERSITAIRE :</h2>
+      <h2>
+        {{ReleveData.etudiant.anneeScolaire}}
+      </h2>
+      <br><br>
+
+      <h3>Le Recteur de L'{{univ_name}} ({{univ_sigle}}) soussigné, certifie que :</h3>
+      <br>
+      <h3><strong>{{ReleveData.etudiant.genre === 'Homme'? 'M': 'Mme/Mlle'}} {{ReleveData.etudiant.nom}} {{ReleveData.etudiant.prenom}}</strong></h3>
+      <br>
+      <h3>Né le: {{ReleveData.etudiant.user.dateDeNaissance | date: 'dd/MM/yyyy'}} à  {{ReleveData.etudiant.user.lieuDeNaissance}}</h3>
+      <br>
+      <h3>Numéro d'étudiant: {{numEtudiant}}.</h3>
+      <br>
+      <h3>Est régulièrement inscrit(e) au titre de l'année universitaire <strong>{{ReleveData.etudiant.anneeScolaire}}</strong> en : <strong>{{ReleveData.etudiant.filiere.nom}} ({{ReleveData.etudiant.filiere.codeFiliere}})</strong> niveau: {{ReleveData.etudiant.niveau}}</h3>
+      <br>
+      <h3>En foi de quoi, le présent certificat lui est délivré pour servir et valoir ce que de droit.</h3>
+      <br><br><br>
+      <div class="row">
+        <div class="col">
+          <div class="d-flex justify-content-start">
+            <h3>Date: </h3> <br>
+            <h3> {{Today | date:'dd/MM/yyyy'}} </h3>
+            <br>
+          </div>
+          <div class="mt-2">
+            <ngx-qrcode qrc-element-type="text" [qrc-value]="CodeQR.qrCode">
+            </ngx-qrcode>
+          </div>
+        </div>
+        <div class="col d-flex justify-content-end">
+          <div style="text-align: center;">
+            <h3>P/O Recteur</h3>
+            <br>
+            <h3>SECRETAIRE PRINCIPAL</h3>
+            <br>
+            <h4>{{user.users.prenom}} {{user.users.nom}}</h4>
+            <br>
+            <br>
+            <br>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </mat-card>
+</div>
+
+<div class="container col-5" *ngIf="doc_generated">
+  <mat-card class="text-center p-3">
+      <span *ngIf="export_spinner" style="text-align: center;">
+                    <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+                </span>
+    <button mat-raised-button color="primary" (click)="exportpdf()" *ngIf="!export_spinner">Exporter en PDF</button>
+  </mat-card>
+</div>

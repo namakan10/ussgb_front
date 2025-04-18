@@ -1,0 +1,42 @@
+.print-agent-container {
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  width: 100%;
+  position: relative
+}
+
+.print-agent-table-container {
+  position: absolute;
+  width: 95%;
+  margin: 3%;
+}
+
+.print-agent-container table {
+  width: 100%;
+}
+
+.print-agent-container table {
+  border: 1px solid black;
+}
+
+.print-agent-container table th {
+  text-align: center;
+  font-size: medium;
+  padding: 5px;
+}
+
+.print-agent-container table td {
+  border: 1px solid black;
+  text-align: center;
+  font-size: medium;
+  padding: 5px;
+}
+
+.header-printing {
+  width: 100%;
+}
+
+.header-printing img {
+  width: 100%;
+  height: 100%;
+}

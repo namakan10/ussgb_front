@@ -1,0 +1,327 @@
+<div class="container-fluid bg-white">
+  <h3 class="text-center">Offre: <strong>{{Offre.libelle}} </strong> <br> {{Offre.entreprise}} </h3>
+  <h4 class="text-center">Liste des Etudiants intéressés</h4>
+
+  <div class="container">
+
+    <div class="d-flex justify-content-center" *ngIf="spinner1 || spinner2">
+           <span style="text-align: center;">
+            <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+          </span> Veuillez patient ...
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-4 p-2" *ngFor="let list of ListEtudiantsInteresse">
+        <div class="bg-white p-2 shadow-sm">
+          <div class="row">
+            <div class="col-4">
+              <img [src]="parseImage(list.user.photo)" width="100%" alt="">
+            </div>
+            <div class="col-8">
+              <div>
+                <span>Nom:</span>
+                <h6>{{list.user.nom}}</h6>
+              </div>
+              <div>
+                <span>Prénom:</span>
+                <h6>{{list.user.prenom}}</h6>
+              </div>
+              <div>
+                <span>N° Etudiant:</span>
+                <h6>{{list.user.numEtudiant}}</h6>
+              </div>
+
+            </div>
+          </div>
+          <div class="mt-2">
+            <p>
+              <span class="material-icons">mail </span> <span> {{list.user.email}}</span>
+            </p>
+            <p>
+              <span class="material-icons">phone </span> <span> {{list.user.telephone}}</span>
+            </p>
+            <p>
+              <span>N°Matricule: </span> <span> {{list.numMatricule}}</span>
+            </p>
+            <div class="text-center">
+              <button mat-raised-button color="primary" (click)="GetEtudiant(list)">CV</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="CVModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"></h5>
+        <button type="button" class="btn btn-close" data-dismiss="modal" aria-label="Close"><i class="fa fa-remove"></i></button>
+      </div>
+      <div class="modal-body">
+
+        <!--++++++++++++++++++++-->
+        <!--CV-->
+        <!--++++++++++++++++++++-->
+        <div class="mb-3" *ngIf="cvIsCreated">
+          <h2 class="text-center">Curriculum Vitae (CV)</h2>
+
+          <div class="row">
+            <div class="col-3 p-2">
+              <div>
+                <img [src]="parseImage(CV_DATA.etudiant.user.photo)" width="100%" height="255" alt="">
+              </div>
+
+              <div class="container mt-3 p-1 font-weight-bold" style="border: 4px solid cornflowerblue; font-size: 18px">
+                <strong>Détails personnels</strong>
+              </div>
+
+              <div class="mt-3">
+                <h4><span><i class="fa fa-location-arrow"></i></span> ADRESSE</h4>
+                <span>{{CV_DATA.etudiant.user.quartier}} / Rue: {{CV_DATA.etudiant.user.rue === null || CV_DATA.etudiant.user.rue === 0 ? '-': CV_DATA.etudiant.user.rue }}
+                  Porte: {{CV_DATA.etudiant.user.porte === null || CV_DATA.etudiant.user.porte === 0 ? '-': CV_DATA.etudiant.user.porte }}
+        </span>
+              </div>
+
+              <div class="mt-3">
+                <h4><span><i class="fa fa-phone"></i></span> TELEPHONE</h4>
+                <span>{{CV_DATA.etudiant.user.telephone}}</span>
+              </div>
+
+
+              <div class="mt-3">
+                <h4><span><i class="fa fa-calendar"></i></span> DATE DE NAISSANCE</h4>
+                <span>{{CV_DATA.etudiant.user.dateDeNaissance | date: "dd-MM-yyyy"}}</span>
+              </div>
+
+              <div class="container mt-3 p-1 font-weight-bold" style="border: 4px solid cornflowerblue; font-size: 18px">
+                <strong>LANGUES</strong>
+              </div>
+
+              <div class="mt-2" *ngFor="let langue of CV_DATA.langues">
+                <div>
+                  <span>- {{langue.libelle}} </span>
+                  <span class="text-right badge badge-info"> {{langue.niveau}}/5</span>
+
+
+                </div>
+              </div>
+
+
+              <div class="container mt-3 p-1 font-weight-bold" style="border: 4px solid darkorange; font-size: 18px">
+                <strong>LOISIRS</strong>
+              </div>
+
+              <div class="mt-2" *ngFor="let interet of CV_DATA.interets">
+                <span><i class="fa fa-dot-circle-o"></i> {{interet.libelle}}</span>
+
+
+              </div>
+
+            </div>
+
+            <!---CORPS DU CV-->
+            <div class="col-9 bg-light">
+              <div class="container-fluid p-4">
+                <div class="container col-8 text-center p-3 font-weight-bold" style="border: 4px solid #353b41">
+                  <h4 >{{CV_DATA.etudiant.user.prenom}} {{CV_DATA.etudiant.user.nom}}</h4>
+                </div>
+              </div>
+
+              <!--PROFIL-->
+              <div class="mt-3" *ngIf="CV_DATA.profil !== null">
+                <h3 class="text-center"><strong>PROFIL</strong></h3>
+              </div>
+
+              <div *ngIf="CV_DATA.profil !== null">
+                <div class="row mt-2">
+                  <div class="col-2 p-1">
+
+                  </div>
+                  <div class="col-10">
+                    <span>{{CV_DATA.profil.contenu}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!--FORMATION-->
+              <div class="mt-3" *ngIf="CV_DATA.formations.length > 0">
+                <h3 class="text-center"><strong>FORMATIONS</strong></h3>
+              </div>
+
+              <div *ngFor="let experience of CV_DATA.formations">
+                <div class="row mt-2">
+                  <div class="col-2 p-1">
+                    <div>
+                      <p>{{experience.dateDebut | date: "dd-MM-yyyy"}}</p>
+                      <p>{{experience.dateFin | date: "dd-MM-yyyy"}}</p>
+                    </div>
+                  </div>
+                  <div class="col-10">
+
+
+                    <h4><strong>{{experience.libelle}}</strong></h4>
+                    <span>{{experience.contenu}}</span>
+                  </div>
+                </div>
+              </div>
+
+
+              <!--EXPERIENCES-->
+              <div class="mt-3" *ngIf="CV_DATA.experiences_pro.length > 0">
+                <h3 class="text-center"><strong>EXPERIENCES PROFESSIONNELLES</strong></h3>
+              </div>
+
+              <div *ngFor="let experience of CV_DATA.experiences_pro">
+                <div class="row mt-2">
+                  <div class="col-2 p-1">
+                    <div>
+                      <p>{{experience.dateDebut | date: "dd-MM-yyyy"}}</p>
+                      <p>{{experience.dateFin | date: "dd-MM-yyyy"}}</p>
+                    </div>
+                  </div>
+                  <div class="col-10">
+
+
+                    <h4><strong>{{experience.libelle}}</strong></h4>
+                    <span>{{experience.contenu}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!--COMPETENCES-->
+              <div class="mt-3" *ngIf="CV_DATA.competences.length > 0">
+                <h3 class="text-center"><strong>COMPETENCES</strong></h3>
+              </div>
+
+              <div *ngFor="let experience of CV_DATA.competences">
+                <div class="row mt-2">
+                  <div class="col-2 d-flex p-1">
+                    NIVEAU : <h4><span class="badge badge-info">{{experience.niveau}}</span> / <span class="badge badge-info">10</span></h4>
+                  </div>
+                  <div class="col-10">
+
+
+                    <h4>{{experience.libelle}}</h4>
+                    <span>{{experience.contenu}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!--QUALITER-->
+              <div class="mt-3" *ngIf="CV_DATA.qualites.length > 0">
+                <h3 class="text-center"><strong>QUALITES</strong></h3>
+              </div>
+
+              <div *ngFor="let experience of CV_DATA.qualites">
+                <div class="row mt-2">
+                  <div class="col-2 p-1 d-flex justify-content-end">
+                    <i class="fa fa-dot-circle-o"></i>
+                  </div>
+                  <div class="col-10">
+
+
+                    <h4><strong>{{experience.libelle}}</strong></h4>
+                  </div>
+                </div>
+              </div>
+
+              <!--REALISATION-->
+              <div class="mt-3" *ngIf="CV_DATA.realisations.length > 0">
+                <h3 class="text-center"><strong> REALISATION </strong></h3>
+              </div>
+
+              <div *ngFor="let experience of CV_DATA.realisations">
+                <div class="row mt-2">
+                  <div class="col-2 p-1">
+                    <div>
+                      <p>{{experience.dateDebut | date: "dd-MM-yyyy"}}</p>
+                      <p>{{experience.dateFin | date: "dd-MM-yyyy"}}</p>
+                    </div>
+                  </div>
+                  <div class="col-10">
+
+
+                    <!--            <h4><strong>{{experience.libelle}}</strong></h4>-->
+                    <span>{{experience.contenu}}</span>
+                  </div>
+                </div>
+              </div>
+
+
+              <!--CERTIFICATS-->
+              <div class="mt-3" *ngIf="CV_DATA.certificats.length > 0">
+                <h3 class="text-center"><strong> CERTIFICATS </strong></h3>
+              </div>
+
+              <div *ngFor="let experience of CV_DATA.certificats">
+                <div class="row mt-2">
+                  <div class="col-2 p-1">
+                    <div>
+                      <p>{{experience.dateDebut | date: "dd-MM-yyyy"}}</p>
+                      <p>{{experience.dateFin | date: "dd-MM-yyyy"}}</p>
+                    </div>
+                  </div>
+                  <div class="col-10">
+
+
+                    <h4><strong>{{experience.libelle}}</strong></h4>
+                    <span>{{experience.contenu}}</span>
+                  </div>
+                </div>
+              </div>
+
+
+              <!--AUTRES-->
+              <div class="mt-3" *ngIf="CV_DATA.autres.length > 0">
+                <h3 class="text-center"><strong> AUTRES </strong></h3>
+              </div>
+
+              <div *ngFor="let experience of CV_DATA.autres">
+                <div class="row mt-2">
+                  <div class="col-2 p-1">
+                    <div>
+                      <p *ngIf="experience.dateDebut !== null && experience.dateDebut !== ''">{{experience.dateDebut | date: "dd-MM-yyyy"}}</p>
+                      <p *ngIf="experience.dateFin !== null && experience.dateFin !== ''">{{experience.dateFin | date: "dd-MM-yyyy"}}</p>
+                    </div>
+
+                    <span class="mt-2" *ngIf="experience.niveau !== null && experience.niveau !== ''">NIVEAU : <h4><span class="badge badge-info">{{experience.niveau}}</span> / <span class="badge badge-info">10</span></h4></span>
+
+                  </div>
+                  <div class="col-10">
+
+
+                    <h4 *ngIf="experience.libelle !== null && experience.libelle !== ''"><strong>{{experience.libelle}}</strong></h4>
+                    <span *ngIf="experience.contenu !== null && experience.contenu !== ''">{{experience.contenu}}</span>
+                  </div>
+                </div>
+              </div>
+
+
+
+
+
+
+
+            </div>
+          </div>
+        </div>
+
+
+        <!--++++++++++++++++++++-->
+        <!--eND CV-->
+        <!--++++++++++++++++++++-->
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+

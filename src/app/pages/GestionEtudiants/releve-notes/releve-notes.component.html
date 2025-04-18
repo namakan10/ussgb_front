@@ -1,0 +1,235 @@
+<h2 class="text-center mt-2">DELIVRANCE DE DOCUMENT UNIVERSITAIRE</h2>
+<mat-card>
+  <h3 class="text-center">RELEVE DE NOTES</h3>
+   <div class="col-8">
+    <form [formGroup]="releve_SearchForm" (ngSubmit)="releve_SearchForm_Submit()">
+        <div class="row">
+<!--          <div class="col">-->
+<!--            <label for="annee">Année Scolaire:</label>-->
+<!--            <select id="annee" class="form-control custom_Input" formControlName="anneeScolaire">-->
+<!--              <option value=""></option>-->
+<!--              <option value="{{annee}}" *ngFor="let annee of Annees">{{annee}}</option>-->
+<!--            </select>-->
+<!--          </div>-->
+
+            <div class="col">
+                <label for="numEtudiant">N° Etudiant: <span class="text-danger">*</span></label>
+                <input type="text" id="numEtudiant" class="form-control custom_Input" formControlName="numEtudiant">
+            </div>
+
+          <div class="col">
+            <label for="choix">choix <span class="text-danger">*</span></label>
+            <select id="choix" class="form-control custom_Input" (change)="choixSelected($event)">
+              <option value="0"></option>
+              <option value="1">Niveau</option>
+              <option value="2">Semestre</option>
+            </select>
+            </div>
+
+            <div class="col" *ngIf="typeChoix === '1'">
+                <label for="rel_niveau">Niveau: <span class="text-danger">*</span></label>
+              <select id="rel_niveau" class="form-control custom_Input" formControlName="rel_niveau">
+                <option value=""></option>
+                <option value="L1">L1</option>
+                <option value="L2">L2</option>
+                <option value="L3">L3</option>
+                <option value="M1">M1</option>
+                <option value="M2">M2</option>
+              </select>
+            </div>
+
+            <div class="col-2" *ngIf="typeChoix === '2'">
+                <label for="Semestre">Semestre <span class="text-danger">*</span></label>
+                <select id="Semestre" class="form-control custom_Input" formControlName="semestre">
+                    <option value=""></option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+            </div>
+            <div class="col text-left pt-2 ml-2">
+              <button type="submit" class="mt-3" [disabled]="releve_SearchForm.invalid" mat-raised-button color="primary">Soumettre</button>
+            </div>
+        </div>
+    </form>
+   </div>
+    <hr>
+</mat-card>
+<div class="container text-center p-4" *ngIf="search_spinner">
+   <span style="text-align: center;">
+                    <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+                </span>
+</div>
+<div class="container center col-5 p-2" *ngIf="!doc_generated && !notFind">
+  <div class="bg-white p-4 shadow-sm text-center">
+    <h1 class="text-center" style="font-size: 20px">
+        <span class="material-icons">
+          find_in_page
+        </span>
+    </h1>
+    <h4>Renseignez les champs pour générer le Relévé de note!</h4>
+  </div>
+</div>
+
+<div class="container col-5" *ngIf="doc_generated">
+  <mat-card class="text-center p-3">
+      <span *ngIf="export_spinner" style="text-align: center;">
+          <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+      </span>
+    <button mat-raised-button color="warn" (click)="exportpdf()" *ngIf="!export_spinner">
+      <span class="material-icons">print</span> Exporter en PDF</button>
+  </mat-card>
+</div>
+
+<div class="container col-12" id="export-doc" *ngIf="doc_generated">
+    <mat-card class="pt-4">
+      <div class="row mt-2" style="font-weight: bold;">
+        <div class="col mt-3 text-center" style="font-weight: bold;">
+          {{univ_Minist}}
+          <div>
+            ------------------
+          </div>
+          <div class="text-uppercase">
+            {{univ_name}}
+          </div>
+        </div>
+
+        <div class="col mt-3 text-right mr-3" style="font-weight: bold;">
+          <div class="mr-4">REPUBLIQUE DU MALI </div>
+          <div>
+            Un Peuple - Un But - Une Foi
+          </div>
+          <div class="mr-4">
+            ------------------
+          </div>
+        </div>
+
+
+      </div>
+
+        <div class="container col-12">
+            <div class="row" style="font-weight: bold;">
+              <div class="col-sm-8">
+
+              </div>
+              <div class="col-sm-4 text-right">
+                <div style="text-align: center;">
+
+                </div>
+                <div style="font-size: 15px;">
+
+                </div>
+              </div>
+              <div class="col-sm-3" style="text-align: center; ">
+                  <br>
+                <img src="{{_asset_image}}"  class="structLogo" style="background-size: cover;" alt="" width="170" height="170">
+              </div>
+              <div class="col-sm-6">
+                  <br>
+               <div style="padding-left: 30px; padding-right: 30px;">
+                 <div style="font-size: 20px; text-align: center; text-transform: uppercase; border-bottom: black solid 5px; border-top: black solid 5px; "> {{user.structure.nom}}</div>
+              </div>
+              </div>
+              <div class="col-sm-3" style="text-align: center;">
+                  <br>
+<!--                <img src="assets/uploads/logo/{{logo(user.structure.logo)}}" style="background-size: cover;" alt="" width="170" height="170">-->
+                    <img class="structLogo" src="{{_http}}{{user.structure.logo}}" style="background-size: cover;" alt="" width="170" height="170">
+              </div>
+
+                <div class="col-sm-12">
+                  <br>
+                  <span style="font-size: 15px; font-weight: normal;">{{user.structure.adresse}}</span>
+                </div>
+                <div class="col-sm-12" style="text-align: center;">
+                  <br>
+                  <div style="font-weight: bold; font-size: 30px;">
+                        RELEVE DE NOTES
+                    </div>
+                    <br>
+
+                  <div class="row" *ngIf="!notFind">
+                    <div class="col-4 p-3">
+                      <div class="p-2 bg-light text-center">
+                        <h6 class="font-weight-bold"><i class="fa fa-user"></i> Nom et prénom : </h6>
+                        <h3> {{ReleveData.etudiant.nom}} {{ReleveData.etudiant.prenom}} </h3>
+                      </div>
+                    </div>
+
+                    <div class="col-4 p-3">
+                      <div class="p-2 bg-light text-center">
+                        <h6 class="font-italic"><strong class="font-weight-bold">N° étudiant:</strong> </h6>
+                        <h3> {{ReleveData.etudiant.numEtudiant}}</h3>
+                      </div>
+                    </div>
+
+                    <div class="col-2">
+                      <div class="bg-light text-center">
+<!--                        <h6 class="font-weight-bold"><mat-icon> eco </mat-icon> Année courante : </h6>-->
+<!--                        <h3> {{ReleveData.notes[0].anneeScolaireEtudiant}} 88  </h3>-->
+                        <ngx-qrcode qrc-element-type="text" [qrc-value]="ReleveData.qrCode" *ngIf="!notFind">
+                        </ngx-qrcode>
+                      </div>
+                    </div>
+
+                  </div>
+
+                    <!--TABLEAU DE NOTE-->
+                    <div class="pt-3">
+                      <h5 class="font-weight-bold">{{typeChoix === '1' ? 'Niveau :'+releve_SearchForm.controls.rel_niveau.value : 'Semestre: '+ releve_SearchForm.controls.semestre.value}}</h5>
+                      <table class="table table-bordered table-hover mt-2">
+                        <thead>
+                          <tr class="text-center">
+                            <th>CODE</th>
+<!--                            <th>Crédit</th>-->
+                            <th>Année de la note</th>
+                            <th>Note Finale</th>
+                            <th>Observation</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let note of ReleveData.notes">
+                            <td>{{note.codeUE}}</td>
+<!--                            <td>{{note.creditUE}}</td>-->
+                            <td>{{note.anneeNote !== null ? note.anneeNote : '-'}}</td>
+                            <td>{{note.noteFinal !== null ? note.noteFinal : '-'}}</td>
+                            <td>{{note.noteFinal >= 10 ? 'validé' : 'non validé'}}</td>
+
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                </div>
+              </div>
+              <br>
+              <br>
+              <br>
+              <br>
+              <br>
+              <div class="row">
+                <div class="col-sm-4 p-2">
+                  <!-- Visa de l'agent comptable -->
+<!--                  <div class="p-2">-->
+<!--                    -->
+<!--                  </div>-->
+                </div>
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4" style="text-align: end;">
+                  <div style="text-align: center;">
+                    <h5>{{Today | date: "dd/MM/yyyy"}} </h5>
+                  </div>
+                  <br>
+
+                  <div style="text-align: center;">P/O Recteur
+                  <br>
+                  SECRETAIRE PRINCIPAL</div>
+                </div>
+              </div>
+              <br>
+              <br>
+              <br>
+          </div>
+    </mat-card>
+</div>

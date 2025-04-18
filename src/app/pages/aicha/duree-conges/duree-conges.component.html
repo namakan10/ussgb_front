@@ -1,0 +1,128 @@
+
+
+<p-toast [style]="{marginTop: '80px'}" position="top-right"></p-toast>
+
+
+
+<div class="widget-text-box">
+
+  <div class="row">
+    <div class="col-8">
+      <h2 style="float: left;">{{formPanel ? (dureeCongesSelected.id ? 'Modifier':'Durée congé'):'Liste des durées congés'}}</h2>
+    </div>
+    <div class="col-4">
+      <button mat-raised-button color="primary" style="float: right;" (click)="addConge()" *ngIf="!formPanel"><i class="fa fa-user-times"></i> <i class="fa fa-plus"></i> Nouvelle durée congé</button>
+      <button mat-raised-button color="primary" style="float: right;" (click)="changePanel()" *ngIf="formPanel"><i class="fa fa-user-times"></i> <i class="fa fa-plus"></i> Liste des durées congés</button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="formPanel" class="formPanel" style="margin-top: 5%;width: 60%;margin-left: 20%">
+  <div class="mat-elevation-z8" style="padding: 2%">
+
+    <form [formGroup]="form" role="form"  novalidate="">
+
+
+      <div class="multiple-fields">
+        <mat-form-field appearance="fill">
+          <mat-label>Congé </mat-label>
+          <input matInput name="conge" placeholder="conge"
+                 matTooltip="conge"
+                 formControlName="conge" required>
+          <mat-error
+            *ngIf="form.controls['conge'].invalid && form.controls['conge'].dirty && form.controls['conge'].errors['required']">
+            Ce champ est obligatoire
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="multiple-fields">
+
+        <mat-form-field appearance="fill">
+          <mat-label>Nombre de durée</mat-label>
+          <input matInput name="nbreEnDuree" placeholder="nbreEnDuree" type="number"
+                 matTooltip="nbreEnDuree"
+                 formControlName="nbreEnDuree" required>
+          <mat-error
+            *ngIf="form.controls['nbreEnDuree'].invalid && form.controls['nbreEnDuree'].dirty && form.controls['nbreEnDuree'].errors['required']">
+            Ce champ est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Période </mat-label>
+          <input matInput name="stringEnDuree" placeholder="Période"
+                 matTooltip="stringEnDuree"
+                 formControlName="stringEnDuree" required>
+          <mat-error
+            *ngIf="form.controls['stringEnDuree'].invalid && form.controls['stringEnDuree'].dirty && form.controls['stringEnDuree'].errors['required']">
+            Ce champ est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+
+      </div>
+
+
+
+      <button class="btn btn-block btn-primary mt-3" type="submit" (click)="addOrdEdite(form.value)" [disabled]="!form.valid">{{dureeCongesSelected.id ? 'Modifier':'Enregistrer'}}</button>
+      <button class="btn btn-block btn-warning mt-3" (click)="changePanel()">Annuler</button>
+
+    </form>
+
+  </div>
+</div>
+
+<div *ngIf="!formPanel" class="formPanel">
+
+  <div class="multiple-fields" style="width: 50%;float: right;margin-top: 40px;">
+    <mat-form-field appearance="fill">
+      <mat-label>Chercher un congé</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Chercher ..." #input>
+    </mat-form-field>
+  </div>
+
+  <div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> # </th>
+        <td mat-cell *matCellDef="let row;let i = index" > {{i+1}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="conge">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Congé </th>
+        <td mat-cell *matCellDef="let row"> {{row.conge}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="nbreEnDuree">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre d période </th>
+        <td mat-cell *matCellDef="let row"> {{row.duree}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="btn-group" dropdown>
+            <div style="margin-left: 50px;">
+              <i class="fa fa-ellipsis-v" style="font-size: 20px; cursor: pointer;" [matMenuTriggerFor]="menu"></i>
+            </div>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item class="warning" (click)="showEdit(row)">Modifier</button>
+              <button mat-menu-item class="danger" (click)="delete(row.id)">Supprimer</button>
+
+            </mat-menu>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">Pas de congé pour le moment"</td>
+      </tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  </div>
+</div>

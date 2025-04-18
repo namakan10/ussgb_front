@@ -1,0 +1,27 @@
+<div class="container p-3">
+
+
+  <h2 class="text-center">MON PARCOURS</h2>
+
+
+  <mat-vertical-stepper [linear]="isLinear" #stepper>
+  <div class="" *ngFor="let parcour of Parcours; let i = index">
+
+      <mat-step [stepControl]="i">
+        <div class="container shadow-sm p-3">
+          <h4>ANNEE: {{parcour.anneeScolaire}}</h4>
+          <h3><span>Date d'inscription : </span><strong>{{parcour.dateInscription | date: "dd-MM-yyyy"}}</strong></h3>
+          <h3 class="mt-2"><span>Niveau: </span><strong>{{parcour.niveau}}</strong></h3>
+          <h3 class="mt-2"><span>Option: </span>{{parcour.option.nom}}<strong> ({{parcour.option.codeOption}})</strong></h3>
+        </div>
+      </mat-step>
+<!--      <mat-step [stepControl]="2">-->
+
+
+<!--      </mat-step>-->
+
+  </div>
+
+  </mat-vertical-stepper>
+
+</div>

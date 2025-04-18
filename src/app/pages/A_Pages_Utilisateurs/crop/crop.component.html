@@ -1,0 +1,41 @@
+<h2 mat-dialog-title>Image cropper</h2>
+<mat-dialog-content>
+
+  <div class="row" style="margin-top: 15px;">
+    <div class="text-center col-md-8">
+      <h5>Crop Image</h5>
+      <image-cropper
+        [imageChangedEvent]="data.imageChangedEvent"
+        [maintainAspectRatio]="false"
+        [aspectRatio]="16 / 16"
+        [resizeToWidth]="456"
+        [onlyScaleDown]="true"
+        format="png"
+        (imageCropped)="imageCropped($event)"
+        (imageLoaded)="imageLoaded()"
+        (cropperReady)="cropperReady()"
+        (loadImageFailed)="loadImageFailed()"></image-cropper>
+    </div>
+    <div class="text-center col-md-4">
+      <h5>Visualisation</h5>
+      <img [src]="croppedImage"/>
+    </div>
+  </div>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cropper</button>
+</mat-dialog-actions>
+
+
+
+<!--<h1 mat-dialog-title>Hi </h1>-->
+<!--<div mat-dialog-content>-->
+<!--<p>What's your favorite animal?</p>-->
+<!--{{data.imageChangedEvent}}-->
+<!--<h1>{{data.croppedImage}}</h1>-->
+<!--</div>-->
+<!--<div mat-dialog-actions>-->
+<!--<button mat-button (click)="onNoClick()">No Thanks</button>-->
+<!--<button mat-button [mat-dialog-close]="data.animal" cdkFocusInitial>Ok</button>-->
+<!--</div>-->

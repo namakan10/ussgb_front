@@ -1,0 +1,605 @@
+
+<!--++++++++++++++++++++++++-->
+<!--LISTE DES SEANCES-->
+<!--++++++++++++++++++++++++-->
+<h3>Programmer des séances
+  <button class="btn btn-smbtn-danger" (click)="Paserelle()"><i class="fa fa-plus-circle"></i> {{showList ? 'Créer des seances': 'Afficher la liste' }}</button>
+
+</h3>
+<div *ngIf="showList">
+
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="form-group">
+        <label for="typeListe">Type de Liste</label>
+        <select class="form-control" id="typeListe"
+                name="typeListe" [(ngModel)]="typeList" (change)="ListChange()">
+          <option value="All">Toutes les seances</option>
+          <option value="Ens">D'un enseignant </option>
+<!--          <option value="Etud">D'un étudiant</option>-->
+          <option value="Opt">Option</option>
+          <option value="Jour">Jour spécifique</option>
+        </select>
+      </div>
+    </div>
+    <!--    FILTER SELECT ENSEIGNANT-->
+    <div class="col-sm-4" *ngIf="typeList === 'Ens'">
+      <div class="ng-autocomplete form-group mt-1">
+        <label for="salle">Enseignant <span class="text-danger">*</span></label>
+        <ng-autocomplete [(ngModel)]="enseignantL" name="enseignantL" id="enseignantL"
+                         [data]="AllEnseignant"
+                         [searchKeyword]="EnseignantKeyword"
+                         (selected)="is_Change($event)"
+                         [itemTemplate]="itemTemplateEns"
+                         [notFoundTemplate]="notFoundTemplateEns">
+        </ng-autocomplete>
+
+        <ng-template #itemTemplateEns let-itemEns>
+          <a [innerHTML]="itemEns.nom"></a>
+        </ng-template>
+
+        <ng-template #notFoundTemplateEns let-notFoundEns>
+          <div [innerHTML]="notFoundEns">Pas de corespondance .</div>
+        </ng-template>
+
+      </div>
+    </div>
+
+<!--    FILTER SELECT OPTION-->
+    <div class="col-sm-4" *ngIf="typeList === 'Opt'">
+      <div class="ng-autocomplete form-group mt-1">
+        <label for="salle">Options <span class="text-danger">*</span></label>
+        <ng-autocomplete [(ngModel)]="optionL" name="optionL" id="optionL"
+                         [data]="Options"
+                         (selected)="is_Change($event)"
+                         [searchKeyword]="OptionKeyword"
+                         [itemTemplate]="itemTemplateOpt"
+                         [notFoundTemplate]="notFoundTemplateOpt">
+        </ng-autocomplete>
+
+        <ng-template #itemTemplateOpt let-itemOpt>
+          <a [innerHTML]="itemOpt.nom"></a>
+        </ng-template>
+
+        <ng-template #notFoundTemplateOpt let-notFoundOpt>
+          <div [innerHTML]="notFoundOpt">Pas de corespondance .</div>
+        </ng-template>
+
+      </div>
+
+    </div>
+
+    <div class="col-sm-4" *ngIf="typeList === 'Jour'">
+      <div class="form-group">
+        <label for="jour">Jour</label>
+        <input type="date" class="form-control" id="jour" name="jour"
+               [(ngModel)]="jour"
+               (change)="is_Change($event)">
+      </div>
+
+    </div>
+
+    <div class="col-sm-2 d-flex align-items-center justify-content-end">
+        <button class="btn btn-info" [disabled]="grisBtn" (click)="Afficher()">Afficher la liste</button>
+    </div>
+  </div>
+
+<!--  TITRE DE LA LISTE PAGE-->
+  <h3 class="font-weight-bolder">{{checkUndefined(this.enseignantL)  ? 'Seance de l\'enseignant(e) '+ this.enseignantL.user.fullName : ''}}</h3>
+  <h3 class="font-weight-bolder">{{checkUndefined(this.optionL)  ? 'Seances pour '+ this.optionL.codeOption : ''}}</h3>
+  <h3 class="font-weight-bolder">{{checkUndefined(this.jour)  ? 'Seances du '+ this.jour : ''}}</h3>
+
+
+  <!--TABLE DE SEANCE-->
+<!--  #1-->
+  <div *ngIf="typeList !== 'Ens'">
+    <div class="col-4">
+      <mat-form-field>
+        <mat-label>FILTRE</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+      </mat-form-field>
+    </div>
+    <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+
+      <ng-container matColumnDef="typeSeance">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+        <td mat-cell *matCellDef="let element"> {{element.typeSeance}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="dateDebut">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date debut</th>
+        <td mat-cell *matCellDef="let element"> {{element.dateDebut}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="heure">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Heures</th>
+        <td mat-cell *matCellDef="let element"> {{element.heureDebut}} à {{element.heureFin}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="enseignant">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Responsable</th>
+        <td mat-cell *matCellDef="let element"> {{element.enseignant.prenom}} {{element.enseignant.nom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="ue">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>UE</th>
+        <td mat-cell *matCellDef="let element"> {{element.hasOwnProperty("ue") && checkUndefined(element.ue) ? element.ue.nomUE: '-'}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="ec">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>EC</th>
+        <td mat-cell *matCellDef="let element"> {{element.hasOwnProperty("elementConstitutif") && checkUndefined(element.elementConstitutif) ? element.elementConstitutif.nomEC: '-'}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="salle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>salle</th>
+        <td mat-cell *matCellDef="let element"> {{element.salle.numSalle +' | '+ element.salle.nbrePlace+' | '+element.salle.typeSalle}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-raised-button color="primary" (click)="deleteSeance(element)">
+            <i class="fa fa-trash text-danger"></i>
+            <span>&nbsp;&nbsp;Supprimer</span>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="loading">
+        <td mat-footer-cell *matFooterCellDef colspan="6">
+          Chargement des données...
+        </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="noData">
+        <td mat-footer-cell *matFooterCellDef colspan="6">
+          Pas de données...
+        </td>
+      </ng-container>
+
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator
+      [length]="length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions">
+
+    </mat-paginator>
+
+  </div>
+
+<!--  #2-->
+  <div *ngIf="typeList ==='Ens'">
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th>Lundi</th>
+        <th>Mardi</th>
+        <th>Mercredi</th>
+        <th>Jeudi</th>
+        <th>Vendredi</th>
+        <th>Samedi</th>
+        <th>Dimanche</th>
+      </tr>
+      </thead>
+      <tbody *ngIf="checkUndefined(this.WeekSeance)">
+      <tr>
+        <td>
+          <div class="p-1 mb-2" style="width: 200px; cursor: pointer" *ngFor="let week of WeekSeance.lundi">
+            <span class="small badge badge-secondary text-right" (click)="deleteSeance(week)"><i class="fa fa-window-close text-danger"></i> </span>
+            <div class="p-1 shadow-sm bg-white" style="border-radius: 7px">
+              <span class="badge badge-secondary">{{week.heureDebut}} à {{week.heureFin}}</span>
+              <span class="badge badge-light">Type: <strong>{{week.typeSeance}}</strong></span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.ue)">UE :{{week.ue.codeUE}}</span>
+              <span class="badge badge-light" *ngIf="checkUndefined(week.elementConstitutif)">EC : {{week.elementConstitutif.codeEC}} </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.salle)">Salle :{{week.salle.numSalle+" "+ week.salle.nbrePlace }}  </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.enseignant)"> par: {{week.enseignant.prenom+' '+week.enseignant.nom}}</span>          </div>
+          </div>
+        </td>
+        <td>
+          <div class="p-1 mb-2" style="width: 200px; cursor: pointer" *ngFor="let week of WeekSeance.mardi">
+            <span class="small badge badge-secondary text-right" (click)="deleteSeance(week)"><i class="fa fa-window-close text-danger"></i> </span>
+
+            <div class="p-1 shadow-sm bg-white" style="border-radius: 7px">
+              <span class="badge badge-secondary">{{week.heureDebut}} à {{week.heureFin}}</span>
+              <span class="badge badge-light">Type: <strong>{{week.typeSeance}}</strong></span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.ue)">UE :{{week.ue.codeUE}}</span>
+              <span class="badge badge-light" *ngIf="checkUndefined(week.elementConstitutif)">EC : {{week.elementConstitutif.codeEC}} </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.salle)">Salle :{{week.salle.numSalle+" "+ week.salle.nbrePlace }}  </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.enseignant)"> par: {{week.enseignant.prenom+' '+week.enseignant.nom}}</span>          </div>
+          </div>
+        </td>
+        <td>
+          <div class="p-1 mb-2" style="width: 200px; cursor: pointer" *ngFor="let week of WeekSeance.mercredi">
+            <span class="small badge badge-secondary text-right" (click)="deleteSeance(week)"><i class="fa fa-window-close text-danger"></i> </span>
+
+            <div class="p-1 shadow-sm bg-white" style="border-radius: 7px">
+              <span class="badge badge-secondary">{{week.heureDebut}} à {{week.heureFin}}</span>
+              <span class="badge badge-light">Type: <strong>{{week.typeSeance}}</strong></span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.ue)">UE :{{week.ue.codeUE}}</span>
+              <span class="badge badge-light" *ngIf="checkUndefined(week.elementConstitutif)">EC : {{week.elementConstitutif.codeEC}} </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.salle)">Salle :{{week.salle.numSalle+" "+ week.salle.nbrePlace }}  </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.enseignant)"> par: {{week.enseignant.prenom+' '+week.enseignant.nom}}</span>          </div>
+          </div>
+        </td>
+        <td>
+          <div class="p-1 mb-2" style="width: 200px; cursor: pointer" *ngFor="let week of WeekSeance.jeudi">
+            <span class="small badge badge-secondary text-right" (click)="deleteSeance(week)"><i class="fa fa-window-close text-danger"></i> </span>
+
+            <div class="p-1 shadow-sm bg-white" style="border-radius: 7px">
+              <span class="badge badge-secondary">{{week.heureDebut}} à {{week.heureFin}}</span>
+              <span class="badge badge-light">Type: <strong>{{week.typeSeance}}</strong></span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.ue)">UE :{{week.ue.codeUE}}</span>
+              <span class="badge badge-light" *ngIf="checkUndefined(week.elementConstitutif)">EC : {{week.elementConstitutif.codeEC}} </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.salle)">Salle :{{week.salle.numSalle+" "+ week.salle.nbrePlace }}  </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.enseignant)"> par: {{week.enseignant.prenom+' '+week.enseignant.nom}}</span>          </div>
+          </div>
+        </td>
+        <td>
+          <div class="p-1 mb-2" style="width: 200px; cursor: pointer" *ngFor="let week5 of WeekSeance.vendredi">
+            <span class="small badge badge-secondary text-right" (click)="deleteSeance(week5)"><i class="fa fa-window-close text-danger"></i> </span>
+
+            <div class="p-1 shadow-sm bg-white" style="border-radius: 7px">
+              <span class="badge badge-secondary">{{week5.heureDebut}} à {{week5.heureFin}}</span>
+              <span class="badge badge-light">Type: <strong>{{week5.typeSeance}}</strong></span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week5.ue)">UE :{{week5.ue.codeUE}}</span>
+              <span class="badge badge-light" *ngIf="checkUndefined(week5.elementConstitutif)">EC : {{week5.elementConstitutif.codeEC}} </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week5.salle)">Salle :{{week5.salle.numSalle+" "+ week5.salle.nbrePlace }}  </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week5.enseignant)"> par: {{week5.enseignant.prenom+' '+week5.enseignant.nom}}</span>          </div>
+          </div>
+        </td>
+        <td>
+          <div class="p-1 mb-2" style="width: 200px; cursor: pointer" *ngFor="let week of WeekSeance.samedi">
+            <span class="small badge badge-secondary text-right" (click)="deleteSeance(week)"><i class="fa fa-window-close text-danger"></i> </span>
+
+            <div class="p-1 shadow-sm bg-white" style="border-radius: 7px">
+              <span class="badge badge-secondary">{{week.heureDebut}} à {{week.heureFin}}</span>
+              <span class="badge badge-light">Type: <strong>{{week.typeSeance}}</strong></span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.ue)">UE :{{week.ue.codeUE}}</span>
+              <span class="badge badge-light" *ngIf="checkUndefined(week.elementConstitutif)">EC : {{week.elementConstitutif.codeEC}} </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.salle)">Salle :{{week.salle.numSalle+" "+ week.salle.nbrePlace }}  </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.enseignant)"> par: {{week.enseignant.prenom+' '+week.enseignant.nom}}</span>          </div>
+          </div>
+        </td>
+        <td>
+          <div class="p-1 mb-2" style="width: 200px; cursor: pointer" *ngFor="let week of WeekSeance.dimanche">
+            <span class="small badge badge-secondary text-right" (click)="deleteSeance(week)"><i class="fa fa-window-close text-danger"></i> </span>
+
+            <div class="p-1 shadow-sm bg-white" style="border-radius: 7px">
+              <span class="badge badge-secondary">{{week.heureDebut}} à {{week.heureFin}}</span>
+              <span class="badge badge-light">Type: <strong>{{week.typeSeance}}</strong></span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.ue)">UE :{{week.ue.codeUE}}</span>
+              <span class="badge badge-light" *ngIf="checkUndefined(week.elementConstitutif)">EC : {{week.elementConstitutif.codeEC}} </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.salle)">Salle :{{week.salle.numSalle+" "+ week.salle.nbrePlace }}  </span> :
+              <span class="badge badge-light" *ngIf="checkUndefined(week.enseignant)"> par: {{week.enseignant.prenom+' '+week.enseignant.nom}}</span>          </div>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+
+<div *ngIf="!showList">
+  <h3 class="text-center">PROGRAMMER UNE SEANCE</h3>
+  <div class="row">
+    <div class="col-4 p-2">
+      <div class="bg-white shadow-sm mt-3 p-3">
+<!--        SubmitForm()-->
+        <form [formGroup]="seanceForm" (ngSubmit)="addToList()">
+          <!-- ENSEIGNANT -->
+          <div class="form-group">
+            <div class="ng-autocomplete form-group mt-1">
+              <label for="salle">Enseignant
+                <span class="text-danger">*
+                <div class="badge badge-danger" *ngIf="seanceForm.get('enseignant').touched &&
+						      seanceForm.get('enseignant').invalid">Champ obligatoire</div>
+                </span>
+              </label>
+              <ng-autocomplete formControlName="enseignant" id="enseignant"
+                               [data]="AllEnseignant" [searchKeyword]="EnseignantKeyword"
+                               (selected)='enseignantSelectEvent($event)'
+                               [itemTemplate]="itemTemplate2"
+                               [notFoundTemplate]="notFoundTemplate2">
+              </ng-autocomplete>
+
+              <ng-template #itemTemplate2 let-item2>
+                <a [innerHTML]="item2.nom"></a>
+              </ng-template>
+
+              <ng-template #notFoundTemplate2 let-notFound2>
+                <div [innerHTML]="notFound2">Pas de corespondance .</div>
+              </ng-template>
+
+            </div>
+          </div>
+
+<!--          *ngIf="showAnnee"-->
+          <div class="form-group">
+            <label for="typeSeance">Type de seance <span class="text-danger">*</span></label>
+            <select formControlName="typeSeance" id="typeSeance" class="form-control custom_Input" (change)="CheckTDGroupeVisibility()">
+              <option value=""></option>
+              <option value="TD">TD</option>
+              <option value="TP">TP</option>
+              <option value="CM">CM</option>
+            </select>
+          </div>
+
+          <div class="row">
+            <div class="col-6 p-2">
+              <div class="form-group">
+                <label for="annee">Année <span class="text-danger">*</span></label>
+                <select formControlName="annee" id="annee" class="form-control custom_Input" (change)="handleTypeVisibility();CheckTDGroupeVisibility()">
+                  <option value=""></option>
+                  <option value="{{ans.anneeScolaire}}" *ngFor="let ans of Annees">{{ans.anneeScolaire}}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-6 p-2">
+              <div class="form-group">
+                <label for="niveau">Niveau <span class="text-danger">*</span></label>
+                <select formControlName="niveau" id="niveau" class="form-control custom_Input" (change)="handleTypeVisibility();CheckTDGroupeVisibility()">
+                  <option value=""></option>
+                  <option value="L1">L1</option>
+                  <option value="L2">L2</option>
+                  <option value="L3">L3</option>
+                  <option value="M1">M1</option>
+                  <option value="M2">M2</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row">
+            <div class="col-6 p-2">
+
+              <div class="form-group">
+                <label for="nbreSemaine">nombre Semaine <span class="text-danger">*</span></label>
+                <input type="number" formControlName="nbreSemaine" id="nbreSemaine" class="form-control custom_Input">
+              </div>
+
+              <div class="form-group">
+                <label for="heureDebut">heure de debut <span class="text-danger">*</span></label>
+                <input type="time" formControlName="heureDebut" id="heureDebut" class="form-control custom_Input">
+              </div>
+
+            </div>
+            <div class="col-6 p-2 p-2">
+              <div class="form-group">
+                <label for="dateDebut">Date <span class="text-danger">*</span></label>
+                <input type="date" formControlName="dateDebut" id="dateDebut" class="form-control custom_Input">
+              </div>
+
+              <div class="form-group">
+                <label for="heureFin">heure de fin <span class="text-danger">*</span></label>
+                <input type="time" formControlName="heureFin" id="heureFin" class="form-control custom_Input">
+              </div>
+
+            </div>
+          </div>
+
+          <!--SALLE-->
+          <div class="form-group">
+            <!--            <input type="number" formControlName="salle" id="salle" class="form-control custom_Input">-->
+
+            <div class="ng-autocomplete form-group mt-1">
+              <label for="salle">Salles
+                <span class="text-danger">*
+                <div class="badge badge-danger" *ngIf="seanceForm.get('salle').touched &&
+						      seanceForm.get('salle').invalid">Champ obligatoire</div>
+                </span>
+              </label>
+              <ng-autocomplete formControlName="salle" id="salle"
+                               [data]="Salles" [searchKeyword]="SalleKeyword"
+                               (selected)='salleSelectEvent($event)'
+                               [itemTemplate]="itemTemplate1"
+                               [notFoundTemplate]="notFoundTemplate1">
+              </ng-autocomplete>
+
+              <ng-template #itemTemplate1 let-item1>
+                <a [innerHTML]="item1.numSalle"></a>
+              </ng-template>
+
+              <ng-template #notFoundTemplate1 let-notFound1>
+                <div [innerHTML]="notFound1">Pas de corespondance .</div>
+              </ng-template>
+
+            </div>
+          </div>
+
+          <!-- OPTIONS  -->
+          <span *ngIf="_SpinnerOptions">
+            <img src="../../../../assets/gif/spinner.gif" width="25" alt="">
+            Veuillez patienter un moment ...
+			    </span>
+          <div class="form-group" *ngIf="chowOptions">
+            <div class="ng-autocomplete form-group mt-1">
+              <label for="salle">Options
+                <span class="text-danger">*
+                <div class="badge badge-danger" *ngIf="seanceForm.get('option').touched &&
+						      seanceForm.get('option').invalid">Champ obligatoire</div>
+                </span>
+              </label>
+              <ng-autocomplete formControlName="option" id="option"
+                               [data]="Options" [searchKeyword]="OptionKeyword"
+                               (selected)='OptionSelected($event)'
+                               [itemTemplate]="itemTemplate5"
+                               [notFoundTemplate]="notFoundTemplate5">
+              </ng-autocomplete>
+
+              <ng-template #itemTemplate5 let-item5>
+                <a [innerHTML]="item5.nom"></a>
+              </ng-template>
+
+              <ng-template #notFoundTemplate5 let-notFound5>
+                <div [innerHTML]="notFound5">Pas de corespondance .</div>
+              </ng-template>
+
+            </div>
+          </div>
+
+<!--          Choix UE ou EC -->
+          <div class="d-flex justify-content-center align-items-center" *ngIf="showChoose">
+            <div class="form-group mr-2 col-1">
+              <input type="radio" name="cour" id="ueCheck" class="form-check-input" value="ue" (change)="CheckSelectBetweenUeAndEc($event)">
+              <label for="ueCheck"><span class="badge badge-info">UE</span></label>
+            </div>
+            <div class="form-group ml-2 col-1">
+              <input type="radio" name="cour" id="ecCheck" class="form-check-input" value="ec" (change)="CheckSelectBetweenUeAndEc($event)">
+              <label for="ecCheck"><span class="badge badge-info">EC</span></label>
+            </div>
+          </div>
+          <div class="text-center">
+          <span *ngIf="_Spinner">
+            <img src="../../../../assets/gif/spinner.gif" width="25" alt="">
+            Veuillez patienter un moment ...
+			    </span>
+          </div>
+          <!-- UE -->
+          <div class="form-group" *ngIf="showUe">
+            <div class="ng-autocomplete form-group mt-1">
+              <label for="ue">UE
+                <span class="text-danger">*
+                <div class="badge badge-danger" *ngIf="seanceForm.get('ue').touched &&
+						      seanceForm.get('ue').invalid">Champ obligatoire</div>
+                </span>
+              </label>
+              <ng-autocomplete formControlName="ue" id="ue"
+                               [data]="EnseignantUes" [searchKeyword]="UeKeyword"
+                               (selected)='ueSelectEvent($event)'
+                               [itemTemplate]="itemTemplate3"
+                               [notFoundTemplate]="notFoundTemplate3">
+              </ng-autocomplete>
+
+              <ng-template #itemTemplate3 let-item3>
+                <a [innerHTML]="item3.nomUE"></a>
+              </ng-template>
+
+              <ng-template #notFoundTemplate3 let-notFound3>
+                <div [innerHTML]="notFound3">Pas de corespondance .</div>
+              </ng-template>
+
+            </div>
+          </div>
+          <!-- EC -->
+          <div class="form-group" *ngIf="showEc">
+            <!--        <label for="enseignant"> EC <span class="text-danger">*</span></label>-->
+            <!--        <select formControlName="ec" id="ec" class="form-control custom_Input">-->
+
+            <div class="ng-autocomplete form-group mt-1">
+              <label for="ec">EC
+                <span class="text-danger">*
+                <div class="badge badge-danger" *ngIf="seanceForm.get('elementConstitutif').touched &&
+						      seanceForm.get('elementConstitutif').invalid">Champ obligatoire</div>
+                </span>
+              </label>
+              <ng-autocomplete formControlName="elementConstitutif" id="ec"
+                               [data]="EnseignantECs" [searchKeyword]="EcKeyword"
+                               (selected)='ecSelectEvent($event)'
+                               [itemTemplate]="itemTemplate4"
+                               [notFoundTemplate]="notFoundTemplate4">
+              </ng-autocomplete>
+
+              <ng-template #itemTemplate4 let-item4>
+                <a [innerHTML]="item4.nomEC"></a>
+              </ng-template>
+
+              <ng-template #notFoundTemplate4 let-notFound4>
+                <div [innerHTML]="notFound4">Pas de corespondance .</div>
+              </ng-template>
+
+            </div>
+
+          </div>
+
+          <!-- GROUP -->
+          <div class="text-center">
+            <span *ngIf="_Spinner2">
+              <img src="../../../../assets/gif/spinner.gif" width="25" alt="">
+                Veuillez patienter un moment ...
+            </span>
+          </div>
+          <div class="form-group" *ngIf="chowGroupe">
+            <label for="groupes"> Groupes <span class="text-danger"></span></label>
+            <!--        <select formControlName="groupes" id="groupes" class="form-control custom_Input" multiple>-->
+            <div id="groupes">
+              <input type="text" class="custom_Input form-control" placeholder="filtre ..." (keyup)="GroupeFilter($event)">
+              <div class="mt-1 ml-2" style="width: 100%; overflow-y: scroll; height: 185px">
+
+                <table class="table text-uppercase">
+                  <tr *ngFor="let group of GroupesFilter">
+                    <td>
+                      <input type="checkbox" name="ck{{group.id}}"
+                             [checked]="group.hasOwnProperty('selected') && group.selected ? true : false"
+                             value="{{group.id}}" id="ck{{group.id}}" (change)="GroupSeleted($event)">
+                    </td>
+                    <td>{{group.libelle}}</td>
+                  </tr>
+
+
+                </table>
+
+              </div>
+
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button type="reset" mat-raised-button color="warn">annuler</button> |
+            <button type="submit" mat-raised-button color="accent" [disabled]="seanceForm.invalid && (this.showUe ||this.showEc)">Ajouter</button>
+          </div>
+
+
+        </form>
+      </div>
+    </div>
+    <div class="col-8 p-2">
+
+      <div class="bg-white p-2">
+        <div class="text-right">
+          <button class="btn btn-info" *ngIf="checkUndefined(seanceToSend)" (click)="SubmitForm()">Enregistrer</button>
+        </div>
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Ifos</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let seance of seanceToSend">
+            <td>{{seance.dateDebut}}</td>
+            <td>{{seance.typeSeance}}</td>
+            <td>
+              <span class="badge badge-secondary">De: {{seance.heureDebut}} à {{seance.heureFin}},</span>
+              <span class="badge badge-secondary">{{seance.nbreSemaine}} semaine(s), </span>
+              <span *ngIf="checkUndefined(seance.showData.selectEC)">EC :{{seance.showData.selectEC.codeEC}}, </span>
+              <span *ngIf="checkUndefined(seance.showData.selectUE)">UE : {{seance.showData.selectUE.codeUE}}, </span>
+              <span *ngIf="checkUndefined(seance.showData)">Salle :{{seance.showData.selectSalle.numSalle+" "+ seance.showData.selectSalle.nbrePlace }} , </span>
+              <span *ngIf="checkUndefined(seance.showData)"> par: {{seance.showData.selectEns.user.fullName}}</span>
+            </td>
+            <td>
+              <button class="btn" (click)="deleteToList(seance)">
+                <i class="fa fa-window-close text-danger"></i>
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,237 @@
+
+<div class="container p-2">
+  <div class="d-flex justify-content-center">
+    <button class="btn btn-info btn-lg"> <span class="badge badge-light">etape 1</span> Formulaire du candidat</button>
+    <button class="btn btn-outline-info btn-lg ml-1" (click)="candidaturePage ? navigateToCandidatureForm(): doNotFing()"><span class="badge badge-info">etape 2 Fin</span> Formulaire de Candidature <i class="fa fa-arrow-circle-right"></i></button>
+  </div>
+  <h2 class="text-center font-weight-bold mt-2">Informations du Candidat</h2>
+</div>
+
+<button mat-button (click)="backToStatutCheckingPage()"><i class="fa fa-arrow-left"></i> Retour</button>
+
+<div class="container mb-5">
+  <div class="container bg-white p-2" style="border-radius: 10px">
+    <form [formGroup]="candidatRegisterForm">
+
+      <mat-horizontal-stepper linear #stepper>
+        <mat-step label="Step 1" state="phone">
+
+<!--SET 1-->
+          <div class="form-group">
+            <label for="nom">Nom <span class="text-danger">*</span></label>
+            <input type="text" autocomplete="off" class="form-control custom_Input" id="nom" formControlName="nom">
+            <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('nom').touched &&
+                   candidatRegisterForm.get('nom').invalid">Champ obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="prenom">Prenom <span class="text-danger">*</span></label>
+            <input type="text" autocomplete="off" class="form-control custom_Input" id="prenom" formControlName="prenom">
+            <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('prenom').touched &&
+                   candidatRegisterForm.get('prenom').invalid">Champ obligatoire</div>
+          </div>
+
+
+          <div class="form-group">
+            <label for="dateDeNaissance">Date de naissance <span class="text-danger">*</span></label>
+            <input type="date" autocomplete="off" class="form-control custom_Input" id="dateDeNaissance" formControlName="dateDeNaissance">
+            <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('dateDeNaissance').touched &&
+                   candidatRegisterForm.get('dateDeNaissance').invalid">Champ obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="lieuDeNaissance">Lieu de naissance <span class="text-danger">*</span></label>
+            <input type="text" autocomplete="off" class="form-control custom_Input" id="lieuDeNaissance" formControlName="lieuDeNaissance">
+            <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('lieuDeNaissance').touched &&
+                   candidatRegisterForm.get('lieuDeNaissance').invalid">Champ obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="genre">Genre <span class="text-danger">*</span></label>
+            <select id="genre" class="form-control custom_Input" formControlName="genre">
+              <option value="homme">Homme</option>
+              <option value="femme">Femme</option>
+            </select>
+            <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('genre').touched &&
+                   candidatRegisterForm.get('genre').invalid">Champ obligatoire</div>
+          </div>
+
+
+          <div>
+            <div class="text-center">
+              <button mat-button matStepperNext>Suivant <i class="fa fa-arrow-circle-right"></i></button>
+            </div>
+          </div>
+        </mat-step>
+        <mat-step label="Step 2">
+<!--SET 2-->
+          <div class="form-group">
+            <label for="modeAdmission">Mode d'admission <span class="text-danger">*</span></label>
+            <input type="text" autocomplete="off" class="form-control custom_Input" id="modeAdmission" formControlName="modeAdmission" disabled>
+            <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('modeAdmission').touched &&
+                   candidatRegisterForm.get('modeAdmission').invalid">Champ obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email <span class="text-danger">*</span></label>
+            <input type="email" autocomplete="off" class="form-control custom_Input" id="email" formControlName="email">
+            <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('email').touched &&
+                   candidatRegisterForm.get('email').invalid">Champ obligatoire</div>
+          </div>
+
+          <!---==============--->
+          <div class="form-group">
+            <label for="dateObtentionDiplome">Date d'obtention du diplôme <span class="text-danger">*</span></label>
+            <input type="date" autocomplete="off" class="form-control custom_Input" id="dateObtentionDiplome" formControlName="dateObtentionDiplome">
+
+            <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('dateObtentionDiplome').touched &&
+                  candidatRegisterForm.get('dateObtentionDiplome').invalid">Champ obligatoire</div>
+
+          </div>
+
+          <div class="form-group">
+            <label for="annee">Annee Scolaire d'obtention du diplôme <span class="text-danger">*</span></label>
+            <div class="row">
+              <div class="col-5">
+                <select class="form-control custom_Input" formControlName="annee1" (change)="selectSecondYears()">
+                  <option *ngFor="let ans of Annees" value="{{ans}}">{{ans}}</option>
+                </select>
+                <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('annee1').touched &&
+                  candidatRegisterForm.get('annee').invalid">Champ obligatoire</div>
+              </div>
+              <div class="col-2"><h6 class="text-center">-</h6></div>
+              <div class="col-5">
+                <input type="text" autocomplete="off" class="form-control custom_Input" formControlName="annee2" value="{{annee2}}" disabled>
+              </div>
+            </div>
+            <input type="text" autocomplete="off" class="form-control custom_Input" id="annee" formControlName="annee" value="{{anneeScol}}" hidden>
+
+            <p class="text-danger"  *ngIf="candidatRegisterForm.get('annee1').touched &&
+                  candidatRegisterForm.get('annee').invalid">
+              <i class=" fa fa-info text-info"></i>
+              L'année de la date d'obtention du diplôme ne peut être inférieur à l'année scolaire.
+            </p>
+
+          </div>
+
+
+          <div class="form-group" *ngIf="modeAdmission !== 'MASTER' && modeAdmission !== 'MASTER_BOURSIER'">
+            <label for="specialite">Spécialité <span class="text-danger">*</span></label>
+            <select class="form-control custom_Input" id="specialite" formControlName="specialite">
+              <option value="{{special.nom}}" *ngFor="let special of CandidatSpecialites">{{special.nom}}</option>
+            </select>
+            <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('specialite').touched &&
+                  candidatRegisterForm.get('specialite').invalid">Champ obligatoire</div>
+          </div>
+
+          <div class="form-group" *ngIf="modeAdmission === 'MASTER' || modeAdmission === 'MASTER_BOURSIER'">
+            <label for="specialite2">Spécialité <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom_Input" id="specialite2" formControlName="specialite">
+            <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('specialite').touched &&
+                  candidatRegisterForm.get('specialite').invalid">Champ obligatoire</div>
+          </div>
+
+
+
+          <div class="text-center">
+            <button mat-button matStepperPrevious><i class="fa fa-arrow-circle-left"></i> Précedent</button>
+            <button mat-button matStepperNext>Suivant <i class="fa fa-arrow-circle-right"></i></button>
+          </div>
+        </mat-step>
+        <mat-step label="Step 3">
+<!--SET 3-->
+            <div class="form-group">
+              <label for="paysDeNaissance">Pays de naissance <span class="text-danger">*</span></label>
+              <select class="form-control custom_Input" id="paysDeNaissance" formControlName="paysDeNaissance">
+                <option value=""></option>
+                <option value="{{pays}}" *ngFor="let pays of Pays">{{pays}}</option>
+              </select>
+
+              <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('paysDeNaissance').touched &&
+                  candidatRegisterForm.get('paysDeNaissance').invalid">Champ obligatoire</div>
+
+            </div>
+
+            <div class="form-group">
+              <label for="nationalite">Nationalité <span class="text-danger">*</span></label>
+              <select class="form-control custom_Input" id="nationalite" formControlName="nationalite">
+                <option value=""></option>
+                <option value="{{pays}}" *ngFor="let pays of Pays">{{pays}}</option>
+              </select>
+              <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('nationalite').touched &&
+                  candidatRegisterForm.get('nationalite').invalid">Champ obligatoire</div>
+
+            </div>
+
+
+
+            <div class="form-group">
+              <label for="ville">Ville <span class="text-danger">*</span></label>
+              <input type="text" autocomplete="off" class="form-control custom_Input" id="ville" formControlName="ville">
+              <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('ville').touched &&
+                  candidatRegisterForm.get('ville').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group">
+              <label for="quartier">quartier <span class="text-danger">*</span></label>
+              <input type="text" autocomplete="off" class="form-control custom_Input" id="quartier" formControlName="quartier">
+              <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('quartier').touched &&
+                  candidatRegisterForm.get('quartier').invalid">Champ obligatoire</div>
+            </div>
+
+
+            <div class="form-group">
+              <label for="rue">Rue <span class="text-danger"></span></label>
+              <input type="text" autocomplete="off" class="form-control custom_Input" id="rue" formControlName="rue">
+              <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('rue').touched &&
+                  candidatRegisterForm.get('rue').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group">
+              <label for="porte">porte <span class="text-danger"></span></label>
+              <input type="text" autocomplete="off" class="form-control custom_Input" id="porte" formControlName="porte">
+              <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('porte').touched &&
+                  candidatRegisterForm.get('porte').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group">
+              <label for="telephone">Téléphone <span class="text-danger">*</span></label>
+              <input type="tel" autocomplete="off" class="form-control custom_Input" id="telephone" formControlName="telephone">
+              <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('telephone').touched &&
+                  candidatRegisterForm.get('telephone').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group">
+              <label for="telephoneTuteur">Téléphone Tuteur <span class="text-danger"></span></label>
+              <input type="tel" autocomplete="off" class="form-control custom_Input" id="telephoneTuteur" formControlName="telephoneTuteur">
+              <!--                  <div class="badge badge-danger"  *ngIf="candidatRegisterForm.get('telephoneTuteur').touched &&-->
+              <!--                  candidatRegisterForm.get('telephoneTuteur').invalid">Champ obligatoire</div>-->
+            </div>
+
+
+
+          <div class="text-center">
+            <button mat-button matStepperPrevious><i class="fa fa-arrow-circle-left"></i> précedent</button>
+          </div>
+        </mat-step>
+
+        <!-- Icon overrides. -->
+      </mat-horizontal-stepper>
+
+      <div class="text-center p-2 mb-3">
+      <span *ngIf="SpinnerLoad" style="text-align: center;">
+           <img src="../../../../../assets/gif/spinner.gif" width="50" alt=""> Veuillez patienter ....
+         </span>
+
+        <button type="submit" mat-raised-button color="primary"
+                [disabled]="candidatRegisterForm.invalid"
+                (click)="RegisterCandidat()"
+                *ngIf="!SpinnerLoad">
+          Enregistrer / etape 2  <i class="fa fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+

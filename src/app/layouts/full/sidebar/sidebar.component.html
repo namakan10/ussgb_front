@@ -1,0 +1,1128 @@
+<!-- ============================================================== -->
+<!-- sidebar -->
+<!-- ============================================================== -->
+<div *ngIf="env !== 'fsap'">
+  <div class="user-profile" style="background-color: #2c3e50">
+    <!-- User profile image -->
+    <div class="profile-img">
+      <!-- <img src="assets/images/users/profile.png" alt="user">  -->
+    </div>
+    <!-- User profile  text-->
+    <!-- ============================================================== -->
+    <!-- Profile - style you can find in header.scss  -->
+    <!-- ============================================================== -->
+    <div class="profile-text"><a [matMenuTriggerFor]="sdprofile" class=""> {{user.users.prenom}} {{user.users.nom}} <i class="ti-angle-down font-12 m-l-5"></i></a></div>
+    <mat-menu #sdprofile="matMenu" class="mymegamenu">
+
+      <button mat-menu-item [routerLink]="[ '/profil']">
+        <mat-icon [ngStyle]="small_icon"> assignment_ind </mat-icon> Mon profil </button>
+
+      <button mat-menu-item (click)="deconnection()">
+        <mat-icon [ngStyle]="small_icon">exit_to_app</mat-icon> Déconnexion </button>
+    </mat-menu>
+
+  </div>
+
+
+  <mat-nav-list appAccordion class="mb-5">
+
+    <!--      {{env === 'usttb' ? '/usttb' : '/ussgb'}} -->
+    <!--      <a class="wrap" appAccordionToggle href="../assets/manuels/usttb/Manuel-admin.pdf">-->
+    <mat-list-item *ngIf="hasRoleAdmin()" routerLinkActive="selected" appAccordionLink>
+      <a class="wrap" appAccordionToggle href="../assets/manuels/usttb/Manuel-admin.pdf">
+        <mat-icon [ngStyle]="small_icon"> download </mat-icon>
+        <span class="small">Manuel de l'administrateur</span>
+      </a>
+    </mat-list-item>
+    <mat-list-item *ngIf="hasRoleEnseignant()" routerLinkActive="selected" appAccordionLink>
+      <a class="wrap" appAccordionToggle href="../assets/manuels/usttb/Manuel-Enseignants-Notes.pdf">
+        <mat-icon [ngStyle]="small_icon"> download </mat-icon>
+        <span class="small">Manuel de l'enseignant</span>
+      </a>
+    </mat-list-item>
+    <mat-list-item *ngIf="hasRoleChefComptable() || hasRoleComptable()" routerLinkActive="selected" appAccordionLink>
+      <a class="wrap" appAccordionToggle href="../assets/manuels/usttb/Manuel-Comptable.pdf">
+        <mat-icon [ngStyle]="small_icon"> download </mat-icon>
+        <span class="small">Manuel de comptable</span>
+      </a>
+    </mat-list-item>
+
+    <hr>
+    <mat-list-item [ngStyle]="small_icon" (click)="GestionStructures()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleAdminRectorat()">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> account_balance </mat-icon>
+        <span>Structures</span>
+      </a>
+    </mat-list-item>
+
+<!--    <mat-list-item [ngStyle]="small_icon" (click)="GestionInfrastructure()" routerLinkActive="selected" appAccordionLink-->
+<!--                   *ngIf="hasRoleAdmin()">-->
+<!--      <a class="wrap" appAccordionToggle>-->
+<!--        <mat [ngStyle]="small_icon"-icon> account_balance </mat-icon>-->
+<!--        <span>Infrastructures</span>-->
+<!--      </a>-->
+<!--    </mat-list-item>-->
+
+    <mat-list-item *ngIf="hasRoleEtudiants()" (click)="gestionReclamationEtudiants()" routerLinkActive="selected" appAccordionLink>
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> money </mat-icon>
+        <span>Mes réclamations</span>
+      </a>
+    </mat-list-item>
+
+    <mat-list-item *ngIf="hasRoleStatistique()" (click)="statistique()" appAccordionLink  routerLinkActive="selected">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> pie_chart </mat-icon>
+        <span>Statistiques</span>
+      </a>
+    </mat-list-item>
+
+    <!-- Gestion générale -->
+    <mat-list-item (click)="onItemSelected(1)" appAccordionLink  routerLinkActive="selected" *ngIf="hasRoleGRH || hasRoleSecretairePrincipale() || hasRolesegal() || hasRoleAdmin()">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon">settings</mat-icon>
+        <span>Gestion générale</span>
+        <span fxFlex></span>
+        <mat-icon [@indicatorRotate]="expanded == 1 ? 'expanded': 'collapsed'">
+          expand_more
+        </mat-icon>
+      </a>
+    </mat-list-item>
+    <div *ngIf="expanded == 1" [ngStyle]="contente_sub_line">
+
+      <mat-list-item (click)="gestionsMandats()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleAdmin()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> history_toggle_off </mat-icon>
+          <span>Mandats</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="gestionsAnnees()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleAdmin()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> eco </mat-icon>
+          <span>Années</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="gestionEvements()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleAdmin()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> history_toggle_off </mat-icon>
+          <span>Evènements</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="gestionFrais()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleAdmin()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> money </mat-icon>
+          <span>Gestion des frais</span>
+        </a>
+      </mat-list-item>
+
+
+      <div class="text-center font-weight-bold font-italic bg-light m-1" style="color: #03181c" *ngIf="hasRoleAdmin()">
+        <h6 class="small p-1 text-uppercase"> Académies/spécialités BAC</h6>
+      </div>
+
+      <mat-list-item *ngIf="hasRoleAdmin()" (click)="gestionAcademie()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> apartment </mat-icon>
+          <span>Académies BAC</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item *ngIf="hasRoleAdmin()" (click)="gestionSpecialite()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> design_services </mat-icon>
+          <span>Spécialités BAC</span>
+        </a>
+      </mat-list-item>
+
+      <div class="text-center font-weight-bold font-italic bg-light m-1" style="color: #03181c" *ngIf="hasRoleGRH || hasRoleAdmin()">
+        <h6 class="small p-1 text-uppercase"> DER / Service et division</h6>
+      </div>
+
+      <mat-list-item [ngStyle]="small_icon" (click)="GestionDepartements()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleAdmin()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> account_balance </mat-icon>
+          <span>Départements</span>
+        </a>
+      </mat-list-item>
+
+
+      <mat-list-item [ngStyle]="small_icon" (click)="gestionService()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleGRH || hasRoleAdmin()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> label </mat-icon>
+          <span>Services</span>
+        </a>
+      </mat-list-item>
+
+
+      <mat-list-item [ngStyle]="small_icon" (click)="gestionDivision()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleGRH || hasRoleAdmin()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> label_important </mat-icon>
+          <span>Divisions</span>
+        </a>
+      </mat-list-item>
+
+      <div class="text-center font-weight-bold font-italic bg-light m-1" style="color: #03181c" *ngIf="hasRoleAdmin()">
+        <h6 class="small p-1 text-uppercase"> Rôles et Accès</h6>
+      </div>
+
+      <mat-list-item *ngIf="hasRoleAdmin()" (click)="droit_Access()" appAccordionLink  routerLinkActive="selected">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> pie_chart </mat-icon>
+          <span>Droits d'accès</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item *ngIf="hasRoleAdmin()" (click)="getionRole()" appAccordionLink  routerLinkActive="selected">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> pie_chart </mat-icon>
+          <span>Liste des rôles</span>
+        </a>
+      </mat-list-item>
+
+      <div class="text-center font-weight-bold font-italic bg-light m-1" style="color: #03181c">
+        <h6 class="small p-1 text-uppercase"> AUTRES</h6>
+      </div>
+
+      <mat-list-item *ngIf="hasRoleAdmin()" (click)="gestionParametre()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> group_work </mat-icon>
+          <span>Paramètre des groupes</span>
+        </a>
+      </mat-list-item>
+
+
+      <mat-list-item *ngIf="hasRoleDashBord()" (click)="gestionSeance()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> calendar_today </mat-icon>
+          <span>Emploi du temps</span>
+        </a>
+      </mat-list-item>
+      <mat-list-item *ngIf="hasRoleEnseignant() || hasRoleAdmin()" (click)="gestionQuestion()" routerLinkActive="selected" appAccordionLink >
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> check_circle_outline </mat-icon>
+          <span>Questionnaires</span>
+        </a>
+      </mat-list-item>
+    </div>
+
+<!-- Filière Options -->
+<mat-list-item (click)="onItemSelected(11)" appAccordionLink  routerLinkActive="selected" *ngIf="hasRoleSecretaire() || hasRoleGestionUE()">
+  <a class="wrap" appAccordionToggle>
+    <mat-icon [ngStyle]="small_icon">book</mat-icon>
+    <span>Filières/Options/UEs et ECs</span>
+    <span fxFlex></span>
+    <mat-icon [@indicatorRotate]="expanded == 11 ? 'expanded': 'collapsed'">
+      expand_more
+    </mat-icon>
+  </a>
+</mat-list-item>
+<div *ngIf="expanded == 11" [ngStyle]="contente_sub_line">
+
+  <mat-list-item (click)="gestionFilieres()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleSecretaire()">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> mediation </mat-icon>
+      <span>{{univ_fils}}</span>
+    </a>
+  </mat-list-item>
+
+  <mat-list-item (click)="gestionOptions()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleSecretaire()">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> open_with </mat-icon>
+      <span>{{univ_opts}}</span>
+    </a>
+  </mat-list-item>
+
+  <mat-list-item (click)="gestionParametrageOptions()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleSecretaire()">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> mediation </mat-icon>
+      <span class="small">Paramétrage des {{univ_opts}}</span>
+    </a>
+  </mat-list-item>
+
+  <div class="text-center font-weight-bold font-italic bg-light m-1" style="color: #03181c">
+    <h6 class="small p-1 text-uppercase"> UE et EC</h6>
+  </div>
+
+  <mat-list-item (click)="GoToAddUe()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleGestionUE()">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> note_add </mat-icon>
+      <span>Ajouter UE</span>
+    </a>
+  </mat-list-item>
+
+  <mat-list-item (click)="GoToUeList()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleGestionUE()">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> list </mat-icon>
+      <span>Liste des UE</span>
+    </a>
+  </mat-list-item>
+  <mat-list-item (click)="GoToEcList()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleGestionUE()">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> list </mat-icon>
+      <span>Liste des EC</span>
+    </a>
+  </mat-list-item>
+
+  <mat-list-item routerLink="/ueToTeacher" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleGestionUE()">
+    <a class="wrap" appAccordionToggle >
+      <mat-icon [ngStyle]="small_icon"> directions </mat-icon>
+      <span class="small">Affecter UE aux enseignants / vacataires</span>
+    </a>
+  </mat-list-item>
+  <mat-list-item routerLink="/ueToOption" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleGestionUE()">
+    <a class="wrap" appAccordionToggle >
+      <mat-icon [ngStyle]="small_icon"> input </mat-icon>
+      <span>Affecter UE aux options</span>
+    </a>
+  </mat-list-item>
+</div>
+<!-- Comptabilité -->
+<mat-list-item *ngIf="hasRoleComptable()" (click)="onItemSelected(2)" appAccordionLink  routerLinkActive="selected">
+  <a class="wrap" appAccordionToggle>
+    <mat-icon [ngStyle]="small_icon">attach_money</mat-icon>
+    <span>Comptabilité</span>
+    <span fxFlex></span>
+    <mat-icon [@indicatorRotate]="expanded == 2 ? 'expanded': 'collapsed'">
+      expand_more
+    </mat-icon>
+  </a>
+</mat-list-item>
+<div *ngIf="expanded == 2" [ngStyle]="contente_sub_line">
+  <mat-list-item (click)="gestionInscription('non', 'Frais de traitement de dossiers')" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle >
+      <mat-icon [ngStyle]="small_icon"> attach_money </mat-icon>
+      <span>Frais de dossier</span>
+    </a>
+  </mat-list-item>
+  <mat-list-item (click)="gestionInscription('non', 'Frais d\'inscription')" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle >
+      <mat-icon [ngStyle]="small_icon"> attach_money </mat-icon>
+      <span>Frais d'inscription</span>
+    </a>
+  </mat-list-item>
+
+  <mat-list-item (click)="gestionScolariteEtudiant()" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle >
+      <mat-icon [ngStyle]="small_icon"> attach_money </mat-icon>
+      <span>Payement échelonné</span>
+    </a>
+  </mat-list-item>
+
+  <mat-list-item (click)="gestionInscription('oui', 'Les inscriptions payée')" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle >
+      <mat-icon [ngStyle]="small_icon"> attach_money </mat-icon>
+      <span>Les inscriptions payées</span>
+    </a>
+  </mat-list-item>
+
+<!--      <mat-list-item (click)="aPaiements()" routerLinkActive="selected" appAccordionLink>-->
+<!--        <a class="wrap" appAccordionToggle >-->
+<!--          <mat [ngStyle]="small_icon"-icon> attach_money </mat-icon>-->
+<!--          <span>Etat des payements </span>-->
+<!--        </a>-->
+<!--      </mat-list-item>-->
+
+
+  <mat-list-item (click)="gestionInscription('enc', 'Les encaissements')" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle >
+      <mat-icon [ngStyle]="small_icon"> attach_money </mat-icon>
+      <span>{{hasRoleChefComptable() ? 'Mes' : ''}} encaissements</span>
+    </a>
+  </mat-list-item>
+
+  <mat-list-item (click)="gestionVersement()" routerLinkActive="selected" *ngIf="hasRoleChefComptable()" appAccordionLink>
+    <a class="wrap" appAccordionToggle >
+      <mat-icon [ngStyle]="small_icon"> price_check </mat-icon>
+      <span>Versements</span>
+    </a>
+  </mat-list-item>
+
+  <mat-list-item (click)="AutrePayementEtudiant()" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle >
+      <mat-icon [ngStyle]="small_icon"> attach_money </mat-icon>
+      <span>Autre payement</span>
+    </a>
+  </mat-list-item>
+
+</div>
+
+<!-- Sécretariat -->
+<mat-list-item *ngIf="hasRoleSecretaire()" (click)="onItemSelected(4)" appAccordionLink  routerLinkActive="selected">
+  <a class="wrap" appAccordionToggle>
+    <mat-icon [ngStyle]="small_icon">people_outline</mat-icon>
+    <span>Secrétariat</span>
+    <span fxFlex></span>
+    <mat-icon [@indicatorRotate]="expanded == 4 ? 'expanded': 'collapsed'">
+      expand_more
+    </mat-icon>
+  </a>
+</mat-list-item>
+<div *ngIf="expanded == 4" [ngStyle]="contente_sub_line">
+
+  <mat-list-item (click)="candidatureATraiter()" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> person_search </mat-icon>
+      <span>Candidature à traiter</span>
+    </a>
+  </mat-list-item>
+  <mat-list-item (click)="dossiersTraiter(true)" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> how_to_reg </mat-icon>
+      <span>Candidatures approuvées</span>
+    </a>
+  </mat-list-item>
+  <mat-list-item (click)="dossiersTraiter(false)" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> person_add_disabled </mat-icon>
+      <span>Candidatures rejetées</span>
+    </a>
+  </mat-list-item>
+  <mat-list-item (click)="nonAdmisList()" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> person_add_disabled </mat-icon>
+      <span>Admis/Non admis</span>
+    </a>
+  </mat-list-item>
+  <mat-list-item (click)="admis(true)" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> how_to_reg </mat-icon>
+      <span>Validation des inscriptions</span>
+    </a>
+  </mat-list-item>
+  <mat-list-item (click)="ListInscrit()"   routerLinkActive="selected" appAccordionLink>
+
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> list </mat-icon>
+      <span>Liste des inscrits</span>
+    </a>
+  </mat-list-item>
+</div>
+
+<!-- Evaluations et notations -->
+<mat-list-item (click)="onItemSelected(102)" appAccordionLink  routerLinkActive="selected" *ngIf="hasRoleNoter() || hasRoleAdmin()">
+  <a class="wrap" appAccordionToggle>
+    <mat-icon [ngStyle]="small_icon">edit_note</mat-icon>
+    <span>Evaluations et notations</span>
+    <span fxFlex></span>
+    <mat-icon [@indicatorRotate]="expanded == 102 ? 'expanded': 'collapsed'">
+      expand_more
+    </mat-icon>
+  </a>
+</mat-list-item>
+
+<div *ngIf="expanded == 102" [ngStyle]="contente_sub_line">
+  <mat-list-item (click)="GoToEvaluationGestion()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleEnseignant() && !_RECTORAT">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> date_range </mat-icon>
+      <span>Évaluations</span>
+    </a>
+  </mat-list-item>
+
+  <mat-list-item (click)="claculeNotes()" appAccordionLink  routerLinkActive="selected">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon">calculate</mat-icon>
+      <span>Calcul des notes</span>
+      <span fxFlex></span>
+
+    </a>
+  </mat-list-item>
+
+  <mat-list-item (click)="claculeNotesEc()" appAccordionLink  routerLinkActive="selected">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon">calculate</mat-icon>
+      <span>Calcul des notes EC</span>
+      <span fxFlex></span>
+
+    </a>
+  </mat-list-item>
+  <mat-list-item (click)="ListNotesCalcul()" appAccordionLink  routerLinkActive="selected">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon">calculate</mat-icon>
+      <span>Notes calculées par UE</span>
+      <span fxFlex></span>
+
+    </a>
+  </mat-list-item>
+  <mat-list-item (click)="ListNotesEcCalcul()" appAccordionLink  routerLinkActive="selected">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon">calculate</mat-icon>
+      <span>Notes calculées par EC</span>
+      <span fxFlex></span>
+
+    </a>
+  </mat-list-item>
+  <mat-list-item (click)="ChargerNotes()" appAccordionLink  routerLinkActive="selected">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon">upload</mat-icon>
+      <span>Charger les notes UE</span>
+      <span fxFlex></span>
+
+    </a>
+  </mat-list-item>
+  <mat-list-item (click)="ChargerNotesEc()" appAccordionLink  routerLinkActive="selected">
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon">upload</mat-icon>
+      <span>Charger les notes EC</span>
+      <span fxFlex></span>
+
+    </a>
+  </mat-list-item>
+</div>
+
+<!-- GRH -->
+<mat-list-item (click)="onItemSelected(13)" appAccordionLink  routerLinkActive="selected" *ngIf="hasRoleGRH() || hasRoleAdmin()">
+  <a class="wrap" appAccordionToggle>
+    <mat-icon [ngStyle]="small_icon">supervised_user_circle</mat-icon>
+    <span>G.R.H</span>
+    <span fxFlex></span>
+    <mat-icon [@indicatorRotate]="expanded == 13 ? 'expanded': 'collapsed'">
+      expand_more
+    </mat-icon>
+  </a>
+</mat-list-item>
+<div *ngIf="expanded == 13" [ngStyle]="contente_sub_line">
+
+  <mat-list-item (click)="goToPersonnels()" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon">person</mat-icon>
+      <span>Personnel administratif</span>
+    </a>
+  </mat-list-item>
+
+  <mat-list-item (click)="goToEnseignants('enseignants')" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon">supervisor_account </mat-icon>
+      <span>Personnel enseignant</span>
+    </a>
+  </mat-list-item>
+
+  <mat-list-item (click)="goToEnseignants('vacataires')" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon">supervisor_account</mat-icon>
+      <span>Personnel vacataire</span>
+    </a>
+  </mat-list-item>
+
+<!--      <mat-list-item (click)="affichePersonnel()" routerLinkActive="selected" appAccordionLink>-->
+<!--        <a class="wrap" appAccordionToggle>-->
+<!--          <mat-icon [ngStyle]="small_icon"> person </mat-icon>-->
+<!--          <span>Personnel administratif</span>-->
+<!--        </a>-->
+<!--      </mat-list-item>-->
+
+<!--      <mat-list-item (click)="afficheEnseignants('vacataire')" routerLinkActive="selected" appAccordionLink>-->
+<!--        <a class="wrap" appAccordionToggle>-->
+<!--          <mat-icon [ngStyle]="small_icon"> person </mat-icon>-->
+<!--          <span>Vacataires</span>-->
+<!--        </a>-->
+<!--      </mat-list-item>-->
+
+<!--      <mat-list-item (click)="afficheEnseignants('enseignant')" routerLinkActive="selected" appAccordionLink>-->
+<!--        <a class="wrap" appAccordionToggle>-->
+<!--          <mat-icon [ngStyle]="small_icon"> school </mat-icon>-->
+<!--          <span>Enseignants</span>-->
+<!--        </a>-->
+<!--      </mat-list-item>-->
+
+  <div class="text-center font-weight-bold font-italic bg-light m-1" style="color: #03181c" *ngIf="hasRoleGRH || hasRoleAdmin()">
+    <h6 class="small p-1 text-uppercase"> AFFECTATIONS</h6>
+  </div>
+
+  <mat-list-item (click)="AffectationEnseignants()" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> safety_divider </mat-icon>
+      <span>Affectation des enseignants</span>
+    </a>
+  </mat-list-item>
+
+
+  <mat-list-item (click)="AffectationPersonnels()" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> transfer_within_a_station </mat-icon>
+      <span>Affectation des personnels</span>
+    </a>
+  </mat-list-item>
+
+
+  <mat-list-item (click)="AffectationDepartements()" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> directions </mat-icon>
+      <span>Affectation aux DER</span>
+    </a>
+  </mat-list-item>
+
+</div>
+
+<!-- Enseignants -->
+<mat-list-item *ngIf="hasRoleEnseignant() && !_RECTORAT" (click)="onItemSelected(3)" appAccordionLink  routerLinkActive="selected">
+  <a class="wrap" appAccordionToggle>
+    <mat-icon [ngStyle]="small_icon"> school </mat-icon>
+    <span>Enseignant</span>
+    <span fxFlex></span>
+    <mat-icon [@indicatorRotate]="expanded == 3 ? 'expanded': 'collapsed'">
+      expand_more
+    </mat-icon>
+  </a>
+</mat-list-item>
+<div *ngIf="expanded == 3" [ngStyle]="contente_sub_line">
+  <mat-list-item (click)="ShowEMploi()" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> calendar_today </mat-icon>
+      <span>Emploi du temps</span>
+    </a>
+  </mat-list-item>
+  <mat-list-item (click)="GoToEnseignantCV()" routerLinkActive="selected" appAccordionLink>
+    <a class="wrap" appAccordionToggle>
+      <mat-icon [ngStyle]="small_icon"> folder_shared </mat-icon>
+      <span>Mon CV</span>
+    </a>
+  </mat-list-item>
+</div>
+
+<div class="text-center font-weight-bold font-italic bg-light m-1" style="color: #26c6da" *ngIf="hasRoleSecretaire()">
+  <h6 class="small p-1 text-uppercase">  </h6>
+</div>
+
+
+    <!-- ***++++ -->
+    <mat-list-item (click)="listCENOU()" routerLinkActive="selected" appAccordionLink>
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> list </mat-icon>
+        <span>Liste CENOU</span>
+      </a>
+    </mat-list-item>
+
+    <mat-list-item *ngIf="hasRoleDoyens() && !_RECTORAT" (click)="gestionConditonPassage()" routerLinkActive="selected" appAccordionLink>
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> check </mat-icon>
+        <span>Conditions de passage</span>
+      </a>
+    </mat-list-item>
+
+    <mat-list-item *ngIf="hasRoleDeliberation() && !_RECTORAT" (click)="deliberation_liste()" routerLinkActive="selected" appAccordionLink>
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> check </mat-icon>
+        <span>Délibération</span>
+      </a>
+    </mat-list-item>
+
+    <mat-list-item (click)="listPassage()" routerLinkActive="selected" appAccordionLink>
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> list </mat-icon>
+        <span>Listes de passage </span>
+      </a>
+    </mat-list-item>
+
+    <mat-list-item *ngIf="(hasProgrammerSeance() ||hasRoleAdmin()) && !_RECTORAT" (click)="ProgrammerSeance()" appAccordionLink  routerLinkActive="selected">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> description </mat-icon>
+        <span>Programmer des séances</span>
+      </a>
+    </mat-list-item>
+
+    <mat-list-item (click)="historique()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleAdmin()">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> list </mat-icon>
+        <span>Historiques</span>
+      </a>
+    </mat-list-item>
+
+    <mat-list-item (click)="GoToEtudiantPassReset()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleAdmin() && !_RECTORAT">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> password </mat-icon>
+        <span>Réinitialisation de passe </span>
+      </a>
+    </mat-list-item>
+
+    <mat-list-item *ngIf="hasPatrimoine()" (click)="onItemSelected(48)" appAccordionLink  routerLinkActive="selected">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon">room_preferences</mat-icon>
+        <span>Patrimoines</span>
+        <span fxFlex></span>
+        <mat-icon [@indicatorRotate]="expanded == 48 ? 'expanded': 'collapsed'">
+          expand_more
+        </mat-icon>
+      </a>
+    </mat-list-item>
+    <div *ngIf="expanded == 48" [ngStyle]="contente_sub_line">
+      <mat-list-item [ngStyle]="small_icon" (click)="GestionBatiment()" routerLinkActive="selected" appAccordionLink *ngIf="hasPatrimoine()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> account_balance </mat-icon>
+          <span>Bâtiments</span>
+        </a>
+      </mat-list-item>
+      <mat-list-item [ngStyle]="small_icon" (click)="GestionSalle()" routerLinkActive="selected" appAccordionLink *ngIf="hasPatrimoine()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> account_balance </mat-icon>
+          <span>Salles</span>
+        </a>
+      </mat-list-item>
+      <mat-list-item [ngStyle]="small_icon" (click)="GestionEquipement()" routerLinkActive="selected" appAccordionLink *ngIf="hasPatrimoine()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> account_balance </mat-icon>
+          <span>Equipements</span>
+        </a>
+      </mat-list-item>
+
+    </div>
+
+
+
+    <!--SCOLARITER CARTE DES ETUDIANTS -->
+<!--    <mat-list-item *ngIf="hasRoleDashBord() || hasRoleAdmin()" (click)="onItemSelected(17)" appAccordionLink  routerLinkActive="selected">-->
+<!--      <a class="wrap" appAccordionToggle>-->
+<!--        <mat-icon [ngStyle]="small_icon">room_preferences</mat-icon>-->
+<!--        <span>Scolarité</span>-->
+<!--        <span fxFlex></span>-->
+<!--        <mat-icon [@indicatorRotate]="expanded == 17 ? 'expanded': 'collapsed'">-->
+<!--          expand_more-->
+<!--        </mat-icon>-->
+<!--      </a>-->
+<!--    </mat-list-item>-->
+
+<!--    <div *ngIf="expanded == 17" [ngStyle]="contente_sub_line">-->
+<!--      <mat-list-item (click)="carteEtudiant()" routerLinkActive="selected" appAccordionLink>-->
+<!--        <a class="wrap" appAccordionToggle>-->
+<!--          <mat [ngStyle]="small_icon"-icon> badge </mat-icon>-->
+<!--          <span>Cartes étudiants</span>-->
+<!--        </a>-->
+<!--      </mat-list-item>-->
+<!--    </div>-->
+
+
+    <!--==============================-->
+    <!--  Etudiants ... -->
+    <!--=============================-->
+    <div class="text-center font-weight-bold font-italic bg-light m-1" style="color: #26c6da" *ngIf="hasRoleSecretaire()">
+      <h6 class="small p-1 text-uppercase">_  </h6>
+    </div>
+
+
+    <mat-list-item (click)="onItemSelected(6)" appAccordionLink  routerLinkActive="selected" *ngIf="hasRoleSecretairePrincipale() || hasRoleRectoratStaff() || hasRoleEnseignant()">
+      <a class="wrap" appAccordionToggle>
+        <!-- <mat-icon [ngStyle]="small_icon">workspaces</mat-icon> -->
+        <span>Gestions Etudiants</span>
+        <span fxFlex></span>
+        <mat-icon [@indicatorRotate]="expanded == 6 ? 'expanded': 'collapsed'">
+          expand_more
+        </mat-icon>
+      </a>
+    </mat-list-item>
+    <div *ngIf="expanded == 6" [ngStyle]="contente_sub_line">
+
+      <mat-list-item *ngIf="hasRoleEnseignant()" (click)="Gotoclasse()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> check </mat-icon>
+          <span>Classes</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="gestionAdminReclamationEtudiants()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleTraitementReclamation()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> hail </mat-icon>
+          <span>Réclamations</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="gestionAdminDemandeExterne()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleSecretairePrincipale()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> manage_accounts </mat-icon>
+          <span class="small">Demandes externes </span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="gestionAdminDemandeEtudiants()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleSecretairePrincipale()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> manage_accounts </mat-icon>
+          <span class="small">Traitement demandes internes</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="listeEtudiants()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleSecretairePrincipale() || hasRoleRectoratStaff()">
+
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> manage_accounts </mat-icon>
+          <span>Liste des étudiants</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="listeEtudiantsNonInscrit()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleSecretairePrincipale() || hasRoleRectoratStaff()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> manage_accounts </mat-icon>
+          <span>Liste des étudiants non inscrits</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="classementEtudiants()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleClassmPwdRespGEtudiant()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> manage_accounts </mat-icon>
+          <span>Classements</span>
+        </a>
+      </mat-list-item>
+      <mat-list-item (click)="studentResetPassword()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleClassmPwdRespGEtudiant()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> manage_accounts </mat-icon>
+          <span>Réinitialisation mot de passe</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="responsableGroupeEtudiants()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleClassmPwdRespGEtudiant()">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> manage_accounts </mat-icon>
+          <span>Responsables de groupe</span>
+        </a>
+      </mat-list-item>
+
+      <!--user.structure.sigle === 'FSEG'"-->
+      <mat-list-item (click)="chargeStructureslist()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleAdmin() && !_RECTORAT">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> list </mat-icon>
+          <span>Charger une liste des étudiants</span>
+        </a>
+      </mat-list-item>
+
+    </div>
+
+    <mat-list-item *ngIf="hasRoleSecretairePrincipale()"  (click)="onItemSelected(7)" appAccordionLink  routerLinkActive="selected">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon">folder</mat-icon>
+        <span>{{_RECTORAT ? "Consulter les documents" : "Délivrer les documents"}}</span>
+        <span fxFlex></span>
+        <mat-icon [@indicatorRotate]="expanded == 7 ? 'expanded': 'collapsed'">
+          expand_more
+        </mat-icon>
+      </a>
+    </mat-list-item>
+    <div *ngIf="expanded == 7" [ngStyle]="contente_sub_line">
+
+      <mat-list-item *ngIf="!_RECTORAT" (click)="releveNote()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> line_style </mat-icon>
+          <span>Relevé de notes</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item *ngIf="!_RECTORAT" (click)="certificatFrequent()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> bookmark </mat-icon>
+          <span>Fréquentation</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="Attestation()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> receipt_long </mat-icon>
+          <span>Attestation</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item *ngIf="_RECTORAT" (click)="Diplome()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> receipt_long </mat-icon>
+          <span>Diplômes</span>
+        </a>
+      </mat-list-item>
+
+    </div>
+
+    <mat-list-item (click)="onItemSelected(13)" appAccordionLink  routerLinkActive="selected" *ngIf="hasRoleEffectiviteHeures()">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon">fact_check</mat-icon>
+        <span>Cahier de texte</span>
+        <span fxFlex></span>
+        <mat-icon [@indicatorRotate]="expanded == 13 ? 'expanded': 'collapsed'">
+          expand_more
+        </mat-icon>
+      </a>
+    </mat-list-item>
+    <div *ngIf="expanded == 13" style="padding-left: 12px;"  [ngStyle]="contente_sub_line">
+      <mat-list-item (click)="effectiviter()" appAccordionLink  routerLinkActive="selected">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon">task_alt</mat-icon>
+          <span>Émarger une séance</span>
+          <span fxFlex></span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="seeVoirEffectivite()" appAccordionLink  routerLinkActive="selected">
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon">visibility</mat-icon>
+          <span> Voir effectivité</span>
+          <span fxFlex></span>
+
+        </a>
+      </mat-list-item>
+    </div>
+
+
+    <mat-list-item (click)="onItemSelected(29)" appAccordionLink  routerLinkActive="selected" *ngIf="hasRoleDoyens()">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon">deck</mat-icon>
+        <span>Congé & permission</span>
+        <span fxFlex></span>
+        <mat-icon [@indicatorRotate]="expanded == 29 ? 'expanded': 'collapsed'">
+          expand_more
+        </mat-icon>
+      </a>
+    </mat-list-item>
+    <div *ngIf="expanded == 29" [ngStyle]="contente_sub_line">
+
+      <mat-list-item (click)="GestionCongePermissionGRH()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> hail </mat-icon>
+          <span>Permission</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="GestionDureeConges()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> date_range </mat-icon>
+          <span>Durée congés</span>
+        </a>
+      </mat-list-item>
+
+    </div>
+
+    <mat-list-item *ngIf="hasRoleAdmin() || hasRolecourrier() || hasRolesegal() || hasRolerecteur() || hasRolevrecteur() || hasRolesecretairesegal() || hasRolesrh() || hasRolefinance() || hasRolescolariterectorat()" (click)="GestionCourriers()" appAccordionLink  routerLinkActive="selected">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> description </mat-icon>
+        <span>Gestion courriers</span>
+      </a>
+    </mat-list-item>
+
+    <mat-list-item (click)="PlanCarriere()" appAccordionLink  routerLinkActive="selected" *ngIf="hasRoleDoyens()">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> pie_chart </mat-icon>
+        <span>Plan de carrière</span>
+      </a>
+    </mat-list-item>
+
+
+    <mat-list-item routerLink="/gestion-grades" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleDoyens()">
+      <a class="wrap" appAccordionToggle >
+        <mat-icon [ngStyle]="small_icon"> list </mat-icon>
+        <span>Gestion des grades</span>
+      </a>
+    </mat-list-item>
+
+    <mat-list-item [ngStyle]="small_icon" (click)="GoToOvrage()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleBibliotheque()">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon">auto_stories</mat-icon>
+        <span>Bibliothèque</span>
+      </a>
+    </mat-list-item>
+<!--    <mat-list-item [ngStyle]="small_icon" (click)="GoToOvrageEmprun()" routerLinkActive="selected" appAccordionLink *ngIf="hasRoleDoyens()">-->
+<!--      <a class="wrap" appAccordionToggle>-->
+<!--        <mat [ngStyle]="small_icon"-icon>auto_stories</mat-icon>-->
+<!--        <span>Emprunts d'ouvrages</span>-->
+<!--      </a>-->
+<!--    </mat-list-item>-->
+
+<!--    Portail -->
+
+    <mat-list-item *ngIf="hasRoleModerateurForum()" (click)="onItemSelected(307)" appAccordionLink  routerLinkActive="selected">
+      <a class="wrap" appAccordionToggle>
+        <mat-icon [ngStyle]="small_icon"> school </mat-icon>
+        <span>Portail web</span>
+        <span fxFlex></span>
+        <mat-icon [@indicatorRotate]="expanded == 307 ? 'expanded': 'collapsed'">
+          expand_more
+        </mat-icon>
+      </a>
+    </mat-list-item>
+    <div *ngIf="expanded == 307" [ngStyle]="contente_sub_line">
+      <mat-list-item (click)="gestionPortailForum()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> dot </mat-icon>
+          <span>Forum</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="gestionPortailActualite()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> dot </mat-icon>
+          <span>Actualité</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="gestionPortailCampus()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> dot </mat-icon>
+          <span>Campus</span>
+        </a>
+      </mat-list-item>
+
+      <mat-list-item (click)="gestionPortailInfoVisiteur()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> dot </mat-icon>
+          <span>Info visiteur</span>
+        </a>
+      </mat-list-item>
+
+<!--      <mat-list-item (click)="gestionPresentation()" routerLinkActive="selected" appAccordionLink *ngIf="_RECTORAT">-->
+<!--        <a class="wrap" appAccordionToggle>-->
+<!--          <mat [ngStyle]="small_icon"-icon> dot </mat-icon>-->
+<!--          <span>Présentation des responsables</span>-->
+<!--        </a>-->
+<!--      </mat-list-item>-->
+      <mat-list-item (click)="gestionPresentation()" routerLinkActive="selected" appAccordionLink >
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> dot </mat-icon>
+          <span>Formation</span>
+          <!-- <span>Présentation des responsables</span> -->
+        </a>
+      </mat-list-item>
+
+<!--      *ngIf="_RECTORAT"-->
+      <mat-list-item  (click)="gestionPortailOther()" routerLinkActive="selected" appAccordionLink>
+        <a class="wrap" appAccordionToggle>
+          <mat-icon [ngStyle]="small_icon"> dot </mat-icon>
+          <span>Autre gestion</span>
+        </a>
+      </mat-list-item>
+<!--      <mat-list-item (click)="GoToEnseignantCV()" routerLinkActive="selected" appAccordionLink>-->
+<!--        <a class="wrap" appAccordionToggle>-->
+<!--          <mat [ngStyle]="small_icon"-icon> folder_shared </mat-icon>-->
+<!--          <span>Mon CV</span>-->
+<!--        </a>-->
+<!--      </mat-list-item>-->
+    </div>
+
+
+  </mat-nav-list>
+
+
+  <div class="modal fade" id="staticBackdrop12" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header"  style="background-color: #1e88e5; color: white;">
+          <h5 class="modal-title" id="staticBackdropLabel">Mon emploi du temps</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <th scope="col">Lundi</th>
+              <th scope="col">Mardi</th>
+              <th scope="col">Mercredi</th>
+              <th scope="col">Jeudi</th>
+              <th scope="col">Vendredi</th>
+              <th scope="col">Samedi</th>
+              <th scope="col">Dimanche</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr >
+
+              <td>
+                <div *ngFor="let em of AllSeance.lundi; let i = index">
+                  <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                  <strong style="color: red;">{{em.typeSeance}}</strong>
+                  <br>
+                  <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                  <br>
+                  <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                  <br>
+                  <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut}} à {{em.heureFin}}
+                </div>
+              </td>
+
+              <td>
+                <div *ngFor="let em of AllSeance.mardi; let i = index">
+                  <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                  <strong style="color: red;">{{em.typeSeance}}</strong>
+                  <br>
+                  <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                  <br>
+                  <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                  <br>
+                  <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut}} à {{em.heureFin}}
+                </div>
+              </td>
+
+              <td>
+                <div *ngFor="let em of AllSeance.mercredi; let i = index">
+                  <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                  <strong style="color: red;">{{em.typeSeance}}</strong>
+                  <br>
+                  <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                  <br>
+                  <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                  <br>
+                  <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut}} à {{em.heureFin}}
+                </div>
+              </td>
+
+              <td>
+                <div *ngFor="let em of AllSeance.jeudi; let i = index">
+                  <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                  <strong style="color: red;">{{em.typeSeance}}</strong>
+                  <br>
+                  <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                  <br>
+                  <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                  <br>
+                  <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut}} à {{em.heureFin}}
+                </div>
+              </td>
+
+              <td>
+                <div *ngFor="let em of AllSeance.vendredi; let i = index">
+                  <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                  <strong style="color: red;">{{em.typeSeance}}</strong>
+                  <br>
+                  <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                  <br>
+                  <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                  <br>
+                  <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut}} à {{em.heureFin}}
+                </div>
+              </td>
+
+              <td>
+                <div *ngFor="let em of AllSeance.samedi; let i = index">
+                  <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                  <strong style="color: red;">{{em.typeSeance}}</strong>
+                  <br>
+                  <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                  <br>
+                  <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                  <br>
+                  <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut}} à {{em.heureFin}}
+                </div>
+              </td>
+
+              <td>
+                <div *ngFor="let em of AllSeance.dimanche; let i = index">
+                  <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                  <strong style="color: red;">{{em.typeSeance}}</strong>
+                  <br>
+                  <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                  <br>
+                  <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                  <br>
+                  <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut}} à {{em.heureFin}}
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div *ngIf="env === 'fsap'">
+  <app-sidebar-fsap></app-sidebar-fsap>
+</div>

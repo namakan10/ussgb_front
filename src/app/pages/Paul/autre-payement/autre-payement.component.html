@@ -1,0 +1,351 @@
+<div *ngIf="spinner1" style="text-align: center;">
+  <img style="margin-top: 50px;" src="assets/gif/livre.gif" width="500" alt="">
+</div>
+<div class="container-fluid" *ngIf='!spinner1'>
+  <div class="row">
+    <div class="col-sm-12">
+      <mat-card>
+        <div class="row" style="padding: 20px;">
+          <div class="col-sm-12">
+            <h4 >PAIEMENT D'AUTRES FRAIS ETUDIANTS</h4>
+          </div>
+          <div class="col-sm-2">
+            <mat-form-field class="example-full-width">
+              <mat-label>Prénom</mat-label>
+              <input matInput [(ngModel)]="prenom" type="text"
+                     name="prenom">
+            </mat-form-field>
+          </div>
+          <div class="col-sm-2">
+            <mat-form-field class="example-full-width">
+              <mat-label>Nom</mat-label>
+              <input matInput [(ngModel)]="nom" type="text"
+                     name="nom">
+            </mat-form-field>
+          </div>
+          <div class="col-sm-2">
+            <mat-form-field class="example-full-width">
+              <mat-label>Téléphone</mat-label>
+              <input matInput [(ngModel)]="telephone" type="number"
+                     name="telephone">
+            </mat-form-field>
+          </div>
+          <div class="col-sm-2">
+            <mat-form-field class="example-full-width">
+              <mat-label>Date d'inscription</mat-label>
+              <input matInput [matDatepicker]="picker" [(ngModel)]="dateInscription" type="text"
+                     name="dateInscription">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-2">
+            <mat-form-field appearance="fill">
+              <mat-label>Année scolaire</mat-label>
+              <mat-select  [(ngModel)]="annee_scolaire" name="annee_scolaire" aria-label="Default select example">
+                <mat-option *ngFor="let annee of anneeStructure" [value]="annee.anneeScolaire">{{annee.anneeScolaire}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-2" *ngIf='type == false'>
+            <mat-form-field appearance="fill">
+              <mat-label>Niveau</mat-label>
+              <mat-select  [(ngModel)]="niveau" name="niveau" aria-label="Default select example">
+                <mat-option value="all">Tout</mat-option>
+                <mat-option value="L1">L1</mat-option>
+                <mat-option value="L2">L2</mat-option>
+                <mat-option value="L3">L3</mat-option>
+                <mat-option value="M1">M1</mat-option>
+                <mat-option value="M2">M2</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-2">
+            <button (click)='afficher()' type="button" style=" background-color: #1e88e5; color: white;" mat-button>
+              <mat-icon> search </mat-icon> Afficher</button>
+          </div>
+          <div class="col-sm-2">
+            <div *ngIf="spinner" style="text-align: right;">
+              <img style="position: absolute; margin-left: -100px;" src="assets/gif/spinner.gif" width="70" alt="">
+            </div>
+          </div>
+<!--          <button type="button" (click)="exportexcel()" class="btn btn-success">Exporter en Excel</button>-->
+          &nbsp;
+<!--          <button type="button" (click)="exportpdf()" class="btn btn-success">Exporter en Pdf</button>-->
+          <br>
+        </div>
+
+      </mat-card>
+    </div>
+    <div class="col-sm-12">
+      <br>
+      <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+        {{error.error}}
+      </div>
+      <div *ngIf="message != null" class="alert alert-success" role="alert">
+        {{message}}
+      </div>
+      <br>
+      <button type="button" (click)="exportexcel()" class="btn btn-success">Exporter en Excel</button>
+      <mat-form-field>
+        <mat-label>Filtrage</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Pierre" #input>
+      </mat-form-field>
+      <div id="excel-table">
+        <div class="mat-elevation-z8">
+          <table class="table-hover" mat-table [dataSource]="dataSource" matSort id="excel-table">
+
+            <ng-container matColumnDef="numEtudiant">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Numéro étudiant</th>
+              <td mat-cell *matCellDef="let row"> {{ row.numEtudiant}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="prenom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom & prénom </th>
+              <td mat-cell *matCellDef="let row">{{row.nom}} {{row.prenom}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="date_lieu_de_naissance">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Date de naissance </th>
+              <td mat-cell *matCellDef="let row">
+                {{row.dateDeNaissance | date: "dd-MM-yyyy"}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="codeOption">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Option </th>
+              <td mat-cell *matCellDef="let row"> {{row.codeOption}} </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="action" stickyEnd>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+              <td mat-cell *matCellDef="let row">
+
+                <button mat-button color="primary" [matMenuTriggerFor]="menu">Actions</button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="ActionClick(row, 'newCarte')">
+                    <span class="material-icons">branding_watermark</span>
+                    Carte scolaire
+                  </button>
+
+                  <button mat-menu-item (click)="ActionClick(row, 'FRAIS_RELEVE_NOTE')">
+                    <span class="material-icons">money</span>
+                    Frais de relevé
+                  </button>
+
+                </mat-menu>
+
+
+                <!-- <button type="button" (click)="validation(false, row.id)" class="btn btn-danger" style="margin-top: 5px;">Non_valide</button> -->
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="4">
+                <h2 style="text-align: center;">
+                  Oooops, Pas de données pour cette recherche
+                </h2>
+              </td>
+            </tr>
+          </table>
+          <mat-paginator
+            [length]="length"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="pageSizeOptions">
+
+          </mat-paginator>
+        </div>
+      </div>
+      <div class="col-sm-2">
+        <div *ngIf="spinner" style="text-align: right;">
+          <img style="position: absolute; margin-left: -100px;" src="assets/gif/spinner.gif" width="70" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--Payement -->
+<div class="modal fade" id="modePayFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel">
+          <span class="material-icons">eco</span>
+          {{detailsPay}}
+        </h5>
+        <button type="button" class="text-white" mat-button data-dismiss="modal" (click)="encaissement_spinner = false" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="">
+          <p><strong>
+            {{checkeIfIsNotEmpty(SelectCandidat) ? SelectCandidat.prenom+' '+SelectCandidat.nom : ''}}</strong></p>
+          <p><span class="badge badge-info">{{checkeIfIsNotEmpty(SelectCandidat) ? SelectCandidat.email : ''}}</span></p>
+        </div>
+        <h5 class="text-uppercase font-weight-bold">Frais: {{montanFrais}} Fcfa</h5>
+        <hr>
+
+        <form [formGroup]="ModePayementForm" (ngSubmit)="SavePayement()">
+          <div>
+            <input type="text" class="form-control custom_Input" value="ESPECE" formControlName="mode" hidden>
+          </div>
+
+          <div class="" *ngIf="relevePay">
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="niv">Niveau <span class="text-danger">*</span></label>
+                  <select formControlName="niveau" id="niv" class="form-control custom_Input">
+                    <option value=""></option>
+                    <option value="L1">L1</option>
+                    <option value="L2">L2</option>
+                    <option value="L3">L3</option>
+                    <option value="M1">M1</option>
+                    <option value="M2">M2</option>
+                  </select>
+                  <div class="" *ngIf="ModePayementForm.get('niveau').invalid && ModePayementForm.get('niveau').touched">
+                    <span class="badge badge-danger">Obligatoire</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+
+                <div class="form-group">
+                  <label for="sem">Semestre <span class="text-danger">*</span></label>
+                  <select formControlName="semestre" id="sem" class="form-control custom_Input">
+                    <option value=""></option>
+                    <option value="1">Semestre 1</option>
+                    <option value="2">Semestre 2</option>
+                    <option value="3">Semestre 3</option>
+                    <option value="4">Semestre 4</option>
+                    <option value="5">Semestre 5</option>
+                    <option value="6">Semestre 6</option>
+                  </select>
+                  <div class="" *ngIf="ModePayementForm.get('semestre').invalid && ModePayementForm.get('semestre').touched">
+                    <span class="badge badge-danger">Obligatoire</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <label for="source">Description
+              <span class="text-info small"><i class="fa fa-info-circle text-danger"></i> (Eventuel)</span>
+            </label>
+            <textarea name="" class="form-control custom_Input" id="source" cols="30" rows="10" formControlName="source"></textarea>
+          </div>
+
+
+          <div class="text-center">
+            <div *ngIf="encaissement_spinner">
+              <img style="position: absolute; margin-left: -100px;" src="assets/gif/spinner.gif" width="70" alt="">
+            </div>
+            <button mat-raised-button color="primary"
+                    [disabled]="ModePayementForm.invalid" *ngIf="!encaissement_spinner">Encaisser</button>
+          </div>
+
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="encaissement_spinner = false">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal Reçu-->
+<div class="modal fade" id="ressumModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="!showCompta">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="exalLabel"><span class="material-icons">point_of_sale</span> Reçu de payement</h5>
+            <button mat-button data-dismiss="modal"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body" *ngIf="showRecu" id="contentToConvert">
+        <div class="row" style="font-weight: bold;">
+          <div class="col-sm-8">
+            <div>{{univ_Minist}}</div>
+
+            <div>
+              ------------------
+            </div>
+            <div class="text-uppercase">
+              {{univ_name}}
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div style="text-align: end;">
+              REPUBLIQUE DU MALI
+              <div style="font-size: 15px;">
+                Un Peuple - Un But - Une Foi
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3 mt-3 text-center text-uppercase bg-info text-white">
+          <h5 class="font-weight-bold"> Reçu de {{detailsPay}}</h5>
+        </div>
+        <h6 class="text-center font-weight-bold badge badge-light">N°: 0{{SelectCandidat.idEtudiant}} </h6>
+        <div class="mt-3">
+          <h6 class="font-weight-bold">Encaissé par: {{user.users.prenom}} {{user.users.nom}} </h6>
+          <br>
+          <h6 class="font-weight-bold">Payé par: {{SelectCandidat.prenom}} {{SelectCandidat.nom}}</h6>.
+          Etudiant à la/l' <strong>{{user.structure.sigle}}</strong> {{user.structure.nom}}.
+          A pour numéro étudiant <strong>{{SelectCandidat.numEtudiant}}</strong>.
+          <br>
+          <br>
+          <h6 class="font-weight-bold">La somme payée est de: {{montanFrais}} Fcfa , encaissé en/par <strong>ESPECE</strong></h6>
+          <br>
+          <br>
+          <br>
+          <h6 class="font-weight-bold">Signature:</h6>
+          <br>
+          <br>
+          <div class="row">
+            <div class="col">
+              <h6 class="font-weight-bold">{{user.users.prenom}} {{user.users.nom}}</h6>
+            </div>
+            <div class="col">
+              <h6 class="font-weight-bold">
+                Bamako, le {{toDay | date: "dd-MM-yyyy"}}
+              </h6>
+            </div>
+          </div>
+
+          <div class="container col-4 d-flex justify-content-center mt-2 p-1">
+            <div>
+              <img src="{{_http}}{{user.structure.logo}}" width="145" height="140" alt="">
+              <!-- <img src="../assets/uploads/logo/{{logo(user.structure.logo)}}" width="145" height="140" alt=""> -->
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+      <div class="modal-footer text-center">
+           <span *ngIf="imprimespinner" style="text-align: center;">
+            <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+           </span>
+        <button type="button" mat-raised-button color="primary" (click)="imprimer()" *ngIf="!imprimespinner">
+          <span class="material-icons"></span> Imprimer</button>
+        <!--        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>-->
+      </div>
+    </div>
+  </div>
+</div>
+

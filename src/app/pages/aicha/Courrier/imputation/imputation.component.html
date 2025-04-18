@@ -1,0 +1,184 @@
+<p-toast [style]="{marginTop: '80px'}" position="top-right"></p-toast>
+
+<p-panel>
+  <p-header>
+    <div class="ui-helper-clearfix">
+      <span class="ui-panel-title" style="font-size:16px;display:inline-block;margin-top:2px">Gestion des imputations de courriers</span>
+      <!--      <p-splitButton [style]="{'float':'right'}" label="Save" icon="pi pi-check" ></p-splitButton>-->
+    </div>
+  </p-header>
+
+<!--  <div *ngIf="formPanel" class="formPanel" style="margin-top: 4%;width: 80%;margin-left: 10%;margin-bottom: 4%">-->
+<!--    <div class="mat-elevation-z8" style="padding: 2%">-->
+
+<!--      <form [formGroup]="form" novalidate="" role="form">-->
+
+<!--        <div class="multiple-fields">-->
+
+<!--          <mat-form-field appearance="fill">-->
+<!--            <mat-label>Date de correspondance</mat-label>-->
+<!--            <input [matDatepicker]="picker1" formControlName="dateCorrespondance" matInput name="dateCorrespondance" required>-->
+<!--            <mat-datepicker-toggle [for]="picker1" matSuffix></mat-datepicker-toggle>-->
+<!--            <mat-datepicker #picker1></mat-datepicker>-->
+<!--            <mat-error-->
+<!--              *ngIf="form.controls['dateCorrespondance'].invalid && form.controls['dateCorrespondance'].dirty && form.controls['dateCorrespondance'].errors['required']">-->
+<!--              Ce champs est obligatoire!-->
+<!--            </mat-error>-->
+<!--          </mat-form-field>-->
+
+<!--          <mat-form-field appearance="fill">-->
+<!--            <mat-label>Date d'arrivée</mat-label>-->
+<!--            <input [matDatepicker]="picker2" formControlName="dateArrivee" matInput name="dateArrivee" required>-->
+<!--            <mat-datepicker-toggle [for]="picker2" matSuffix></mat-datepicker-toggle>-->
+<!--            <mat-datepicker #picker2></mat-datepicker>-->
+<!--            <mat-error-->
+<!--              *ngIf="form.controls['dateArrivee'].invalid && form.controls['dateArrivee'].dirty && form.controls['dateArrivee'].errors['required']">-->
+<!--              Ce champs est obligatoire!-->
+<!--            </mat-error>-->
+<!--          </mat-form-field>-->
+<!--        </div>-->
+
+
+<!--        <div class="multiple-fields">-->
+<!--          <mat-form-field appearance="fill">-->
+<!--            <mat-label>object </mat-label>-->
+<!--            <input matInput name="object" placeholder="object"-->
+<!--                   matTooltip="object"-->
+<!--                   formControlName="object" required>-->
+<!--            <mat-error-->
+<!--              *ngIf="form.controls['object'].invalid && form.controls['object'].dirty && form.controls['object'].errors['required']">-->
+<!--              Ce champ est obligatoire-->
+<!--            </mat-error>-->
+<!--          </mat-form-field>-->
+<!--        </div>-->
+
+<!--        <div class="multiple-fields">-->
+<!--          <mat-form-field appearance="fill">-->
+<!--            <mat-label>Expediteur </mat-label>-->
+<!--            <input matInput name="expediteur" placeholder="expediteur"-->
+<!--                   matTooltip="expediteur"-->
+<!--                   formControlName="expediteur" required>-->
+<!--            <mat-error-->
+<!--              *ngIf="form.controls['expediteur'].invalid && form.controls['expediteur'].dirty && form.controls['expediteur'].errors['required']">-->
+<!--              Ce champ est obligatoire-->
+<!--            </mat-error>-->
+<!--          </mat-form-field>-->
+<!--        </div>-->
+
+
+<!--        <button (click)="applySave()" [disabled]="!form.valid" class="btn btn-block btn-primary mt-3" type="submit" *ngIf="!courrier.id">Enregistrer</button>-->
+<!--        <button (click)="applyEdite()" [disabled]="!form.valid" class="btn btn-block btn-primary mt-3" type="submit" *ngIf="courrier.id">Modifier</button>-->
+<!--        <button (click)="applyAnnuler()"  class="btn btn-block btn-warning mt-3" type="submit">Annuler</button>-->
+
+<!--      </form>-->
+
+<!--    </div>-->
+<!--  </div>-->
+
+  <div *ngIf="!formPanel">
+
+    <p-dataView #dv
+                [value]="courriers"
+                [loading]="loading"
+                filterBy="etat"
+                [paginator]="true"
+                [sortField]="sortField"
+                [sortOrder]="sortOrder"
+                [rows]="10"
+                [lazy]="true">
+      <p-header>
+        <div class="ui-helper-clearfix">
+          <div class="ui-g">
+            <div class="ui-g-12 ui-md-4">
+              <p-dropdown [options]="sortOptions" [(ngModel)]="sortKey" placeholder="Organiser par"
+                          (onChange)="onSortChange($event)" [style]="{'min-width':'15em'}"></p-dropdown>
+            </div>
+            <div class="ui-g-6 ui-md-4 filter-container">
+              <div style="position:relative">
+                <input type="search" pInputText placeholder="Rechercher" (keyup)="dv.filter($event.target.value)">
+              </div>
+            </div>
+            <div class="ui-g-6 ui-md-4" style="text-align:right">
+              <button mat-raised-button color="primary" style="margin-right: 15px" (click)="newCourrier()"><i class="fa fa-plus"></i> Nouveau Courrier</button>
+              <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+            </div>
+          </div>
+        </div>
+
+      </p-header>
+      <ng-template let-row pTemplate="listItem">
+        <div style="margin: 5px;">
+          <p-panel >
+            <p-header>
+              <div class="ui-toolbar-group-left">
+                <div>Numéro du courrier : {{row.numeroCourrier}}</div>
+              </div>
+            </p-header>
+            <table style="width: 100%">
+              <tr>
+                <td style="width: 80%">
+                  <div> Numéro de référence  : {{row.numeroRefArr}}</div>
+                  <div>Statut du courrier : {{row.statut}}</div>
+                  <div>Etat du courrier : {{row.etat}}</div>
+                  <div>Date de correspondance : {{row.dateCorrespondance | date: 'dd-MM-yyyy'}}</div>
+                  <div>Date d'arrivée : {{row.dateArrivee | date: 'dd-MM-yyyy'}}</div>
+                </td>
+                <td style="width: 20%">
+                  <div class="ui-toolbar-group-right">
+
+<!--                    <button class="btn btn-block btn-info btn-sm mt-3" (click)="traite(row.id)">Traité</button>-->
+                    <button class="btn btn-block btn-success btn-sm mt-3" (click)="repondre(row.id)" *ngIf="hasRoleCourrier()">Répondre</button>
+
+                    <!--                    <div class="btn-group" dropdown>-->
+                    <!--                      <div style="margin-left: 50px;">-->
+                    <!--                        <i class="fa fa-ellipsis-v" style="font-size: 20px; cursor: pointer;" [matMenuTriggerFor]="menu"></i>-->
+                    <!--                      </div>-->
+                    <!--                      <mat-menu #menu="matMenu">-->
+                    <!--&lt;!&ndash;                        <button mat-menu-item (click)="traiterCourrier(row)" class="btn btn-block btn-success btn-sm mt-3">Traité</button>&ndash;&gt;-->
+                    <!--&lt;!&ndash;                        <button mat-menu-item (click)="traiterCourrier(row)" class="btn btn-block btn-primary btn-sm mt-3">Repondu</button>&ndash;&gt;-->
+                    <!--                        <button mat-menu-item (click)="imputerCourrier(row)" class="btn btn-block btn-info btn-sm mt-3">Imputé</button>-->
+                    <!--                        <button mat-menu-item (click)="selectCourrier(row)" class="btn btn-block btn-warning btn-sm mt-3">Modifié</button>-->
+                    <!--                      </mat-menu>-->
+                    <!--                    </div>-->
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <p-footer>
+              Expediteur : {{row.expediteur}}
+            </p-footer>
+          </p-panel>
+
+        </div>
+      </ng-template>
+      <ng-template let-row pTemplate="gridItem">
+        <div class="ui-g-12 ui-md-3">
+          <p-panel >
+            <p-header>
+              Numéro du courrier : {{row.numeroCourrier}}
+            </p-header>
+            <div> numéro de ref arr  : {{row.numeroRefArr}}</div>
+            <div>Statut du courrier : {{row.statut}}</div>
+            <div>Etat du courrier : {{row.etat}}</div>
+            <div>Date de correspondance : {{row.dateCorrespondance | date: 'dd-MM-yyyy'}}</div>
+            <div>Date d'arrivée : {{row.dateArrivee | date: 'dd-MM-yyyy'}}</div>
+            <p-footer>
+              Expediteur : {{row.expediteur}}
+            </p-footer>
+          </p-panel>
+
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="paginatorleft" let-state>
+        {{state.first}}
+        <button type="button" pButton icon="fa-refresh"></button>
+      </ng-template>
+      <ng-template pTemplate="paginatorright">
+        <button type="button" pButton icon="fa-cloud-upload"></button>
+      </ng-template>
+    </p-dataView>
+  </div>
+  <p-footer></p-footer>
+</p-panel>

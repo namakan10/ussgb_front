@@ -1,0 +1,213 @@
+
+<div class="text-center" *ngIf="!structureSelected">
+  <div><span style="font-size: 15px">{{univ_name}}
+  </span></div>
+  <div style="font-size: 90px; padding: 0; top:0">{{univ}}</div>
+
+</div>
+
+<div class="row">
+  <div class="col-sm-12 col-md-1 col-lg-1"></div>
+  <div class="col-sm-12 col-md-10 col-lg-10">
+    <div *ngIf="!structureSelected">
+      <h3 class="badge bg-light">{{univ_inst}}</h3>
+      <div style="width: 100%;">
+        <mat-tab-group animationDuration="2000ms">
+    
+          <mat-tab label="{{structure.sigle}}" *ngFor="let structure of allStructure">
+            <h2 class="text-center">{{structure.sigle}}</h2>
+            <h3 class="text-center">{{structure.nom}}</h3>
+            <div class="p-3 d-flex justify-content-center align-content-center">
+              <div>
+                <img src="http://{{structure.logo}}" width="160" height="160" alt="">
+              </div>
+            </div>
+            <!-- <div class="row mt-2">
+              <div class="col-4">
+                <img src="http://{{structure.logo}}" width="160" height="160" alt="">
+                <div class="mt-2">
+                  {{structure.description}}
+                </div>
+              </div>
+      
+              <div class="col p-2 d-flex justify-content-center align-content-center">
+                <button mat-raised-button color="primary" (click)="diseableClick ? DoNotFing() :CurrentEvent(structure);" *ngIf="!showdetail"><i class="fa fa-info-circle"></i> Plus d'info</button>
+                <div class="mt-2" *ngIf="showdetail">
+                  <h5 class="mt-2">{{structure.detail}}</h5>
+                </div>
+              </div>
+            </div> -->
+      
+      
+          </mat-tab>
+      
+      
+        </mat-tab-group>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-1 col-lg-1"></div>
+</div>
+
+
+
+<div class="container p-2" *ngIf="structureSelected">
+  <h3 class="font-weight-bold text-center text-uppercase">Les évènements</h3>
+  <div class="mt-3 container p-2 shadow-sm mb-3">
+    <form [formGroup]="FilterForm">
+      <div class="row">
+        <div class="col-2">
+          <label for="anneeF">Année scolaire <span class="text-danger">*</span></label>
+          <select class="form-control custom_Input" id="anneeF" formControlName="anneeF" (change)="changeAns($event)">
+            <option value=""></option>
+            <option value="{{ans.id}}" *ngFor="let ans of StructureAnnees">{{ans.anneeScolaire}}</option>
+
+          </select>
+        </div>
+
+        <div class="col-2">
+          <label for="cursusF">cursus</label>
+          <select class="form-control custom_Input" id="cursusF" formControlName="cursus">
+            <option value="">Tout</option>
+            <option value="LICENCE">LICENCE</option>
+            <option value="DUT">DUT</option>
+            <option value="MASTER">MASTER</option>
+            <option value="DOCTORAT">DOCTORAT</option>
+          </select>
+        </div>
+
+
+        <div class="col-3 d-flex justify-content-start">
+          <button class="btn btn-primary" (click)="filterSearch()" [disabled]="FilterForm.invalid">
+            <span class="material-icons">search</span> Chercher
+          </button>
+          <button type="reset" mat-button color="warn">Rafraîchir</button>
+        </div>
+
+
+      </div>
+    </form>
+  </div>
+
+  <div class="mt-3 container shadow-sm col-5 p-2">
+    <h3 class="text-center text-info">{{_Ans}}</h3>
+  </div>
+
+  <div class="row" *ngIf="checkIfIsEmty(FilterForm.controls.anneeF.value) && (listP || listD)">
+    <div class="col p-2 shadow-sm" *ngIf="listP">
+      <button class="btn btn-outline-info btn-block" (click)="ListePassage()">
+        LISTE DE PASSAGE
+      </button>
+    </div>
+<!--    <div class="col p-2 shadow-sm" *ngIf="listD">-->
+<!--      <button class="btn btn-outline-danger btn-block" (click)="ListeAdmission()">-->
+<!--        LISTE D'ADMISSION-->
+<!--      </button>-->
+<!--    </div>-->
+  </div>
+
+  <hr>
+  <div class="row mt-2">
+
+<!--    <div class="col-3 p-2 bg-info text-white" *ngIf="ListeIsEmpty">-->
+<!--      <div class="p-2" style="border-radius: 7px; border: 1px solid #ccc">-->
+<!--        <h5>{{ListCursus}}</h5>-->
+<!--        <p class="mt-2"><span class="badge badge-info">{{ListType}}</span></p>-->
+
+<!--        <div class="p-1">-->
+<!--          <div *ngIf="listP">-->
+<!--            <p> Pour voir la liste de passage <strong class="text-dark">{{ListCursus}}</strong> veuillez cliquer sur <span class="text-dark">affichier la liste</span> pour accéder aux liste de passage pour les/l' anné(e) scolaire <strong>{{ListAnnees}}</strong></p>-->
+<!--            <button mat-raised-button color="warn" (click)="ListePassage()" >-->
+<!--              AFFICHIER LA LISTE-->
+<!--            </button>-->
+<!--          </div>-->
+
+<!--          <div *ngIf="listD">-->
+<!--            <p> Pour voir la liste d'admission <strong class="text-dark">{{ListCursus}}</strong> veuillez cliquer sur <span class="text-dark">affichier la liste</span> pour accéder aux liste de passage pour les/l' anné(e) scolaire <strong>{{ListAnnees}}</strong></p>-->
+<!--            <button mat-raised-button color="accent">-->
+<!--              LISTE D'ADMISSION-->
+<!--            </button>-->
+<!--          </div>-->
+
+<!--        </div>-->
+
+<!--        <hr>-->
+
+
+<!--      </div>-->
+<!--    </div>-->
+
+
+    <div class="col-3 p-2" *ngFor="let events of EvenementList">
+      <div class="p-2" style="border-radius: 7px; border: 1px solid #ccc">
+        <h5>{{events.cursus}}</h5>
+        <p class="mt-2"><span class="badge badge-info">{{events.type}}</span></p>
+
+        <div>
+          <div class="p-1" *ngIf="events.type === 'INSCRIPTION'">
+            <p>Pour <strong>Pré-inscription</strong> pour le/la {{events.cursus === 'LICENCE'?'Licence 1 (L1)': events.cursus}}, pour l'année: <strong>{{events.annee.anneeScolaire}}</strong>.
+              Veuillez cliquez sur le <span class="text-info">bouton pré-inscrire </span>
+            </p>
+            <p><span class="badge badge-secondary">{{events.dateDebut | date: "dd-MM-yyyy"}}</span> au <span class="badge badge-secondary">{{events.dateFin | date: "dd-MM-yyyy"}}</span></p>
+          </div>
+
+          <div class="p-1" *ngIf="events.type === 'CANDIDATURE'">
+            <p><strong>Candidature pour l'année: <strong>{{events.annee.anneeScolaire}}</strong>. Description</strong></p>
+            <p><span class="badge badge-secondary">{{events.dateDebut | date: 'dd-MM-yyyy'}}</span> au <span class="badge badge-secondary">{{events.dateFin | date: 'dd-MM-yyyy'}}</span></p>
+          </div>
+
+          <div class="p-1" *ngIf="events.type === 'RE_INSCRIPTION'">
+            <p><strong>La ré-inscription en {{events.cursus}} pour l'année: <strong>{{events.annee.anneeScolaire}}</strong> est lancé</strong> pour vous inscrire cliquer sur le bouton INSCRIRE</p>
+            <p><span class="badge badge-secondary">{{events.dateDebut | date: 'dd-MM-yyyy'}}</span> au <span class="badge badge-secondary">{{events.dateFin | date: 'dd-MM-yyyy'}}</span></p>
+          </div>
+
+<!--          <div class="p-1" *ngIf="events.type === 'LISTE_DE_PASSAGE'">-->
+<!--            <p> Pour voir la liste de passage <strong class="text-dark">{{events.cursus}}</strong> veuillez cliquer sur <span class="text-dark">affichier la liste</span> pour accéder aux liste de passage</p>-->
+<!--            <p><span class="badge badge-secondary">{{events.dateDebut}}</span> au <span class="badge badge-secondary">{{events.dateFin | date: "dd-MM-yyyy"}}</span></p>-->
+<!--          </div>-->
+
+          <div class="p-1" *ngIf="events.type === 'LISTE_D_ADMISSION'">
+            <p> Pour voir la liste d'admission {{events.cursus}} veuillez cliquer sur <span class="text-info">affichier la liste</span></p>
+            <p><span class="badge badge-secondary">{{events.dateDebut}}</span> au <span class="badge badge-secondary">{{events.dateFin | date: "dd-MM-yyyy"}}</span></p>
+           </div>
+
+        </div>
+        <hr>
+
+        <div class="p-2 text-center" *ngIf="events.type === 'INSCRIPTION'">
+          <button mat-button color="primary" (click)="EventSelected(events)">
+            PRE-INSCRIRE
+          </button>
+        </div>
+
+        <div class="p-2 text-center" *ngIf="events.type === 'CANDIDATURE'">
+          <button mat-button color="primary" (click)="EventSelected(events)">
+            POSTULER
+          </button>
+        </div>
+
+        <div class="p-2 text-center" *ngIf="events.type === 'RE_INSCRIPTION'">
+          <button mat-button color="primary" (click)="NavigateToReInscription(events)">
+            INSCRIRE
+          </button>
+        </div>
+
+<!--        <div class="p-2 text-center" *ngIf="events.type === 'LISTE_DE_PASSAGE'">-->
+<!--          <button mat-raised-button (click)="ListePassage()">-->
+<!--            AFFICHIER LA LISTE-->
+<!--          </button>-->
+<!--        </div>-->
+
+        <div class="p-2 text-center" *ngIf="events.type === 'LISTE_D_ADMISSION'">
+          <button mat-raised-button color="primary">
+            AFFICHIER LA LISTE
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

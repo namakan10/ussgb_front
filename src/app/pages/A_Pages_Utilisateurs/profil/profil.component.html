@@ -1,0 +1,300 @@
+<div class="container">
+  <div class="row">
+    <div class="col-sm-4">
+      <div style="background: white; height: 500px;">
+        <div style="height: 250px; box-shadow: 0px 5px 10px -2px; background-color: #1e88e5;">
+
+        </div>
+        <div style="margin-top: -60px; text-align: center;">
+          <img width="120" style="border: white solid 5px; border-bottom: none; height: 120px;" src="http://{{user.users.photo}}" alt="" class="img-fluid rounded-circle z-depth-0">
+        </div>
+        <div style="margin-top: 20px;">
+          <div class="list-group">
+            <a (click)="changer(0)" style="border: none; cursor: pointer;" [className]="detect === 0 ? 'list-group-item bg-color waves-light text-white':'list-group-item waves-light'" mdbWavesEffect>
+              Mon profil
+            </a>
+            <a style="cursor: pointer;" (click)="changer(1)" [className]="detect === 1 ? 'list-group-item bg-color waves-light text-white':'list-group-item waves-light'" mdbWavesEffect>Modifier mon nom d'utilisateur</a>
+            <a (click)="changer(2)" style="border-bottom: none; cursor: pointer;" [className]="detect === 2 ? 'list-group-item bg-color waves-light text-white':'list-group-item waves-light'" mdbWavesEffect>Modifier mon mot de passe</a>
+            <a (click)="ChangerPhoto();changer(3)" style="border-bottom: none; cursor: pointer;" [className]="detect === 3 ? 'list-group-item bg-color waves-light text-white':'list-group-item waves-light'" mdbWavesEffect>Modifier ma photo</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-8">
+      <div style="background: white; height: 550px; padding: 20px;">
+        <h3>{{title}}</h3>
+        <div *ngIf="spinner" style="text-align: right;">
+          <img style="position: absolute; margin-left: -100px; margin-top: 20px;" src="assets/gif/spinner.gif" width="70" alt="">
+        </div>
+        <hr class="my-2">
+
+        <div class="col-sm-12" *ngIf="detect == 0">
+          <mat-horizontal-stepper labelPosition="bottom" #stepper>
+            <mat-step>
+              <ng-template matStepLabel>Personnel</ng-template>
+              <div class="row">
+
+                <div class="col-sm-4">
+                  <mat-form-field>
+                    <mat-label>Prénom</mat-label>
+                    <input matInput value="{{user.users.prenom}}" readonly>
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                  <mat-form-field>
+                    <mat-label>Nom</mat-label>
+                    <input matInput value="{{user.users.nom}}" readonly>
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                  <mat-form-field>
+                    <mat-label>Genre</mat-label>
+                    <input matInput value="{{user.users.genre}}" readonly>
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                  <mat-form-field>
+                    <mat-label>Date de naissance</mat-label>
+                    <input matInput value="{{user.users.dateDeNaissance | date:'M/d/yyyy'}}" readonly>
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                  <mat-form-field>
+                    <mat-label>Lieu de naissance</mat-label>
+                    <input matInput value="{{user.users.lieuDeNaissance}}" readonly>
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                  <mat-form-field>
+                    <mat-label>Téléphone</mat-label>
+                    <input matInput value="{{user.users.telephone}}" readonly>
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-8" >
+                  <div class="md-form form-sm">
+                    <mat-form-field>
+                      <mat-label>Adresse email</mat-label>
+                      <input matInput type="text" readonly value="{{user.users.email}}">
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <mat-form-field>
+                    <mat-label>Nom d'utilisateur</mat-label>
+                    <input matInput value="{{user.users.username}}" readonly>
+                  </mat-form-field>
+                </div>
+
+              </div>
+              <div>
+                <button mat-button matStepperNext color="primary">Suivant</button>
+              </div>
+            </mat-step>
+            <mat-step>
+              <form>
+                <ng-template matStepLabel>Adresse</ng-template>
+                <div class="row">
+                  <div class="col-sm-6">
+                    <mat-form-field>
+                      <mat-label>Pays</mat-label>
+                      <input matInput value="{{user.users.pays}}" readonly>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-sm-6">
+                    <mat-form-field>
+                      <mat-label>Ville</mat-label>
+                      <input matInput value="{{user.users.ville}}" readonly>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-sm-6">
+                    <mat-form-field>
+                      <mat-label>Quartier</mat-label>
+                      <input matInput value="{{user.users.quartier}}" readonly>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-sm-6">
+                    <mat-form-field>
+                      <mat-label>Porte</mat-label>
+                      <input matInput value="{{user.users.porte}}" readonly>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-sm-6">
+                    <mat-form-field>
+                      <mat-label>Rue</mat-label>
+                      <input matInput value="{{user.users.rue}}" readonly>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div>
+                  <button mat-button matStepperPrevious color="primary">Précédent</button>
+                  <button mat-button matStepperNext color="primary">Suivant</button>
+                </div>
+              </form>
+            </mat-step>
+            <mat-step>
+              <ng-template matStepLabel>Structure</ng-template>
+              <div class="row">
+                <div class="col-sm-6">
+                  <mat-form-field>
+                    <mat-label>Numéro matricule</mat-label>
+                    <input matInput value="{{user.users.numMatricule}}" readonly>
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-6">
+                  <mat-form-field>
+                    <mat-label>Type</mat-label>
+                    <input matInput value="{{user.users.typeUtilisateur}}" readonly>
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-6">
+                  <mat-form-field>
+                    <mat-label>Structure</mat-label>
+                    <input matInput value="{{user.structure.nom}}" readonly>
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-6">
+                  <div class="view overlay zoom">
+                    <img src="http://{{user.structure.logo}}" class="img-fluid" alt="zoom">
+                    <div class="mask flex-center waves-effect waves-light  rgba-orange-strong">
+                      <p class="white-text" style="font-weight: bold;">{{user.structure.nom}} logo</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <button mat-button matStepperPrevious color="primary">Précédent</button>
+              </div>
+            </mat-step>
+          </mat-horizontal-stepper>
+
+        </div>
+
+        <div class="col-sm-12" *ngIf="detect == 1">
+          <div class="row" style="margin-top: 50px;">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10">
+              <form [formGroup]="usernameForm" (ngSubmit)="usernameUpdate()">
+                <div class="md-form form-sm">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Nouveau nom d'utilisateur</mat-label>
+                    <mat-icon matPrefix> perm_identity </mat-icon>
+                    <input (change)="change()" matInput type="text" formControlName="newUsername" id="form1"
+                           class="form-control form-control-sm black-text"
+                           [ngClass]="{'is-invalid' : usernameForm.get('newUsername').touched && usernameForm.get('newUsername').invalid}"
+                           autocomplete="new-password">
+                  </mat-form-field>
+                  <ng-container *ngIf="usernameForm.get('newUsername').touched && usernameForm.get('newUsername').errors?.required">
+                    <p class="caption status-danger">
+                      Ce champ est obligatoire
+                    </p>
+                  </ng-container>
+                </div>
+
+                <div class="md-form form-sm">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Mot de passe actuel</mat-label>
+                    <mat-icon matPrefix> vpn_key </mat-icon>
+                    <input (change)="change()" matInput type="password" formControlName="password" id="form1"
+                           class="form-control form-control-sm black-text"
+                           [ngClass]="{'is-invalid' : usernameForm.get('password').touched && usernameForm.get('password').invalid}"
+                           autocomplete="new-password">
+                  </mat-form-field>
+
+
+                  <ng-container *ngIf="usernameForm.get('password').touched && usernameForm.get('password').errors?.required">
+                    <p class="caption status-danger">
+                      Veuillez saisir votre mot de passe
+                    </p>
+                  </ng-container>
+                </div>
+                <button mat-button style="background-color: #ffb22b; color: white;" type="submit" [disabled]="disabledSubmitButton2">Modifier</button>
+
+              </form>
+            </div>
+            <div class="col-sm-1"></div>
+          </div>
+        </div>
+
+        <div class="col-sm-12" *ngIf="detect == 2">
+          <form class="p-5" [formGroup]="passwordForm" (ngSubmit)="passwordUpdate()">
+
+            <div class="md-form form-sm">
+              <mat-form-field class="example-full-width">
+                <mat-label>Ancien mot de passe</mat-label>
+                <mat-icon matPrefix> vpn_key </mat-icon>
+                <input (change)="change()" matInput type="password" formControlName="oldPassword" id="form1"
+                       class="form-control form-control-sm black-text"
+                       [ngClass]="{'is-invalid' : passwordForm.get('oldPassword').touched && passwordForm.get('oldPassword').invalid}"
+                       autocomplete="new-password">
+              </mat-form-field>
+
+              <ng-container *ngIf="passwordForm.get('oldPassword').touched && passwordForm.get('oldPassword').errors?.required">
+                <p class="caption status-danger">
+                  Veuillez saisir l'ancien mot de passe
+                </p>
+              </ng-container>
+            </div>
+
+            <div class="md-form form-sm">
+              <mat-form-field class="example-full-width">
+                <mat-label>Nouveau mot de passe</mat-label>
+                <mat-icon matPrefix> vpn_key </mat-icon>
+                <input (change)="change()" matInput type="password" formControlName="newPassword" id="form1"
+                       class="form-control form-control-sm black-text"
+                       [ngClass]="{'is-invalid' : passwordForm.get('newPassword').touched && passwordForm.get('newPassword').invalid}"
+                       autocomplete="new-password">
+              </mat-form-field>
+              <ng-container *ngIf="passwordForm.get('newPassword').touched && passwordForm.get('newPassword').errors?.required">
+                <p class="caption status-danger">
+                  Veuillez saisir le nouveau mot de passe
+                </p>
+              </ng-container>
+            </div>
+            <div class="md-form form-sm">
+              <mat-form-field class="example-full-width">
+                <mat-label>Rétapez le nouveau mot de passe</mat-label>
+                <mat-icon matPrefix> vpn_key </mat-icon>
+                <input (change)="change()" matInput type="password" formControlName="verifPassword" id="form1"
+                       class="form-control form-control-sm black-text"
+                       [ngClass]="{'is-invalid' : passwordForm.get('verifPassword').touched && passwordForm.get('verifPassword').invalid}"
+                       autocomplete="new-password">
+              </mat-form-field>
+              <ng-container>
+                <p class="caption status-danger"
+                   *ngIf="passwordForm.get('verifPassword').touched && passwordForm.get('verifPassword').errors?.required">
+                  Ce champ est obligatoire
+                </p>
+              </ng-container>
+            </div>
+            <div class="">
+              <span *ngIf="spinnerPassUpdate" style="text-align: center;">
+                   <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+                  <span>Veuillez patienter ...</span>
+              </span>
+            </div>
+              <button mat-button style="background-color: #ffb22b; color: white;" type="submit" [disabled]="disabledSubmitButton" *ngIf="!spinnerPassUpdate">Modifier</button>
+          </form>
+        </div>
+
+        <div class="col-sm-12" *ngIf="detect == 3">
+          <div class="container d-flex justify-content-center p-2">
+            <img src="http://{{photoProfil}}" alt="" height="190" width="190" *ngIf="!changPhotoEvent">
+            <img src="{{photoProfil}}" alt="" height="190" width="190" *ngIf="changPhotoEvent">
+          </div>
+          <form [formGroup]="PhotoChangeForm" (ngSubmit)="ChangeMyProfile()">
+            <div class="form-group">
+              <label for="photoChang">Photo <span class="text-danger">*</span></label>
+              <input type="file" id="photoChang" class="form-control custom_Input" accept="image/*" formControlName="profilPhoto"
+                     (change)="onselectFile($event)">
+            </div>
+            <div class="text-center">
+              <button mat-raised-button color="primary" [disabled]="PhotoChangeForm.invalid">Changer</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,257 @@
+<div class="container-fluid" id="container-wrapper">
+    <div class="card mb-4">
+      <div class="card-body">
+        <form id="adminpro-form" class="adminpro-form">
+            <div class="col-lg-12">
+              <div class="login-bg">
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="login-title">
+                      <h1>Candidature pour {{univ_sigle}}</h1><br>
+                      <p class="text-uppercase">{{univ_name}}</p><br>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Matricule <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="text" name="matricule" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Numéro de place au Bac <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="text" name="placebac" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Nom <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="text" name="nom" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Prénom <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="text" name="prenom" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Genre <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                        <select class="form-control" id="genre" name="type">
+                            <option value="homme">Homme</option>
+                            <option value="femme">Femme</option>
+                        </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Date et lieu de naissance <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class=".login-input-area">
+                      <input type="date" name="date" ngModel required>&nbsp;&nbsp;à&nbsp;&nbsp;
+                      <input type="text" name="lieu" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Pays de naissance <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="text" name="paynaissance" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Nationnalité <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="text" name="nationnalite" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Email <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="email" name="email" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Téléphone étudiant <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="text" name="teletudiant" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Téléphone du Tuteur <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="text" name="teltuteur" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Adresse</p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="text" name="ville" placeholder="ville">
+                      <input type="text" name="quarier" placeholder="Quartier">
+                      <input type="text" name="rue" placeholder="Rue">
+                      <input type="text" name="porte" placeholder="Porte">
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Specialité Bac <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <select class="form-control">
+                        <option value="TSE">TSE (Terminale science exacte)</option>
+                        <option value="TSEXP">TSEXP (Terminal science expérimental)</option>
+                        <option value="TSECO">TSECO (Terminal science economique)</option>
+                        <option value="TSS">TSS (Terminal science social)</option>
+                        <option value="TSS">TLL (Terminal langues lettres)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Academie <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <select class="form-control">
+                        <option value="AERD">Bamako Rive Droite</option>
+                        <option value="AERG">Bamako Rive Gauche</option>
+                        <option value="kaye">Kayes</option>
+                        <option value="koulikoro">Koulikoro</option>
+                        <option value="sikasso">Sikasso</option>
+                        <option value="segou">Segou</option>
+                        <option value="mopti">Mopti</option>
+                        <option value="toubouctou">Tombouctou</option>
+                        <option value="gao">Gao</option>
+                        <option value="kidal">Kidal</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Photo <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="file" name="imgetudiant" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Attestation du bac <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="file" name="attestation" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="login-input-head">
+                      <p>Relevé de notes <span style="color: red">*</span></p>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-input-area">
+                      <input type="file" name="relevenote" ngModel required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="login-button-pro">
+                      <button type="Submit" class="login-button login-button-lg">Envoyer</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+      </div>
+    </div>
+  </div>

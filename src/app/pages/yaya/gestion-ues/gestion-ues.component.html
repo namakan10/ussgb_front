@@ -1,0 +1,94 @@
+<mat-card>
+  <mat-card-header>
+    Liste des Ues
+  </mat-card-header>
+  <mat-card-content>
+    <div class="search-div">
+      <button (click)="ajouterUes()" mat-raised-button>
+        <i class="fa fa-plus"></i>&nbsp;&nbsp;Ajouter
+      </button>
+      <mat-form-field class="search-form-field" floatLabel="never">
+        <input matInput [(ngModel)]="searchKey" placeholder="Recherche" autocomplete="off" (keyup)="applyFilter()">
+        <button mat-button matSuffix mat-icon-button aria-label="Clear"*ngIf="searchKey"  (click)="onSearchClear()">
+          <i class="fa fa-times"></i>
+        </button>
+      </mat-form-field>
+    </div>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+
+      <!--- Note that these columns can be defined in any order.
+            The actual rendered columns are set as a property on the row definition" -->
+
+
+      <ng-container matColumnDef="nomUe">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>NomUe</th>
+        <td mat-cell *matCellDef="let element"> {{element.nomUe}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="codeUe">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>CodeUe</th>
+        <td mat-cell *matCellDef="let element"> {{element.codeUe}} </td>
+      </ng-container>
+      <ng-container matColumnDef="semestre">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Semestre</th>
+        <td mat-cell *matCellDef="let element"> {{element.semestre}} </td>
+      </ng-container>
+      <ng-container matColumnDef="volumeHoraire">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>VolumeHoraire</th>
+        <td mat-cell *matCellDef="let element"> {{element.volumeHoraire}} </td>
+      </ng-container>
+      <ng-container matColumnDef="credit">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Credit</th>
+        <td mat-cell *matCellDef="let element"> {{element.credit}} </td>
+      </ng-container>
+      <ng-container matColumnDef="chapitre">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Chapitre</th>
+        <td mat-cell *matCellDef="let element"> {{element.chapitre}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>
+          <mat-menu #action="matMenu">
+            <button mat-menu-item (click)="modifierUe(element.id)">
+              <i class="fa fa-edit"></i>
+              <span>&nbsp;&nbsp;Modifier</span>
+            </button>
+            <button mat-menu-item (click)="supprimerUe(element.id)">
+              <i class="fa fa-trash"></i>
+              <span>&nbsp;&nbsp;Supprimer</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+     
+
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    <mat-paginator [length]="100"
+                   [pageSize]="25"
+                   [pageSizeOptions]="[25, 50, 100]">
+    </mat-paginator>
+  </mat-card-content>
+</mat-card>
+<!--<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-4" *ngFor = "let fraisInscription of fraisInscriptions">
+      <div class="personal-info-wrap shadow-reset">
+        <div class="widget-text-box">
+          <h4>{{ fraisInscription.type }}</h4>
+          <h4>{{ fraisInscription.frais }}&nbsp;FCFA</h4>
+          <div class="text-right like-love-list">
+            <a class="btn btn-default" (click)="modifierFrais(fraisInscription.id )"><i class="fa fa-edit"></i></a>
+            <a class="btn btn-default" (click)="supprimerFrais(fraisInscription.id )"><i class="fa fa-trash-alt"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>-->

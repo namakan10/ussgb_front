@@ -1,0 +1,103 @@
+
+
+<div class="container mt-3">
+
+  <button mat-raised-button color="warn" (click)="BackToClasse()"><i class="fa fa-reply"></i> Retour</button>
+  <h4 class="font-weight-bold text-center">{{classeName}}</h4>
+</div>
+
+<hr>
+<div class="row">
+  <div class="col-12">
+    <div class="col-4">
+      <mat-form-field>
+        <mat-label>FILTRE</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+      </mat-form-field>
+    </div>
+    <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+
+      <!--- Note that these columns can be defined in any order.
+            The actual rendered columns are set as a property on the row definition" -->
+
+
+      <ng-container matColumnDef="numEtudiant">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Num Etudiant</th>
+        <td mat-cell *matCellDef="let element"> {{element.numEtudiant}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="prenom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Prénom</th>
+        <td mat-cell *matCellDef="let element"> {{element.prenom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+        <td mat-cell *matCellDef="let element"> {{element.nom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="nationalite">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nationalité</th>
+        <td mat-cell *matCellDef="let element"> {{element.nationalite}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="telephone">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Téléphone</th>
+        <td mat-cell *matCellDef="let element"> {{element.user.telephone}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="codeFiliere">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Code Filière</th>
+        <td mat-cell *matCellDef="let element"> {{element.filiere.codeFiliere}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="scolarite">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Scolarité</th>
+        <td mat-cell *matCellDef="let element"> {{element.scolarite}} </td>
+      </ng-container>
+
+<!--      <ng-container matColumnDef="actions">-->
+<!--        <th mat-header-cell *matHeaderCellDef></th>-->
+<!--        <td mat-cell *matCellDef="let element">-->
+<!--          <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>-->
+<!--          <mat-menu #action="matMenu">-->
+
+<!--            <button mat-menu-item (click)="getUeNotInCourse(element)">-->
+<!--              <i class="fa fa-list"></i>-->
+<!--              <span>&nbsp;&nbsp;Ues non liées</span>-->
+<!--            </button>-->
+
+<!--            <button mat-menu-item (click)="EditEtudiants(element)">-->
+<!--              <i class="fa fa-edit text-info"></i>-->
+<!--              Modifier-->
+<!--            </button>-->
+
+<!--          </mat-menu>-->
+<!--        </td>-->
+<!--      </ng-container>-->
+
+      <ng-container matColumnDef="loading">
+        <td mat-footer-cell *matFooterCellDef colspan="6">
+          Chargement des données...
+        </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="noData">
+        <td mat-footer-cell *matFooterCellDef colspan="6">
+          Pas de données...
+        </td>
+      </ng-container>
+
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator
+      [length]="length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions">
+
+    </mat-paginator>
+  </div>
+</div>

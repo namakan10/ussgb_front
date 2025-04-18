@@ -1,0 +1,279 @@
+<div class="container col-5 shadow-sm p-1 text-center text-white mb-2" style="border-radius: 10px; background-color: #1e88e5">
+  <h5>HISTORIQUES</h5>
+</div>
+
+<div>
+  <button mat-button [color]="choix ? 'warn' : ''" (click)="choix = true; initFilterForm()">
+    Historiques entre deux dates
+  </button>
+  <button mat-button [color]="!choix ? 'warn' :   ''" (click)="choix = false; initFilterForm()">
+    Historiques sur une date précise
+  </button>
+  <hr>
+  <form [formGroup]="FilterForm">
+    <div class="row">
+      <div class="col-3">
+        <label for="table">Historique sur:</label>
+        <select class="form-control custom_Input" id="table" formControlName="table">
+          <option value=""></option>
+          <option value="CANDIDAT">les candidats</option>
+          <option value="FRAIS">les frais</option>
+          <option value="PAIEMENT">les paiements</option>
+          <option value="VERSEMENT">les versements</option>
+          <option value="ETUDIANT">les étudiants</option>
+          <option value="NOTE">les notes</option>
+        </select>
+      </div>
+
+
+      <div class="col-3">
+        <label for="operation">Type d'opération</label>
+        <select class="form-control custom_Input" id="operation" formControlName="operation">
+          <option value=""></option>
+            <option value="UPDATE">les modifications</option>
+          <option value="DELETE">les suppressions</option>
+        </select>
+      </div>
+
+      <div class="col-3" *ngIf="!choix">
+        <label for="date">Date</label>
+        <input type="date" class="form-control custom_Input" id="date" formControlName="date">
+      </div>
+
+      <div class="col-3" *ngIf="choix">
+        <label for="startDate">Date de début</label>
+        <input type="date" class="form-control custom_Input" id="startDate" formControlName="startDate">
+      </div>
+
+      <div class="col-3" *ngIf="choix">
+        <label for="endDate">Date de fin</label>
+        <input type="date" class="form-control custom_Input" id="endDate" formControlName="endDate">
+      </div>
+
+    </div>
+    <div class="text-right">
+       <span *ngIf="_spinner" style="text-align: center;">
+          <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+         Veuillez patienter ...
+        </span>
+      <button *ngIf="_spinner" mat-button color="accent" (click)="GetHistoriqueList()">
+        <span class="material-icons">search</span> Chercher
+      </button>
+    </div>
+  </form>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="col-4">
+      <mat-form-field>
+        <mat-label>FILTRE</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+      </mat-form-field>
+    </div>
+    <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+
+      <!--- Note that these columns can be defined in any order.
+            The actual rendered columns are set as a property on the row definition" -->
+
+
+      <ng-container matColumnDef="dateAction">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date de l'action</th>
+        <td mat-cell *matCellDef="let element"> {{element.modifyDate | date: "dd/MM/yyyy"}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="idRef">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Operation</th>
+        <td mat-cell *matCellDef="let element"> {{element.operation}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="modifBy">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ FilterForm.controls.operation.value === 'UPDATE'  ? 'modifier par:' : 'Supprimer par :'}}</th>
+        <td mat-cell *matCellDef="let element"> {{element.modifyBy}} </td>
+      </ng-container>
+
+<!--      <ng-container matColumnDef="table">-->
+<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>-->
+<!--        <td mat-cell *matCellDef="let element"> {{element.operation}} </td>-->
+<!--      </ng-container>-->
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-raised-button color="accent" (click)="detail(element)"><i class="fa fa-list"></i> detail</button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="loading">
+        <td mat-footer-cell *matFooterCellDef colspan="6">
+          Chargement des données...
+        </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="noData">
+        <td mat-footer-cell *matFooterCellDef colspan="6">
+          Pas de données...
+        </td>
+      </ng-container>
+
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+<!--    <mat-paginator-->
+<!--      [length]="length"-->
+<!--      [pageSize]="pageSize"-->
+<!--      [pageSizeOptions]="pageSizeOptions">-->
+
+<!--    </mat-paginator>-->
+  </div>
+</div>
+
+
+<!-- Modal DETAIL -->
+<div class="modal fade" id="detailFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Les détails</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="showDetail">
+          <h5>{{FilterForm.controls.operation.value === 'UPDATE' ? 'Modification' : 'Supression'}} Enregistré le
+            <span class="badge badge-light">{{this.data.modifyDate | date: "dd/MM/yyyy"}}</span>
+          </h5>
+          <h5 *ngIf="data.jsonAncien.hasOwnProperty('update_by')">Responsable de l'action : <strong>{{data.modifyBy }}</strong></h5>
+          <div>
+<!--            {{data.jsonAncien | json}}-->
+            <mat-tab-group>
+              <mat-tab label="Ancienne données">
+<!--               DETAIL PAYEMENT FRAIS -->
+                <div *ngIf="FilterForm.controls.table.value === 'PAIEMENT'">
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('annee_scolaire')">Année Scolaire: {{data.jsonAncien.annee_scolaire }}</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('date_paiement')">Payement fait le: {{data.jsonAncien.date_paiement |date: "dd/MM/yyyy"}} à {{data.jsonAncien.heure_paiement}}</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('montant_paye')">La somme de : {{data.jsonAncien.montant_paye}} Fcfa, fait par {{data.jsonAncien.mode_paiement}}</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('motif')">Pour motif : <strong>{{data.jsonAncien.motif}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('num_paiement')">Numéro de payement : <strong>{{data.jsonAncien.num_paiement}}</strong></div>
+                </div>
+<!--              DETAIL VERSEMENT-->
+                <div *ngIf="FilterForm.controls.table.value === 'VERSEMENT'">
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('annee_scolaire')">Année Scolaire: {{data.jsonAncien.annee_scolaire }}</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('date_de_versement')">Versement fait le: {{data.jsonAncien.date_de_versement }} à {{data.jsonAncien.heure_de_versement}}</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('montant')">La somme de : {{data.jsonAncien.montant }} Fcfa</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('motif')">Pour motif : <strong>{{data.jsonAncien.motif}}</strong></div>
+                </div>
+<!--                DETAIL FRAIS-->
+                <div *ngIf="FilterForm.controls.table.value === 'FRAIS'">
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('frais')">Montant: {{data.jsonAncien.frais }}</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('type_frais')">Type de Frais : {{data.jsonAncien.type_frais }}</div>
+                </div>
+<!--              DETAIL CANDIDAT-->
+                <div *ngIf="FilterForm.controls.table.value === 'CANDIDAT'">
+
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('nom')">Nom: {{data.jsonAncien.nom }}</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('prenom')">Prénom: {{data.jsonAncien.prenom }}</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('annee')">Année Scolaire: {{data.jsonAncien.annee }}</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('academie')">Academie: {{data.jsonAncien.academie }}</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('date_de_naissance')">Date de naissance : {{data.jsonAncien.date_de_naissance}}</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('lieu_de_naissance')">Lieu de naissance : {{data.jsonAncien.lieu_de_naissance}}</div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('email')">Email : <strong>{{data.jsonAncien.email}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('genre')">Genre : <strong>{{data.jsonAncien.genre}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('telephone')">Téléphone : <strong>{{data.jsonAncien.telephone}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('telephone_tuteur')">Téléphone tuteur : <strong>{{data.jsonAncien.telephone_tuteur}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('mode_admission')">Mode d'admission : <strong>{{data.jsonAncien.mode_admission}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('nationalite')">Nationlité : <strong>{{data.jsonAncien.nationalite}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('pays_de_naissance')">Pays de naissance : <strong>{{data.jsonAncien.pays_de_naissance}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('num_place_bac')">Numéro place BAC : <strong>{{data.jsonAncien.num_place_bac}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('session_bac')">Session BAC : <strong>{{data.jsonAncien.session_bac}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('specialite')">Spécialité BAC : <strong>{{data.jsonAncien.specialite}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('num_admission')">Numéro d'admission : <strong>{{data.jsonAncien.num_admission}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('num_matricule')">Numéro matricule : <strong>{{data.jsonAncien.num_matricule}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('quartier')">Quartier : <strong>{{data.jsonAncien.quartier}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('rue')">Rue : <strong>{{data.jsonAncien.rue}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('porte')">Quartier : <strong>{{data.jsonAncien.porte}}</strong></div>
+                  <div *ngIf="data.jsonAncien.hasOwnProperty('type_candidat')">Type de candidat : <strong>{{data.jsonAncien.type_candidat}}</strong></div>
+
+                </div>
+<!--                DETAIL NOTE-->
+                <div *ngIf="FilterForm.controls.table.value === 'NOTE'">
+                </div>
+<!--                DETAIL ETUDIANT-->
+                <div *ngIf="FilterForm.controls.table.value === 'ETUDIANT'">
+                </div>
+
+              </mat-tab>
+<!--==================================================-->
+<!--===============NEW MODIF PART ====================-->
+<!--==================================================-->
+              <mat-tab label="Nouvelle données">
+
+                <!--               DETAIL PAYEMENT FRAIS -->
+                <div *ngIf="FilterForm.controls.table.value === 'PAIEMENT' && EmptyCheck(data.jsonNew)">
+                  <div *ngIf="data.jsonNew.hasOwnProperty('annee_scolaire')">Année Scolaire: {{data.jsonNew.annee_scolaire }}</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('date_paiement')">Payement fait le: {{data.jsonNew.date_paiement |date: "dd/MM/yyyy"}} à {{data.jsonNew.heure_paiement}}</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('montant_paye')">La somme de : {{data.jsonNew.montant_paye}} Fcfa, fait par {{data.jsonNew.mode_paiement}}</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('motif')">Pour motif : <strong>{{data.jsonNew.motif}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('num_paiement')">Numéro de payement : <strong>{{data.jsonNew.num_paiement}}</strong></div>
+                </div>
+
+                <!--              DETAIL VERSEMENT-->
+                <div *ngIf="FilterForm.controls.table.value === 'VERSEMENT' && EmptyCheck(data.jsonNew)">
+                  <div *ngIf="data.jsonNew.hasOwnProperty('annee_scolaire')">Année Scolaire: {{data.jsonNew.annee_scolaire }}</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('date_de_versement')">Versement fait le: {{data.jsonNew.date_de_versement }} à {{data.jsonNew.heure_de_versement}}</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('montant')">La somme de : {{data.jsonNew.montant }} Fcfa</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('motif')">Pour motif : <strong>{{data.jsonNew.motif}}</strong></div>
+                </div>
+
+                <!--                DETAIL FRAIS NEW-->
+                <div *ngIf="FilterForm.controls.table.value === 'FRAIS' && EmptyCheck(data.jsonNew)">
+                  <div *ngIf="data.jsonNew.hasOwnProperty('frais')">Montant: {{data.jsonNew.frais }}</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('type_frais')">Type de Frais : {{data.jsonNew.type_frais }}</div>
+                </div>
+
+                <!--              DETAIL CANDIDAT-->
+                <div *ngIf="FilterForm.controls.table.value === 'CANDIDAT'">
+
+                  <div *ngIf="data.jsonNew.hasOwnProperty('nom')">Nom: {{data.jsonNew.nom }}</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('prenom')">Prénom: {{data.jsonNew.prenom }}</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('annee')">Année Scolaire: {{data.jsonNew.annee }}</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('academie')">Academie: {{data.jsonNew.academie }}</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('date_de_naissance')">Date de naissance : {{data.jsonNew.date_de_naissance}}</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('lieu_de_naissance')">Lieu de naissance : {{data.jsonNew.lieu_de_naissance}}</div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('email')">Email : <strong>{{data.jsonNew.email}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('genre')">Genre : <strong>{{data.jsonNew.genre}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('telephone')">Téléphone : <strong>{{data.jsonNew.telephone}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('telephone_tuteur')">Téléphone tuteur : <strong>{{data.jsonNew.telephone_tuteur}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('mode_admission')">Mode d'admission : <strong>{{data.jsonNew.mode_admission}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('nationalite')">Nationlité : <strong>{{data.jsonNew.nationalite}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('pays_de_naissance')">Pays de naissance : <strong>{{data.jsonNew.pays_de_naissance}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('num_place_bac')">Numéro place BAC : <strong>{{data.jsonNew.num_place_bac}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('session_bac')">Session BAC : <strong>{{data.jsonNew.session_bac}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('specialite')">Spécialité BAC : <strong>{{data.jsonNew.specialite}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('num_admission')">Numéro d'admission : <strong>{{data.jsonNew.num_admission}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('num_matricule')">Numéro matricule : <strong>{{data.jsonNew.num_matricule}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('quartier')">Quartier : <strong>{{data.jsonNew.quartier}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('rue')">Rue : <strong>{{data.jsonNew.rue}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('porte')">Quartier : <strong>{{data.jsonNew.porte}}</strong></div>
+                  <div *ngIf="data.jsonNew.hasOwnProperty('type_candidat')">Type de candidat : <strong>{{data.jsonNew.type_candidat}}</strong></div>
+
+                </div>
+
+              </mat-tab>
+            </mat-tab-group>
+
+            <!--==================================================-->
+            <!--=============== END NEW MODIF PART ====================-->
+            <!--==================================================-->
+<!--            <div *ngFor="let obj of data.jsonAncien">{{obj | json}}</div>-->
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>

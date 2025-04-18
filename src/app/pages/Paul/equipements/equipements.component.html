@@ -1,0 +1,214 @@
+
+<h3 class="font-weight-bold text-center">Gestions des équipements</h3>
+
+<mat-card>
+  <mat-card-header>
+    <div class="text-right" *ngIf="!bySalle">
+      <button class="mb-2" (click)="newEquipement()" mat-raised-button color="primary">
+        <i class="fa fa-plus"></i>&nbsp;&nbsp; Ajouter
+      </button>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="row">
+<!--        <div class="col-sm-12 col-md-6 col-lg-6" *ngIf="!bySalle && _RECTORAT">-->
+<!--          <div class="form-group">-->
+<!--            <label for="structure">Structure <span class="text-danger">*</span></label>-->
+<!--            <select (change)="StructureChange($event)" class="form-control custom_Input" name="structure" id="structure">-->
+<!--              <option value=""></option>-->
+<!--              <option *ngFor="let structure of Structures" [value]="structure.id">{{structure.sigle}}</option>-->
+<!--            </select>-->
+<!--          </div>-->
+<!--        </div>-->
+        <div class="col-sm-12 col-md-6 col-lg-6 text-right" *ngIf="!bySalle">
+          <div class="form-group">
+            <label for="salle">Salle <span class="text-danger">*</span></label>
+            <select class="form-control custom_Input" id="salleL" [(ngModel)]="salleSelected" (change)="GetEquipments();">
+              <option value="">Toutes les salles</option>
+              <option value="{{sal.id}}" *ngFor="let sal of Salles">{{sal.numSalle+' : '+sal.nbrePlace+' places'}}</option>
+            </select>
+          </div>
+<!--          <div class="text-right" *ngIf="_RECTORAT">-->
+<!--            <button (click)="GetEquipments()" mat-raised-button color="accent">-->
+<!--              <i class="fa fa-list-alt"></i> Afficher-->
+<!--            </button>-->
+<!--          </div>-->
+        </div>
+    </div>
+
+    <div>
+      <div class="text-center">
+        <h4 class="font-weight-bold"  *ngIf="!bySalle"><span>{{checkUndefined(this.StructureSelected) ? this.StructureSelected.sigle : ''}}</span> {{checkUndefined(SalleS) ? 'Equipements de la salle :' +SalleS.numSalle+' : '+SalleS.nbrePlace+' places' : 'Tous les équipements de la structure'}}</h4>
+        <h4 class="font-weight-bold" *ngIf="bySalle"><span>{{checkUndefined(this.StructureSelected) ? this.StructureSelected.sigle : ''}}</span> {{'Equipements de la salle :' + this.inputSalle.numSalle+' : '+ this.inputSalle.nbrePlace+' places'}}</h4>
+        <h5 class="font-weight-bold"><span class="badge badge-info">Nombre: {{this.totalElements}}</span></h5>
+      </div>
+      <div class="col-4">
+        <mat-form-field>
+          <mat-label>FILTRE</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+        </mat-form-field>
+      </div>
+      <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+
+        <!--- Note that these columns can be defined in any order.
+              The actual rendered columns are set as a property on the row definition" -->
+
+
+        <ng-container matColumnDef="salle">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Salle</th>
+          <td mat-cell *matCellDef="let element"> {{element.salle.numSalle}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+          <td mat-cell *matCellDef="let element"> {{element.nom}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="identifiant">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Identifiant</th>
+          <td mat-cell *matCellDef="let element"> {{element.identifiant}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+          <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="caracteristique">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Caractéristiques</th>
+          <td mat-cell *matCellDef="let element"> {{element.caracteristique}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="etat">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Etat</th>
+          <td mat-cell *matCellDef="let element"> {{element.etat}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>
+            <mat-menu #action="matMenu">
+
+              <button mat-menu-item (click)="fullEditForm(element)">
+                <i class="fa fa-edit"></i>
+                <span>&nbsp;&nbsp;Modifier</span>
+              </button>
+
+
+              <button mat-menu-item (click)="Delete_Equipement(element)">
+                <i class="fa fa-trash"></i>
+                <span>&nbsp;&nbsp;Supprimer</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="loading">
+          <td mat-footer-cell *matFooterCellDef colspan="6">
+            Chargement des données...
+          </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="noData">
+          <td mat-footer-cell *matFooterCellDef colspan="6">
+            Pas de données...
+          </td>
+        </ng-container>
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator
+        [length]="length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions">
+
+      </mat-paginator>
+    </div>
+
+  </mat-card-content>
+</mat-card>
+
+
+<!-- Modal -->
+<div class="modal fade" id="EquipmentsFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">history_toggle_off</span> {{action === 'creat' ?  'Ajout d\'un equipemment' : 'Modification d\'un equipemment'}}</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="EquipmentForm"
+              (ngSubmit)="action === 'creat'?creatEquipement():updateEquipement()" *ngIf="showForm">
+
+
+          <div class="form-group">
+            <label for="salle">Salle <span class="text-danger">*</span></label>
+            <select class="form-control custom_Input" id="salle" formControlName="salle" >
+              <option value=""></option>
+              <option value="{{sal.id}}" *ngFor="let sal of Salles">{{sal.numSalle+' : '+sal.nbrePlace+' places'}}</option>
+            </select>
+            <div class="badge badge-danger"  *ngIf="EquipmentForm.get('salle').touched &&
+                    EquipmentForm.get('salle').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="nom">Nom <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom_Input" id="nom" formControlName="nom">
+            <div class="badge badge-danger"  *ngIf="EquipmentForm.get('nom').touched &&
+                    EquipmentForm.get('nom').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="identifiant">Identifiant <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom_Input" id="identifiant" formControlName="identifiant">
+            <div class="badge badge-danger"  *ngIf="EquipmentForm.get('identifiant').touched &&
+                    EquipmentForm.get('identifiant').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="type">type  <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom_Input" id="type" formControlName="type">
+            <div class="badge badge-danger"  *ngIf="EquipmentForm.get('type').touched &&
+                    EquipmentForm.get('type').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="caracteristique">Caractéristiques  <span class="text-danger">*</span></label>
+            <textarea name="caracteristique" class="form-control custom_Input" id="caracteristique" formControlName="caracteristique" cols="30" rows="2"></textarea>
+            <div class="badge badge-danger"  *ngIf="EquipmentForm.get('caracteristique').touched &&
+                    EquipmentForm.get('caracteristique').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="etat">Etat  <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom_Input" id="etat" formControlName="etat">
+            <div class="badge badge-danger"  *ngIf="EquipmentForm.get('etat').touched &&
+                    EquipmentForm.get('etat').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+
+          <div class="text-center mt-2 mb-2">
+            <!--            <button mat-button (click)="showFormSat('false')" class="mb-2 text-danger">Annuler</button>-->
+            <button mat-raised-button color="primary" type="submit" [disabled]="EquipmentForm.invalid">
+              <i class="fa fa-save"></i>
+              {{action === "creat" ? 'ajouter':'Modifier'}}</button>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+

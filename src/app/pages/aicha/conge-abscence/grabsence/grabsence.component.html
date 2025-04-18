@@ -1,0 +1,174 @@
+
+<p-toast [style]="{marginTop: '80px'}" position="top-right"></p-toast>
+
+
+
+
+<div class="widget-text-box">
+
+  <div class="row">
+    <div class="col-8">
+      <h2 style="float: left;">{{formPanel ? (absenceSelected.id ? 'Modifier':'Attribuer une permission'):'Liste des permissions'}}</h2>
+    </div>
+    <div class="col-4">
+      <button mat-raised-button color="primary" style="float: right;" (click)="addAbsence()" *ngIf="!formPanel"><i class="fa fa-user-times"></i> Attribuer une permission</button>
+      <button mat-raised-button color="primary" style="float: right;" (click)="changePanel()" *ngIf="formPanel"><i class="fa fa-user-times"></i> Liste des permissions</button>
+      <button mat-raised-button color="accent" style="float: right;margin-right: 20px" (click)="initPersmission(structureId)"><i class="fa fa-refresh"></i> Actualiser</button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="formPanel" class="formPanel" style="margin-top: 5%;width: 60%;margin-left: 20%">
+  <div class="mat-elevation-z8" style="padding: 2%">
+
+    <form [formGroup]="form" role="form"  novalidate="">
+
+      <div class="multiple-fields">
+
+        <mat-form-field appearance="fill">
+          <mat-label>Date de départ</mat-label>
+          <input matInput [matDatepicker]="picker1" [min]="minDay"  formControlName="dateDepart" required>
+          <mat-datepicker-toggle matSuffix [for]="picker1" ></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+          <mat-error
+            *ngIf="form.controls['dateDepart'].invalid && form.controls['dateDepart'].dirty && form.controls['dateDepart'].errors['required']">
+            Ce champs est obligatoire!
+          </mat-error>
+        </mat-form-field>
+
+
+        <mat-form-field appearance="fill">
+          <mat-label>Duree </mat-label>
+          <input matInput name="duree" placeholder="Durée" type="number"
+                 matTooltip="Durée"
+                 formControlName="duree" required>
+          <mat-error
+            *ngIf="form.controls['duree'].invalid && form.controls['duree'].dirty && form.controls['duree'].errors['required']">
+            Ce champ est obligatoire
+          </mat-error>
+          <mat-error
+            *ngIf="form.controls['duree'].invalid && form.controls['duree'].dirty && form.controls['duree'].errors['min']">
+            Ce champ est doit etre superieur à zéro
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Utilisateur demandeur </mat-label>
+        <mat-select placeholder="Utilisateur" formControlName="users" name="users" [compareWith]=compareById required>
+          <mat-option *ngFor="let u of users" [value]="u"> {{u.prenom}} {{u.nom}} </mat-option>
+        </mat-select>
+
+        <mat-error
+          *ngIf="form.controls['users'].invalid && form.controls['users'].dirty && form.controls['users'].errors['required']">
+          Ce champ est obligatoire
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field [style.fontSize]="200" appearance="outline">
+        <mat-label>Motif de la permission</mat-label>
+        <textarea matInput name="motif" formControlName="motif" required
+                  cdkAutosizeMinRows="1"
+                  cdkAutosizeMaxRows="5"></textarea>
+
+        <mat-error
+          *ngIf="form.controls['motif'].invalid && form.controls['motif'].dirty && form.controls['motif'].errors['required']">
+          Ce champ est obligatoire
+        </mat-error>
+      </mat-form-field>
+
+      <input type="file" placeholder="choisir un justificatif"
+             (change)="onFileChanged($event)" accept="application/pdf,.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
+
+
+
+
+
+      <button class="btn btn-block btn-primary mt-3" type="submit" (click)="uploadAdd()" [disabled]="!form.valid" *ngIf="!absenceSelected.id">Enregistrer</button>
+      <button class="btn btn-block btn-primary mt-3" type="submit" (click)="uploadUpdate()" [disabled]="!form.valid" *ngIf="absenceSelected.id">Modifier</button>
+
+    </form>
+
+  </div>
+</div>
+
+<div *ngIf="!formPanel" class="formPanel">
+
+  <div class="multiple-fields" style="margin-top: 40px;">
+    <mat-form-field appearance="fill">
+      <mat-label>Statut de permission</mat-label>
+      <mat-select (selectionChange)="onStatut($event.value)">
+        <mat-option *ngFor="let d of statutConges; index as i;" [value]="d">{{d}}</mat-option>
+      </mat-select>
+
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Chercher une permission</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Chercher ..." #input>
+    </mat-form-field>
+  </div>
+
+  <div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> # </th>
+        <td *matCellDef="let row;let i=index" mat-cell> {{i+1}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="user">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Utilisateur </th>
+        <td mat-cell *matCellDef="let row"> {{row.users.prenom }} {{row.users.nom }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="depart">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Date de départ </th>
+        <td mat-cell *matCellDef="let row"> {{row.dateDepart | date: "dd-MM-yyyy"}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="duree">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Durée </th>
+        <td mat-cell *matCellDef="let row"> {{row.duree}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="motif">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Motif de la permission </th>
+        <td mat-cell *matCellDef="let row"> {{row.motif}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="statut">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Statut </th>
+        <td mat-cell *matCellDef="let row"> {{row.statut}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="btn-group" dropdown>
+            <div style="margin-left: 50px;">
+              <i class="fa fa-ellipsis-v" style="font-size: 20px; cursor: pointer;" [matMenuTriggerFor]="menu"></i>
+            </div>
+            <mat-menu #menu="matMenu">
+              <a mat-menu-item href="http://{{row.fichierJustificatif}}" target="_blank" *ngIf="row.fichierJustificatif">Justificatif</a>
+
+              <button mat-menu-item (click)="showEdit(row)" *ngIf="row.statut==='En attente de validation'">Modifier</button>
+              <button mat-menu-item (click)="traitement(row.id,'Validé')" *ngIf="row.statut==='En attente de validation' || row.statut==='Rejeté' || row.statut==='Annulé'">Validé</button>
+              <button mat-menu-item (click)="traitement(row.id,'Rejeté')" *ngIf="row.statut==='En attente de validation'">Rejeté</button>
+              <button mat-menu-item (click)="delete(row.id)" *ngIf="row.statut==='Encours de validation'">Supprimer</button>
+            </mat-menu>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">Pas de congé pour le moment"</td>
+      </tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  </div>
+</div>

@@ -1,0 +1,175 @@
+<h3>Liste de délibération</h3>
+<div>
+  <form [formGroup]="FilterForm">
+    <div class="row">
+      <div class="col-sm-12 col-md-3 col-lg-3">
+        <label for="anneeF">Année</label>
+        <select class="form-control custom_Input" id="anneeF" formControlName="annee">
+          <option value=""></option>
+          <option value="{{annees.anneeScolaire}}" *ngFor="let annees of StructureAnnees">{{annees.anneeScolaire}}</option>
+        </select>
+      </div>
+
+      <div class="col-sm-12 col-md-3 col-lg-3">
+        <label for="niveau">Niveau</label>
+        <select class="form-control custom_Input" id="niveau" formControlName="niveau">
+          <option value=""></option>
+          <option value="L1">L1</option>
+          <option value="L2">L2</option>
+          <option value="L3">L3</option>
+          <option value="M1">M1</option>
+          <option value="M2">M2</option>
+        </select>
+      </div>
+
+      <div class="col-sm-12 col-md-3 col-lg-3">
+        <label for="option">{{univ_opt}}</label>
+        <ng-autocomplete id="option"
+                         [data]="Options" [searchKeyword]="keyword"
+                         (selected)='OptionSelectEvent($event)'
+                         [itemTemplate]="itemTemplate"
+                         [notFoundTemplate]="notFoundTemplate">
+        </ng-autocomplete>
+
+        <ng-template #itemTemplate let-item>
+          <a [innerHTML]="item.nom"></a>
+        </ng-template>
+
+        <ng-template #notFoundTemplate let-notFound>
+          <div [innerHTML]="notFound">Pas de corespondance .</div>
+        </ng-template>
+      </div>
+
+
+
+      <div class="col">
+         <span *ngIf="list_spinner" style="text-align: center;">
+              <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+           Veuiller patienter ...
+         </span>
+        <div *ngIf="!list_spinner">
+          <button mat-button color="primary" [disabled]="FilterForm.invalid" (click)="GetDeliberationListe()">
+            <span class="material-icons">search</span> Chercher
+          </button>
+          <button type="reset" mat-button color="warn">rafraîchir</button>
+        </div>
+      </div>
+
+
+    </div>
+  </form>
+</div>
+
+<div class="mt-2">
+  <div class="col-4">
+    <mat-form-field>
+      <mat-label>FILTRE</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+    </mat-form-field>
+  </div>
+  <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <ng-container matColumnDef="numEtudiant">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Num Etudiant</th>
+      <td mat-cell *matCellDef="let element"> {{element.numEtudiant}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ueValide">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>UE validée</th>
+      <td mat-cell *matCellDef="let element"> <span style="cursor: pointer" (click)="AddJurryPoint(element, 'ueValide')">{{element.nbreValide}} <i class="fa fa-eye"></i></span> </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ueNonValide">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>UE Non validée</th>
+      <td mat-cell *matCellDef="let element"> <span style="cursor: pointer" (click)="AddJurryPoint(element, 'ueNonValide')">{{element.nbreNonValide}} <i class="fa fa-eye"></i></span> </td>
+    </ng-container>
+
+
+<!--    <ng-container *ngFor="let optUes of optUES" matColumnDef="{{optUes.codeUE}}">-->
+<!--      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{optUes.codeUE}}</th>-->
+<!--      <td mat-cell *matCellDef="let element">-->
+<!--        <span (click)="AddJurryPoint(element)"> {{getNote(element, optUes)}}</span> </td>-->
+<!--    </ng-container>-->
+
+
+    <ng-container matColumnDef="loading">
+      <td mat-footer-cell *matFooterCellDef colspan="6">
+        Chargement des données...
+      </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="noData">
+      <td mat-footer-cell *matFooterCellDef colspan="6">
+        Pas de données...
+      </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+  <mat-paginator
+    [length]="length"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="pageSizeOptions">
+
+  </mat-paginator>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="JurryPointFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">check</span> statut de validation</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        <h3>
+          {{ValidationAction === 'ueNonValide' ? "UEs non validées par " : "UEs Validées par"}}
+          <strong>{{CheckUndefined(elementSelected) ? elementSelected.numEtudiant : ""}}</strong>
+        </h3>
+
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Ue</th>
+                <th>Note</th>
+                <th *ngIf="ValidationAction === 'ueNonValide'">Selection </th>
+              </tr>
+            </thead>
+            <tbody *ngIf="CheckUndefined(UeValidationList)">
+              <tr *ngFor="let ueNote of UeValidationList; let i = index">
+                <td>{{ueNote.codeUE}}</td>
+                <td>{{ueNote.noteFinal}}</td>
+                <td *ngIf="ValidationAction === 'ueNonValide'">
+                    <input type="checkbox" name="check{{i}}" class="form-control" (change)="SelectUe($event, ueNote)">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+<!--        </form>-->
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" mat-raised-button color="warn" data-dismiss="modal">Fermer</button>
+
+        <div class="form-group text-center mt-2" *ngIf="ValidationAction === 'ueNonValide'">
+             <span *ngIf="jury_spinner" style="text-align: center;">
+              <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+             </span>
+          <button *ngIf="JurryPointBody.length > 0" type="button" mat-raised-button color="accent"
+                  (click)="SaveJurryPoint()">
+            Attribuer des points jury <i class="fa fa-save"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

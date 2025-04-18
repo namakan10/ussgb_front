@@ -1,0 +1,45 @@
+<div class="container-fluid" style="width: 700px;height:350px;"id="container-wrapper">
+  <div class="card mb-4">
+    <div class="card-body">
+      <form [formGroup]="modifFiliereForm" (ngSubmit)="modifierFiliere(modifFiliereForm)"style="width: 600px;height:400px;">
+        <div class="col-12">
+          <div class="login-bg">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="login-title">
+                    <h1>modifier une filiere</h1><br>
+                  </div>
+                </div>
+              </div>
+              <p>
+                <mat-label>Nom de la filiere</mat-label>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{filiere['nom']}}</mat-label>
+                  <input type="text" formControlName="nom" matInput placeholder="Nom de la filiere">
+                  
+                  
+                </mat-form-field>
+              </p>
+              <p>
+                <mat-label>Code de la filiere</mat-label>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{filiere['codeFiliere']}}</mat-label>
+                  <input type="text" formControlName="codeFiliere" matInput placeholder="Code de la filiere">
+                  
+                  
+                </mat-form-field>
+              </p>
+              
+              <div class="example-button-row" style="float: right;">
+                 
+                <button type="Submit" mat-raised-button color="primary">Enregistrer</button>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <button (click)="Annuler()" mat-raised-button color="warn">Annuler</button>
+                
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,140 @@
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<style>
+  *{
+    padding: 0;
+    margin: 0;
+    text-decoration: none;
+    list-style: none;
+    box-sizing: border-box;
+  }
+  body{
+    font-family: montserrat;
+  }
+  nav{
+    background: #0082e6;
+    height: 80px;
+    width: 100%;
+  }
+  label.logo{
+    color: white;
+    font-size: 35px;
+    line-height: 20px;
+    padding: 0 50px;
+    font-weight: bold;
+
+
+
+  }
+  nav ul{
+    float: right;
+    margin-right: 20px;
+  }
+  nav ul li{
+    display: inline-block;
+    line-height: 80px;
+    margin: 0 5px;
+  }
+  nav ul li a{
+    color: white;
+    font-size: 17px;
+    padding: 7px 13px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  a.active,a:hover{
+    background: #1b9bff;
+    transition: .5s;
+  }
+
+  @media (max-width: 999px){
+
+    ul{
+      position: fixed;
+      width: 100%;
+      height: 100vh;
+      background: #2c3e50;
+      top: 80px;
+      left: -100%;
+      text-align: center;
+      transition: all .5s;
+    }
+    nav ul li{
+      display: block;
+      margin: 50px 0;
+      line-height: 30px;
+    }
+    nav ul li a{
+      font-size: 20px;
+    }
+    a:hover,a.active{
+      background: none;
+      color: #0082e6;
+    }
+    #check:checked ~ ul{
+      left: 0;
+    }
+  }
+</style>
+<div class="main-container">
+    <!-- ============================================================== -->
+    <!-- Topbar - style you can find in header.scss -->
+    <!-- ============================================================== -->
+  <nav class="sticky-top">
+
+    <label class="logo bg-white" style="border-bottom-right-radius: 50%">
+      <img src="{{_http}}{{src}}" style="height: 79px" alt="">
+    </label>
+    <span class="font-weight-bold text-white" style="font-size:24px">{{user.structure.sigle}}</span>
+    <span class="font-weight-bold text-white" *ngIf="checkUndefined(selectedS) && selectedS.sigle !=='Rectorat'"
+          style="font-size:24px">/{{selectedS.sigle}}</span>
+    <!--  class="homeLogo"-->
+
+    <span fxFlex></span>
+
+
+
+
+    <app-header (selectedS)="SelectedStructure($event)"></app-header>
+  </nav>
+    <!-- ============================================================== -->
+    <!-- End Topbar - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <mat-sidenav-container class="example-sidenav-container mb-4" [style.marginTop.px]="mobileQuery.matches ? 0 : 0">
+        <!-- ============================================================== -->
+        <!-- Sidebar - style you can find in sidebar.scss -->
+        <!-- ============================================================== -->
+        <mat-sidenav #snav id="snav" class="dark-sidebar pl-xs" [mode]="mobileQuery.matches ? 'side' : 'over'" fixedTopGap="0" [opened]="mobileQuery.matches" [disableClose]="mobileQuery.matches"  >
+
+                <app-sidebar></app-sidebar>
+
+
+        </mat-sidenav>
+        <!-- ============================================================== -->
+        <!-- Sidebar - style you can find in sidebar.scss -->
+        <!-- ============================================================== -->
+
+        <!-- ============================================================== -->
+        <!-- Page container - style you can find in pages.scss -->
+        <!-- ============================================================== -->
+        <mat-sidenav-content class="page-wrapper">
+
+                <div class="page-content">
+
+                        <router-outlet><app-spinner></app-spinner></router-outlet>
+
+                </div>
+
+        </mat-sidenav-content>
+        <!-- ============================================================== -->
+        <!-- Page container - style you can find in pages.scss -->
+        <!-- ============================================================== -->
+    </mat-sidenav-container>
+  <footer class="fixed-bottom mt-2" style="background-color: #eee">
+    <!--      <img src="../../../assets/images/ussgb.png" height="60" width="100" style="border-radius: 5px" alt="">-->
+    <div class="text-center">
+      2020-2021 {{univ_sigle}}
+    </div>
+  </footer>
+</div>

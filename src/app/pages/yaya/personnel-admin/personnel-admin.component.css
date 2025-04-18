@@ -1,0 +1,31 @@
+table{
+  width: 100%;
+}
+
+
+/*img {*/
+/*  max-width: 100%;*/
+/*  height: auto;*/
+/*}*/
+
+
+.multiple-fields {
+  display: flex !important;
+  flex-wrap: nowrap;
+  justify-content: space-between !important;
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100% !important;
+}
+
+.multiple-fields mat-form-field:not(:last-child) {
+  margin-right: 2%;
+}
+
+.modal-content {
+  width: 615px !important;
+  margin: auto;
+}
+

@@ -1,0 +1,177 @@
+<div class="container-fluid" id="container-wrapper">
+    <div class="card mb-4">
+      <div class="card-body">
+        <form >
+          <div class="col-12">
+            <div class="login-bg">
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="login-title">
+                    <h3>Ajouter une UE</h3><br>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Département<span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Département concernée</mat-label>
+                    <mat-select  [(ngModel)]="ider" name="ider">
+                      <mat-option value=""></mat-option>
+                      <mat-option *ngFor="let der of derData" value="{{der.id}}"> {{der.nom}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Nom UE<span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Nom UE</mat-label>
+                    <input  [(ngModel)]="nomUE"  type="text" name="nomUE" matInput
+                    >
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Code UE <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Code UE</mat-label>
+                    <input  [(ngModel)]="codeUE"  type="text" name="codeUE" matInput
+                    >
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Semestre <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Semestre</mat-label>
+                    <mat-select  [(ngModel)]="semestre" name="semestre">
+                        <mat-option value=""></mat-option>
+                        <mat-option value="1">Semestre 1</mat-option>
+                        <mat-option value="2">Semestre 2</mat-option>
+                        <mat-option value="3">Semestre 3</mat-option>
+                        <mat-option value="4">Semestre 4</mat-option>
+                        <mat-option value="5">Semestre 5</mat-option>
+                        <mat-option value="6">Semestre 6</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Cursus <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Cursus</mat-label>
+                    <mat-select  [(ngModel)]="cursus" name="cursus">
+                        <mat-option value=""></mat-option>
+                        <mat-option value="DUT">DUT</mat-option>
+                        <mat-option value="LICENCE">LICENCE</mat-option>
+                        <mat-option value="MASTER">MASTER</mat-option>
+                        <mat-option value="DOCTORAT">DOCTORAT</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Volume horaire <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Volume horaire</mat-label>
+                    <input  [(ngModel)]="volumeHoraire"  type="number" name="volumeHoraire" matInput
+                    >
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Crédit <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Crédit</mat-label>
+                    <input  [(ngModel)]="credit"  type="number" name="Credit" matInput
+                    >
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Chapitre <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <!-- <mat-form-field class="example-full-width">
+                    <mat-label>Chapitre</mat-label>
+                    <input  [(ngModel)]="chapitre"  type="text" name="chapitre" matInput
+                    >
+                  </mat-form-field> -->
+                  <mat-form-field class="example-full-width" appearance="fill">
+                    <textarea
+                    cdkTextareaAutosize
+                    cdkAutosizeMinRows="5"
+                    cdkAutosizeMaxRows="10"
+                     placeholder="Un commentaire sur le chapitre" [(ngModel)]="chapitre"  type="text" name="chapitre" matInput></textarea>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                </div>
+                <div class="col-lg-8">
+                  <div class="login-button-pro">
+                    <div *ngIf="spinner">
+                      <img src="assets/gif/spinner.gif" width="70" alt="">
+                  </div>
+                    <button type="reset" mat-button style="background-color: #1e88e5; color: white;"
+                            class="relative waves-light" mdbWavesEffect><i class="fa fa-history text-danger"></i>
+                    </button> |
+                    <button (click)="onSubmit()" type="button" mat-raised-button
+                            color="primary"
+                            class="relative waves-light" mdbWavesEffect>Enregistrer
+                    </button>
+<!--                    [disabled]="checkIfIsEmpty(nomUE) ||-->
+<!--                    checkIfIsEmpty(cursus) || checkIfIsEmpty(codeUE) || checkIfIsEmpty(semestre) ||-->
+<!--                    checkIfIsEmpty(volumeHoraire) || checkIfIsEmpty(credit) || checkIfIsEmpty(chapitre) ||-->
+<!--                    checkIfIsEmpty(ider)"-->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+

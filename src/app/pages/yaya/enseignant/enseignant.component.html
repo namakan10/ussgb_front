@@ -1,0 +1,335 @@
+
+<mat-card *ngIf="!modifSelct && !creatSelct">
+  <mat-card-content>
+
+    <h2 class="font-weight-bold mt-2 mb-2 text-uppercase text-center">Liste des {{typeListe === 'enseignant' ? 'enseignants' : 'vacataires'}}</h2>
+
+    <div class="text-left like-love-list mb-2 mt-2">
+      <button (click)="AjouterEnseignant()" mat-raised-button color="primary">
+        <i class="fa fa-plus"></i>&nbsp;&nbsp; Ajouter un {{typeListe}}
+      </button>
+    </div>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Filtre</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="" #input>
+    </mat-form-field>
+
+      <hr/>
+
+    <button (click)="resetToDefaultPassword(selection.selected)" mat-raised-button color="primary" *ngIf="!selection.isEmpty()" style="margin-bottom: 20px;">
+      <i class="fa fa-lock"></i>&nbsp;&nbsp; Reinitialiser mot de passe {{selection.selected.length}}
+    </button>
+
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+
+      <ng-container matColumnDef="selection">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        [aria-label]="checkboxLabel()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+           <div *ngIf="row.user">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row.user.id) : null"
+                        [checked]="selection.isSelected(row.user.id)"
+                        [aria-label]="checkboxLabel(row.user.id)">
+          </mat-checkbox>
+         </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+        <td mat-cell *matCellDef="let element"> {{element.user.nom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="prenom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Prenom</th>
+        <td mat-cell *matCellDef="let element"> {{element.user.prenom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="telephone">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Telephone</th>
+        <td mat-cell *matCellDef="let element"> {{element.user.telephone}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="dateAffectation">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date d'embauche</th>
+        <td type='mediumDate' mat-cell *matCellDef="let element"> {{element.dateEmbauche | date: "dd-MM-yyyy"}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="grade">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Grade</th>
+        <td mat-cell *matCellDef="let element"> {{element.grade}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="statut">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+        <td mat-cell *matCellDef="let element"> {{element.statut}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>
+          <mat-menu #action="matMenu">
+
+            <button mat-menu-item (click)="ShowEnseignantCarte(element)">
+              <span class="material-icons">print</span>
+              <span> Imprimer la carte</span>
+            </button>
+
+            <button mat-menu-item
+                    (click)="personnelAccess(element.id,element.user.username,element.user.nom,element.user.prenom, element)">
+              <i class="fa fa-check-square"></i> Droits</button>
+
+            <button mat-menu-item (click)="modifierEnseignant(element.id)">
+              <i class="fa fa-edit text-primary"></i>
+              <span>&nbsp;&nbsp;Modifier</span>
+            </button>
+
+
+
+            <button mat-menu-item *ngIf="element.user" (click)="resetToDefaultPassword([element.user.id])">
+              <i class="fa fa-lock text-primary"></i>
+              <span>&nbsp;&nbsp;Reinitialiser mot de passe</span>
+            </button>
+
+            <button mat-menu-item (click)="supprimerEnseignant(element.id)">
+              <i class="fa fa-trash text-danger"></i>
+              <span>&nbsp;&nbsp;Supprimer</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="loading">
+        <td mat-footer-cell *matFooterCellDef colspan="6">
+          Chargement des données...
+        </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="noData">
+        <td mat-footer-cell *matFooterCellDef colspan="6">
+          Pas de données...
+        </td>
+      </ng-container>
+
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    </table>
+
+    <mat-paginator
+      [length]="length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions">
+
+    </mat-paginator>
+
+  </mat-card-content>
+  <br><br>
+</mat-card>
+
+
+
+<div class="modal fade" id="carteEnseignantModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog  modal-xl">
+    <div class="modal-content">
+      <div class="modal-header text-white">
+        <div class="multiple-fields">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"><span class="material-icons">close</span></button>
+
+          <button *ngIf='select != undefined && !carteSpinner' (click)="imprimerCarte()" type="button" class="btn btn-primary">Imprimer la carte</button>
+
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+                    <span style="text-align: center;" *ngIf="carteSpinner">
+                        <img src="../../../../assets/media/loading/squard.gif" width="25" alt="">
+		                <span>Veuillez patienter ...</span>
+                    </span>
+        </div>
+
+        <div class="container mt-3">
+          <div class="row">
+            <div class="col" *ngIf="select">
+              <div id="face" style="border-radius: 1em 1em; height: 353px; width: 543px;background: url('assets/images/carte/body.PNG');background-repeat:no-repeat;background-position: center; background-color: white;color: black; border: 7px solid #1a1a27;">
+                <div style="height: 90px">
+                  <table style="width: 100%;height: 100px">
+                    <tbody>
+                    <tr>
+                      <td style="width: 220px;text-align: center;">
+                        <img style="border-top-left-radius: 1em; border-top-right-radius: 1em;height: 60px;width: 60px;float: left;" src="{{_http}}{{user.structure.logo}}" crossorigin="anonymous" alt="">
+                        <p style="color: #0a0a0a;font-size: 12px;font-weight: bold;">{{user.structure.nom  | uppercase}}<br/>{{user.structure.sigle  | uppercase}}</p>
+                      </td>
+                      <td style="text-align: end;">
+                        <p style="text-align: center;font-weight: bold;font-size: 11px;margin-left: 70px;padding-right:0.5em;">
+                          REPUBLIQUE DU MALI<br/>Un Peuple - Un But - Une Foi
+                          <br/>
+                          ............................................................
+                          <br/>
+                          MINISTERE DE L'ENSEIGNEMENT SUPERIEUR<br/>ET DE LA RECHERCHE SCIENTIFIQUE
+                        </p>
+                      </td>
+                    </tr>
+                    <tbody>
+                  </table>
+                </div>
+
+                <table style="width: 100%;">
+                  <tbody>
+                  <tr>
+                    <td style="width: 160px;text-align: center;">
+                      <img style="height: 160px;width: 135px;margin-bottom: 2px;" src="{{select.user.photo ? _http+select.user.photo:'../assets/images/carte/profile.png'}}" alt="user photo" crossorigin="anonymous">
+                    </td>
+                    <td>
+                      <div style="margin-left: 15px;height: 180px;">
+                        <p style="text-align: start;font-size: 16px;font-weight: bold;">CARTE D'IDENTITE PROFESSIONNELLE</p>
+
+                        <table style="width: 100%;font-size: 12px;margin-bottom: 50px;font-weight: bold;">
+                          <tbody>
+                          <tr>
+                            <td style="width: 125px;text-align: start"><div>N° Matricule</div></td>
+                            <td style="text-align: start"><div>: {{select.user.numMatricule}}</div></td>
+                          </tr>
+                          <tr>
+                            <td style="width: 125px;text-align: start"><div>Nom</div></td>
+                            <td style="text-align: start"><div>: {{select.nom | uppercase}}</div></td>
+                          </tr>
+                          <tr>
+                            <td style="width: 125px;text-align: start"><div>Prénom</div></td>
+                            <td style="text-align: start"><div>: {{select.prenom}}</div></td>
+                          </tr>
+                          <tr>
+                            <td style="width: 125px;text-align: start"><div>Date de naissance</div></td>
+                            <td style="text-align: start"><div>: {{select.user.dateDeNaissance | date: "dd-MM-yyyy"}}</div></td>
+                          </tr>
+                          <tr>
+                            <td style="width: 125px;text-align: start"><div>Lieu de naissance</div></td>
+                            <td style="text-align: start"><div>: {{select.user.lieuDeNaissance}}</div></td>
+                          </tr>
+                          <tr>
+                            <td style="width: 125px;text-align: start"><div>Nationalité</div></td>
+                            <td style="text-align: start"><div>: {{select.nationalite}}</div></td>
+                          </tr>
+                          <tr>
+                            <td style="width: 125px;text-align: start"><div>Téléphone</div></td>
+                            <td style="text-align: start"><div>: {{select.user.telephone}}</div></td>
+                          </tr>
+                          <tr>
+                            <td style="width: 125px;text-align: start"><div>Profession</div></td>
+                            <td style="text-align: start"><div>: {{select.corps}}</div></td>
+                          </tr>
+                          <tr>
+                            <td style="width: 125px;text-align: start"><div>Fait le </div></td>
+                            <td style="text-align: start"><div>: {{ toDay | date: 'dd/MM/yyyy'}}</div></td>
+                          </tr>
+                          <tbody>
+                        </table>
+                      </div>
+
+                    </td>
+                  </tr>
+                  <tbody>
+                </table>
+              </div>
+            </div>
+            <div class="col" *ngIf="select">
+              <div id="dos" style="border-radius: 1em 1em; height: 353px; width: 543px; background: white; border: 7px solid #1a1a27;">
+
+                <div style="text-align: center;font-weight: bold;text-align: center;font-size: 14px;margin-left: 5px;margin-right: 5px;">
+                  <div style="color: #17a2b8;">Cette carte ne peut être utilisée que par le signataire autorisé.</div>
+                  <div>En cas de découverte, veuillez déposer &nbsp;cette carte à la structure {{user.structure.sigle}}.<br/>
+                    En cas de perte, l'intéressé est tenu d'informer le Service des Ressources Humaines de la structure {{user.structure.sigle}} en fournissant un certificat de perte.
+                  </div>
+                </div>
+                <hr style="border: 1px solid #17a2b8;">
+                <div>
+                  <div class="row" style="width: 100%;height: 120px;">
+                    <table style="width: 100%;height: 120px;">
+                      <tr style="height: 120px;">
+                        <td style="width: 25%;">
+                          <div style="margin: auto;height: 120px;width: 120px;text-align: center;display: flex;justify-content: center;">
+                            <img style="border-top-left-radius: 1em; border-top-right-radius: 1em;" height="80" width="80" src="{{_asset_image}}" crossorigin="anonymous" alt="" style="margin-top: 30px;">
+                          </div>
+                        </td>
+                        <td style="width: 50%;">
+                          <div style="margin: auto;height: 120px;width: 120px;text-align: center;display: flex;justify-content: center;">
+                            <div style="height: 120px !important;">
+                              <qr-code [value]="qrCodeParse(select)" [size]="120" [level]="'L'"></qr-code>
+                            </div>
+                          </div>
+                        </td>
+                        <td style="width: 25%;">
+                          <div style="height: 120px;width: 120px;text-align: center;display: flex;justify-content: center;">
+                            <img style="border-top-left-radius: 1em; border-top-right-radius: 1em;" height="80" width="80" src="{{_http}}{{user.structure.logo}}" crossorigin="anonymous" alt="" style="margin-top: 30px;">
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid #17a2b8;">
+                <div style="color: black; text-align: center;font-size: 14px;font-weight: bold;margin-top: 20px;">
+                  {{user.structure.adresse}}
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal  -->
+<div class="modal fade" id="AccesFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="exampleModalLabel">Droits</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="container shadow-sm p-2" *ngIf="AccessContaine">
+          <h3><i class="fa fa-user"></i>  Accès de {{CurrentPersoAccessSelect}}</h3>
+          <div class="row">
+            <div class="mt-2 col-6 p-1 text-center" *ngFor="let rl of roles">
+              <div class="container shadow-sm col-12" style="border-radius: 10px">
+                <span *ngIf="rl.statut === 'ok'"><input type="checkbox" checked (change)="handelRoleChecking(rl.id,$event)" class="small form-control"></span>
+                <span *ngIf="rl.statut !== 'ok'"><input type="checkbox" (change)="handelRoleChecking(rl.id,$event)" class="small form-control"></span>
+                <span>{{rl.description}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+      <div class="modal-footer">
+               <span *ngIf="droit_spinner" style="text-align: right;">
+                <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+              </span>
+        <div *ngIf="!droit_spinner">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+          | <button class="btn btn-info" (click)="UpdatAccess()">Valider</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

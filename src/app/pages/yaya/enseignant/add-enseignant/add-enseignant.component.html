@@ -1,0 +1,532 @@
+
+
+
+<div class="container col-10 mb-4 mt-3 p-3 bg-white shadow-sm">
+
+
+  <h2  class="text-center font-weight-bold text-uppercase">AJOUT D'UN {{typeListe}}</h2>
+  <h6 class="text-center"><strong>Les champs obligatoires ont une <span class="text-danger">*</span></strong></h6>
+  <hr>
+  <div class="ml-2">
+    <button mat-raised-button color="warn" (click)="close()">
+      <span class="material-icons">
+        reply
+      </span>
+      Annuler
+    </button>
+  </div>
+
+  <form [formGroup]="AddEnseignantForm" (ngSubmit)="SaveEnseignant()">
+
+    <div class="container">
+
+      <!--  ++++++++++  ETAT CIVIL +++++++ -->
+      <!--  ++++++++++ +++++++++++ +++++++ -->
+      <div class="container d-flex justify-content-center col-4">
+        <img [src]="photoEns" width="150" height="150" alt="">
+      </div>
+
+      <div class="ml-2">
+        <h3><strong>ETAT CIVIL</strong></h3>
+      </div>
+
+      <div class="row mt-3 shadow-sm p-2">
+        <div class="col">
+
+          <div class="form-group" >
+            <label for="photo">Photo <span class="text-danger">*</span></label>
+            <input type="file" id="photo" class="form-control" formControlName="photo" (change)="onselectFile($event)">
+          </div>
+
+          <div class="form-group mt-1">
+            <mat-form-field appearance="fill">
+              <mat-label>Nom <span class="text-danger">*</span></mat-label>
+              <input type="text" id="nom" matInput formControlName="nom">
+            </mat-form-field>
+            <div class="badge badge-danger"
+                 *ngIf="AddEnseignantForm.get('nom').touched &&
+                                    AddEnseignantForm.get('nom').invalid">Champ obligatoire</div>
+          </div>
+
+          <div class="form-group mt-1">
+            <mat-form-field appearance="fill">
+              <mat-label>Prénom</mat-label>
+              <input type="text" id="prenom"  matInput formControlName="prenom">
+            </mat-form-field>
+            <div class="badge badge-danger"
+                 *ngIf="AddEnseignantForm.get('prenom').touched &&
+                                    AddEnseignantForm.get('prenom').invalid">Champ obligatoire</div>
+          </div>
+
+          <div class="form-group mt-1">
+            <label for="genre">Genre <span class="text-danger">*</span></label>
+            <select id="genre" class="form-control custom_Input" formControlName="genre">
+              <option value=""></option>
+              <option value="Homme">Homme</option>
+              <option value="Femme">Femme</option>
+            </select>
+            <div class="badge badge-danger"
+                 *ngIf="AddEnseignantForm.get('genre').touched &&
+                                    AddEnseignantForm.get('genre').invalid">Champ obligatoire</div>
+          </div>
+
+          <div class="form-group mt-1">
+            <mat-form-field appearance="fill">
+              <mat-label for="nationalite">Nationalité <span class="text-danger">*</span></mat-label>
+              <mat-select id="nationalite"  formControlName="nationalite">
+                <mat-option value="{{pays}}" *ngFor="let pays of Pays">
+                  {{pays}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div class="badge badge-danger"
+                 *ngIf="AddEnseignantForm.get('nationalite').touched &&
+                                    AddEnseignantForm.get('nationalite').invalid">Champ obligatoire</div>
+          </div>
+
+          <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+            <mat-form-field appearance="fill">
+              <mat-label>Numéro Matricle <span class="text-danger">*</span></mat-label>
+              <input type="tel" id="numMatricule"  formControlName="numMatricule" matInput placeholder="Matricule">
+            </mat-form-field>
+            <div class="badge badge-danger"
+                 *ngIf="AddEnseignantForm.get('numMatricule').touched &&
+                                    AddEnseignantForm.get('numMatricule').invalid">Champ obligatoire</div>
+          </div>
+
+        </div>
+        <!--COL 2 ETAT CIVIL-->
+        <div class="col">
+
+          <div class="form-group mt-1">
+            <label for="dateDeNaissance">Date de naissance <span class="text-danger">*</span></label>
+            <input type="date" class="form-control custom_Input" id="dateDeNaissance" formControlName="dateDeNaissance">
+            <div class="badge badge-danger"
+                 *ngIf="AddEnseignantForm.get('dateDeNaissance').touched &&
+                                    AddEnseignantForm.get('dateDeNaissance').invalid">Champ obligatoire</div>
+          </div>
+
+          <div class="form-group mt-1">
+            <mat-form-field appearance="fill">
+              <mat-label>Lieu de naissance <span class="text-danger">*</span></mat-label>
+              <input type="text"  id="lieuDeNaissance"  formControlName="lieuDeNaissance" matInput placeholder="lieu de naissance">
+            </mat-form-field>
+            <div class="badge badge-danger"
+                 *ngIf="AddEnseignantForm.get('lieuDeNaissance').touched &&
+                                    AddEnseignantForm.get('lieuDeNaissance').invalid">Champ obligatoire</div>
+          </div>
+
+          <div class="form-group mt-1">
+            <mat-form-field appearance="fill">
+              <mat-label for="situation_matrimoniale">Situation matrimoniale <span class="text-danger">*</span></mat-label>
+              <mat-select id="situation_matrimoniale"  formControlName="situation_matrimoniale">
+                <mat-option value="{{statutMatrimo}}" *ngFor="let statutMatrimo of PersonnelDonnees.situationMatrimoniale">
+                  {{statutMatrimo}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div class="badge badge-danger"
+                 *ngIf="AddEnseignantForm.get('situation_matrimoniale').touched &&
+                                    AddEnseignantForm.get('situation_matrimoniale').invalid">Champ obligatoire</div>
+          </div>
+
+
+          <div class="form-group mt-1">
+            <mat-form-field appearance="fill">
+              <mat-label for="regime_mariage">Régime du mariage <span class="text-danger">*</span></mat-label>
+              <mat-select id="regime_mariage" formControlName="regime_mariage">
+                <mat-option value="{{regimeMaria}}" *ngFor="let regimeMaria of PersonnelDonnees.regimeMariage">{{regimeMaria}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div class="badge badge-danger"
+                 *ngIf="AddEnseignantForm.get('regime_mariage').touched &&
+                                    AddEnseignantForm.get('regime_mariage').invalid">Champ obligatoire</div>
+          </div>
+
+
+          <div class="form-group mt-1">
+            <mat-form-field appearance="fill">
+              <mat-label>Nombre d'enfant <span class="text-danger">*</span></mat-label>
+              <input type="text" id="nbreEnfant" formControlName="nbreEnfant" matInput placeholder="">
+            </mat-form-field>
+          </div>
+
+        </div>
+
+
+      </div>
+      <!--  +++++++++  -->
+      <!--  ROW 2  -->
+      <!--  ++++++++  -->
+      <div class="row mt-3 shadow-sm p-2">
+        <div class="col p-2">
+          <div class="ml-2">
+            <h4><strong>CARRIERE</strong></h4>
+          </div>
+
+          <div class="shadow-sm p-2">
+            <div class="form-group mt-1">
+              <label for="dateEmbauche">Date d'affectation <span class="text-danger">*</span></label>
+              <input type="date" class="form-control custom_Input" id="dateEmbauche" formControlName="dateEmbauche">
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('dateEmbauche').touched &&
+                                        AddEnseignantForm.get('dateEmbauche').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group mt-1">
+              <label for="idDep">Département <span class="text-danger">*</span></label>
+              <select id="idDep" class="form-control custom_Input" formControlName="departement" (change)="DepSelect()">
+                <option value=""></option>
+                <option value="{{Depp.id}}" *ngFor="let Depp of departements">{{Depp.nom}}</option>
+              </select>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('departement').touched &&
+                                        AddEnseignantForm.get('departement').invalid">Champ obligatoire</div>
+            </div>
+
+<!--            IF RECTORAT-->
+            <div *ngIf="_RECTORAT">
+
+              <div class="ng-autocomplete form-group mt-1">
+                <label for="service"><strong>Service</strong> <span class="text-danger"></span> <i class="fa fa-info-circle text-info"></i> [Sélectionnez un département avant.] (eventuel)</label>
+                <ng-autocomplete formControlName="service" id="service"
+                                 [data]="Struc_Services" [searchKeyword]="keyword"
+                                 (selected)='seviceSelectEvent($event)'
+                                 (inputFocused)='DepSelect()'
+                                 [itemTemplate]="itemTemplate"
+                                 [notFoundTemplate]="notFoundTemplate">
+                </ng-autocomplete>
+
+                <ng-template #itemTemplate let-item>
+                  <a [innerHTML]="item.nom"></a>
+                </ng-template>
+
+                <ng-template #notFoundTemplate let-notFound>
+                  <div [innerHTML]="notFound">Pas de corespondance .</div>
+                </ng-template>
+
+                <span *ngIf="depChange_Spinner">
+                  <img src="../../../../../assets/gif/spinner.gif" width="65" alt="">
+                </span>
+              </div>
+
+            </div>
+
+
+
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <div class="ng-autocomplete mt-1">
+                <label for="specialite"><strong>Spécialite</strong> <span class="text-danger">*</span></label>
+                <span *ngIf="special_spinner" style="text-align: center;">
+                 <img src="../../../../assets/gif/spinner.gif" width="25" alt="">
+                   Veuillez patienter ...
+                </span>
+                <ng-autocomplete formControlName="specialite" id="specialite"
+                                 [data]="Specialites" [searchKeyword]="keyword"
+                                 (selected)='sepcialiteSelectEvent($event)'
+                                 (inputFocused)="getEnseignantSpecialites()"
+                                 (inputChanged)='onSepcialiteChangeSearch($event)'
+                                 [itemTemplate]="itemTemplate"
+                                 [notFoundTemplate]="notFoundTemplate5">
+                </ng-autocomplete>
+
+                <ng-template #itemTemplate let-item>
+                  <a [innerHTML]="item.nom"></a>
+                </ng-template>
+
+                <ng-template #notFoundTemplate5 let-notFound5>
+                  <div>
+                    <span class="text-info"><i class="fa fa-info-circle text-danger"></i> Si votre spécialité n'est pas dans la liste, veuilez l'écrire, puis cliquer sur <strong>Ajouter</strong></span>
+                    <input type="text" [value]="newSpe" [hidden]="true"/>
+                    <button type="button" class="btn btn-primary btn-block" (click)="AddNewSpecialiteFontion('Spécialité')">
+                      <i class="fa fa-plus-circle"></i> Ajouter
+                    </button>
+                  </div>
+
+                </ng-template>
+
+
+                <span *ngIf="specialSpinner">
+				                    <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+			                    </span>
+              </div>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('specialite').touched &&
+						                AddEnseignantForm.get('specialite').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <mat-form-field appearance="fill">
+                <mat-label> Grade <span class="text-danger">*</span></mat-label>
+                <mat-select id="grade" formControlName="grade">
+                  <!--                  <mat-option value="{{grad}}" *ngFor="let grad of PersonnelDonnees.grades">{{grad}}</mat-option>-->
+                  <mat-option value="ASSISTANT">ASSISTANT</mat-option>
+                  <mat-option value="MAITRE_ASSISTANT">MAÎTRE ASSISTANT</mat-option>
+                  <mat-option value="MAITRE_CONF">MAÎTRE DE CONFERENCE</mat-option>
+                  <mat-option value="MAITRE_RECHERCHE">MAÎTRE DE RECHERCHE</mat-option>
+                  <mat-option value="DIRECTEUR_RECHERCHE">DIRECTEUR DE RECHERCHE</mat-option>
+                  <mat-option value="CHARGE_RECHERCHE">CHARGE DE RECHERCHE</mat-option>
+                  <mat-option value="ATTACHE_RECHERCHE">ATTACHE DE RECHERCHE</mat-option>
+                  <mat-option value="PROFESSEUR">PROFESSEUR</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('grade').touched &&
+                      AddEnseignantForm.get('grade').invalid">Champ obligatoire</div>
+            </div>
+
+            <!--                        CORPS-->
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <mat-form-field appearance="fill">
+                <mat-label>Corps <span class="text-danger">*</span></mat-label>
+                <mat-select id="corps" formControlName="corps">
+                  <mat-option value="ENSEIGNANT_DU_SUPERIEUR_A">ENSEIGNANT DU SUPERIEUR (A)</mat-option>
+                  <mat-option value="CHERCHEUR_A">CHERCHEUR (A)</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('corps').touched &&
+                                        AddEnseignantForm.get('corps').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <label for="discipline">Discipline <span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom_Input" id="discipline" formControlName="discipline">
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('discipline').touched &&
+                                        AddEnseignantForm.get('discipline').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group mt-1">
+              <mat-form-field appearance="fill">
+                <mat-label >Catégorie <span class="text-danger">*</span></mat-label>
+                <mat-select id="categorie"  formControlName="categorie">
+                  <mat-option value="{{catego}}" *ngFor="let catego of PersonnelDonnees.categorie">{{catego}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('categorie').touched &&
+                                        AddEnseignantForm.get('categorie').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <mat-form-field appearance="fill">
+                <mat-label for="classe">Classe <span class="text-danger">*</span></mat-label>
+                <mat-select id="classe"  formControlName="classe">
+                  <mat-option value="{{cl}}" *ngFor="let cl of PersonnelDonnees.classes">{{cl}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('classe').touched &&
+                                        AddEnseignantForm.get('classe').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <mat-form-field appearance="fill">
+                <mat-label for="echelon"> Echelon <span class="text-danger">*</span></mat-label>
+                <mat-select id="echelon"  formControlName="echelon">
+                  <mat-option value="{{echelon}}" *ngFor="let echelon of PersonnelDonnees.echelons">{{echelon}} </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('classe').touched &&
+                                        AddEnseignantForm.get('classe').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <label for="dateDernierAvancement">Date dernier avancement <span class="text-danger">*</span></label>
+              <input type="date" class="form-control custom_Input" id="dateDernierAvancement" formControlName="dateDernierAvancement">
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('dateDernierAvancement').touched &&
+                                        AddEnseignantForm.get('dateDernierAvancement').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group mt-1">
+              <mat-form-field appearance="fill">
+                <mat-label for="niveau_etude">Niveau d'étude <span class="text-danger">*</span></mat-label>
+                <mat-select id="niveau_etude"  formControlName="niveau_etude">
+                  <mat-option value="{{niveauEtud}}" *ngFor="let niveauEtud of PersonnelDonnees.niveauxEtude">{{niveauEtud}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('niveau_etude').touched &&
+                                        AddEnseignantForm.get('niveau_etude').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <mat-form-field appearance="fill">
+                <mat-label>Indice <span class="text-danger">*</span> </mat-label>
+                <input type="text"id="indice" formControlName="indice" matInput placeholder="indice">
+              </mat-form-field>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('indice').touched &&
+                                        AddEnseignantForm.get('indice').invalid">Champ obligatoire</div>
+            </div>
+
+
+            <!--                     ETAT DE SERVICE -->
+            <div class="ng-autocomplete form-group">
+              <label for="etatService">Etat de service <span class="text-danger">*</span></label>
+              <ng-autocomplete formControlName="etatService" id="etatService"
+                               [data]="etatServicePersonnels" [searchKeyword]="keyword"
+                               (selected)='etatServiceSelectEvent($event)'
+                               (inputFocused)="getUtils()"
+                               [itemTemplate]="itemTemplate"
+                               [notFoundTemplate]="notFoundTemplate">
+              </ng-autocomplete>
+
+              <ng-template #itemTemplate let-item>
+                <a [innerHTML]="item.nom"></a>
+              </ng-template>
+
+              <ng-template #notFoundTemplate let-notFound>
+                <div [innerHTML]="notFound">Pas de corespondance .</div>
+              </ng-template>
+
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('etatService').touched &&
+                                            AddEnseignantForm.get('etatService').invalid">Champ obligatoire</div>
+            </div>
+
+            <!--                        <div class="form-group mt-1">-->
+            <!--                            <mat-form-field appearance="fill">-->
+            <!--                                <mat-label>Etat du service <span class="text-danger">*</span></mat-label>-->
+            <!--                                <mat-select id="etatService"  formControlName="etatService">-->
+            <!--                                    <mat-option value="{{etatServ}}" *ngFor="let etatServ of PersonnelDonnees.etatsService">{{etatServ}}</mat-option>-->
+            <!--                                </mat-select>-->
+            <!--                            </mat-form-field>-->
+            <!--                            <div class="badge badge-danger"-->
+            <!--                                 *ngIf="AddEnseignantForm.get('etatService').touched &&-->
+            <!--                                        AddEnseignantForm.get('etatService').invalid">Champ obligatoire</div>-->
+            <!--                        </div>-->
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <mat-form-field appearance="fill">
+                <mat-label>Statut <span class="text-danger">*</span></mat-label>
+                <mat-select id="statut"  formControlName="statut">
+                  <mat-option value="{{etatFonc}}" *ngFor="let etatFonc of PersonnelDonnees.statusFonction">{{etatFonc}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('statut').touched &&
+                                        AddEnseignantForm.get('statut').invalid">Champ obligatoire</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!--  COL 2 OF ROW 2      -->
+        <div class="col p-2">
+          <div class="ml-2">
+            <h4><strong>ADRESSE ET AUTRE</strong></h4>
+          </div>
+
+          <div class="shadow-sm p-2">
+            <div class="alert alert-light">
+              <div class="form-group mt-1">
+                <mat-form-field appearance="fill">
+                  <mat-label>Adresse mail <span class="text-danger">*</span></mat-label>
+                  <input matInput placeholder="pat@example.com" id="email" formControlName="email" >
+                </mat-form-field>
+                <div class="badge badge-danger"
+                     *ngIf="AddEnseignantForm.get('email').touched &&
+                                            AddEnseignantForm.get('email').invalid">Champ obligatoire</div>
+                <p class="text-danger">NB: Un mail vous sera envoyé! Veuillez vous assurer que l'email soit correct!</p>
+              </div>
+            </div>
+
+            <div class="form-group mt-1">
+              <mat-form-field appearance="fill">
+                <mat-label>N° téléphone <span class="text-danger">*</span></mat-label>
+                <input type="tel" id="telephone"  formControlName="telephone" matInput placeholder="Telehone">
+              </mat-form-field>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('telephone').touched &&
+                                        AddEnseignantForm.get('telephone').invalid">Champ obligatoire</div>
+            </div>
+
+
+            <div class="form-group mt-1">
+              <mat-form-field appearance="fill">
+                <mat-label>>Ville <span class="text-danger">*</span></mat-label>
+                <input type="text" id="ville"  formControlName="ville" matInput placeholder="Ville">
+              </mat-form-field>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('ville').touched &&
+                                        AddEnseignantForm.get('ville').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group mt-1">
+              <mat-form-field appearance="fill">
+                <mat-label>Quartier <span class="text-danger">*</span></mat-label>
+                <input type="text" id="quartier"  formControlName="quartier" matInput placeholder="Quartier">
+              </mat-form-field>
+              <div class="badge badge-danger"
+                   *ngIf="AddEnseignantForm.get('quartier').touched &&
+                                        AddEnseignantForm.get('quartier').invalid">Champ obligatoire</div>
+            </div>
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <mat-form-field appearance="fill">
+                <mat-label>Rue</mat-label>
+                <input type="text" id="Rue"  formControlName="rue" matInput placeholder="Rue">
+              </mat-form-field>
+            </div>
+
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <mat-form-field appearance="fill">
+                <mat-label>Porte</mat-label>
+                <input type="text" id="porte"  formControlName="porte" matInput placeholder="porte">
+              </mat-form-field>
+            </div>
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <mat-form-field appearance="fill">
+                <mat-label>Numero Amo </mat-label>
+                <input type="text"id="numAmo"  formControlName="numAmo" matInput placeholder="Numero assurance maladie">
+              </mat-form-field>
+            </div>
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <mat-form-field appearance="fill">
+                <mat-label>Numero Nina </mat-label>
+                <input type="text"id="numNina"  formControlName="numNina" matInput placeholder="Numero carte nina">
+              </mat-form-field>
+            </div>
+
+            <div class="form-group mt-1" *ngIf="typeListe !== 'vacataire'">
+              <mat-form-field appearance="fill">
+                <mat-label>Numero Inps </mat-label>
+                <input type="text"id="numInps"  formControlName="numInps" matInput placeholder="Numero Inps">
+              </mat-form-field>
+            </div>
+
+
+            <div class="text-center p-3 mt-2" *ngIf="_spinner">
+                             <span>
+                                 <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+                                 <span>veuillez patienter ...</span>
+                             </span>
+            </div>
+            <div class="text-center mt-2" *ngIf="!_spinner">
+              <button type="submit" mat-raised-button color="primary" [disabled]="AddEnseignantForm.invalid || !photochangeEvent"><i class="fa fa-save"></i>
+                Enregister les changements</button>
+              <span>&nbsp;&nbsp;&nbsp;</span>
+            </div>
+
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+  </form>
+</div>
+
+

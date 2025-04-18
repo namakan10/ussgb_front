@@ -1,0 +1,516 @@
+<h2 class="ml-2 text-center font-weight-bold text-uppercase">Bibliothèque</h2>
+
+<div *ngIf="!showLivreDetail">
+  <div class="container shadow-sm bg-white p-2">
+    <div class="p-2">
+      <div class="row">
+        <div class="col-md-6">
+          <button mat-raised-button color="accent" [matMenuTriggerFor]="menu" *ngIf="roleBiblio"><span class="material-icons">add</span> Ajouter un Ouvrage</button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="TypeChange('LIVRE')"><span class="material-icons">menu_book</span> Livre</button>
+            <button mat-menu-item (click)="TypeChange('ARTICLE')"><span class="material-icons text-info">library_books</span> Article</button>
+            <button mat-menu-item (click)="TypeChange('MEMOIRE')"><span class="material-icons text-danger">local_library</span> Mémoire</button>
+          </mat-menu>
+        </div>
+        <div class="col-md-6">
+<!--          -->
+          <button mat-raised-button color="primary" (click)="hendleBook()" *ngIf="roleBiblio">
+            <span class="material-icons">book</span> Ajouter un auteur
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <form [formGroup]="SearchForm" (ngSubmit)="getOuvrage()">
+      <div class="row">
+
+        <div class="col-3">
+          <div class="form-group">
+            <label for="search">Filtrer par <span class="text-danger">*</span>:</label>
+            <select id="search" class="form-control custom_Input" formControlName="searchType">
+              <option value="LIVRE">LIVRE</option>
+              <option value="ARTICLE">ARTICLE</option>
+              <option value="MEMOIRE">MEMOIRE</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="form-group">
+            <label for="titre">Titre <span class="text-danger"></span></label>
+            <input type="text" class="form-control custom_Input" id="titre" formControlName="titre">
+          </div>
+        </div>
+
+        <div class="col-3">
+          <div class="form-group">
+            <label for="Genre">Genre <span class="text-danger"></span></label>
+            <select id="Genre" class="form-control custom_Input" formControlName="id_genre">
+              <option value=""></option>
+              <option value="{{genre.id}}" *ngFor="let genre of GenresList">{{genre.nom}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-3">
+          <div class="form-group">
+            <label for="Auteur">Auteur <span class="text-danger"></span></label>
+            <select id="Auteur" class="form-control custom_Input" formControlName="id_auteur">
+              <option value=""></option>
+              <option value="{{auteurs.id}}" *ngFor="let auteurs of AuteursList">{{auteurs.nom}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-3">
+          <div class="form-group">
+            <label for="Editeur">Editeur <span class="text-danger"></span></label>
+            <select id="Editeur" class="form-control custom_Input" formControlName="id_editeur">
+              <option value=""></option>
+              <option value="{{editeurs.id}}" *ngFor="let editeurs of EditeursList">{{editeurs.nom}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-1">
+
+         <span *ngIf="search_spinner" style="text-align: center;">
+       <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+   </span>
+
+        <button mat-raised-button color="accent" [disabled]="SearchForm.invalid" *ngIf="!search_spinner">
+          <span class="material-icons">search</span>
+          Chercher
+        </button>
+
+      </div>
+    </form>
+  </div>
+
+
+<!--  <h2 class="font-weight-bold text-center" *ngIf="NoData">Aucun résultat !</h2>-->
+
+ <mat-tab-group mat-align-tabs="start">
+  <mat-tab label="{{type}}">
+
+  <div class="row">
+    <div class="col-sm-12 col-md-2 col-lg-2" *ngIf="SendDataArray.length > 0 ">
+       <div class="ml-2 mt-2">
+        <button class="btn btn-info" (click)="confirmEmprunt()"><i class="fa fa-hand-grab-o"></i> Emprunter</button>
+      </div>
+    </div>
+    
+    <div class="col-sm-12 col-md-4 col-lg-4">
+      <mat-form-field>
+        <mat-label>FILTRE</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="mt-3">
+
+    <div *ngIf="this.SearchForm.controls.searchType.value && this.length > 0">{{ this.length}} {{this.SearchForm.controls.searchType.value}}S</div>
+    <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="check">
+        <th mat-header-cell *matHeaderCellDef>
+<!--          <input type="checkbox" class="form-check-input" name="allSelector" (change)="isCheckedOrNot($event)">-->
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <input type="checkbox" class="ck"  name="check{{element.id}}"
+                 (change)="isCheckedOrNot($event, element)" value="{{element.id}}">
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="Image">
+        <th mat-header-cell *matHeaderCellDef> Image </th>
+        <td mat-cell *matCellDef="let element">
+            <div class="p-2">
+              <img src="../assets/images/cadre2.jpg" height="130" width="85" alt="" *ngIf="element.image === null || element.image === undefined || element.image === ''">
+              <img src="http://{{element.image}}" height="100" width="85" alt="" *ngIf="element.image !== null && element.image !== undefined && element.image !== ''">
+            </div>
+        </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="Type">
+        <th mat-header-cell *matHeaderCellDef> Type d'ouvrage </th>
+        <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="Titre">
+        <th mat-header-cell *matHeaderCellDef> Titre </th>
+        <td mat-cell *matCellDef="let element"> {{element.titre}} </td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="Auteur">
+        <th mat-header-cell *matHeaderCellDef> Auteur(s) </th>
+        <td mat-cell *matCellDef="let element">
+          <span *ngIf="SearchForm.controls.searchType.value === 'LIVRE'">
+            <span class="" *ngFor="let auteur of element.auteurs"> [<strong> {{auteur.nom}} </strong>] </span>
+          </span>
+          <span *ngIf="SearchForm.controls.searchType.value !== 'LIVRE'">
+            <span class="" *ngFor="let us of element.users">
+              [<strong matTooltip="{{us.typeUtilisateur}}(e)"> {{us.prenom+' '+ us.nom}} </strong>]
+            </span>
+
+          </span>
+
+
+        </td>
+      </ng-container>
+
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="Editeur">
+        <th mat-header-cell *matHeaderCellDef> Editeur </th>
+        <td mat-cell *matCellDef="let element">
+          <span *ngIf="SearchForm.controls.searchType.value === 'LIVRE'">
+            {{element.nom}}
+          </span>
+          <span *ngIf="SearchForm.controls.searchType.value !== 'LIVRE'">--</span>
+        </td>
+      </ng-container>
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="Journal">
+        <th mat-header-cell *matHeaderCellDef> Journal </th>
+        <td mat-cell *matCellDef="let element">
+          <span *ngIf="SearchForm.controls.searchType.value === 'ARTICLE'">
+            {{element.journal}}
+          </span>
+          <span *ngIf="SearchForm.controls.searchType.value !== 'ARTICLE'">--</span>
+        </td>
+      </ng-container>
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-raised-button color="accent" [matMenuTriggerFor]="menu" *ngIf="roleBiblio">Action</button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="showDetail(element)" *ngIf="element.type === 'LIVRE'"><span class="material-icons">launch</span> Détail</button>
+            <button mat-menu-item (click)="EditLivre(element)"><span class="material-icons text-info">edit</span> Modifier</button>
+            <button mat-menu-item (click)="supprimerLivre(element)"><span class="material-icons text-danger">delete</span> Supprimer</button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator
+        [length]="length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions">
+
+      </mat-paginator>
+
+  </div>
+
+   </mat-tab>
+</mat-tab-group>
+</div>
+
+<button mat-raised-button color="warn" (click)="showLivreDetail = false" *ngIf="showLivreDetail">
+  <span class="material-icons">reply</span> Retour
+</button>
+<!--=====================-->
+<!--Detail sur l'ouvrage-->
+<!--=====================-->
+<app-livre-detail [BookDatas]="BookData" *ngIf="showLivreDetail"></app-livre-detail>
+<!--END Detail sur l'ouvrage-->
+<!--=====================-->
+
+<div class="modal fade" id="NewLivreFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div [className]="livreIsChoose ? 'modal-dialog modal-xl' : 'modal-dialog modal-md'">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h5 class="modal-title font-weight-bold text-white" id="exampleModalLabel">
+          <span *ngIf="livreIsChoose"><span class="material-icons">menu_book</span> Ajout d'un livre</span>
+          <span *ngIf="articleIsChoose"><span class="material-icons">library_books</span>  Ajout d'un article</span>
+          <span *ngIf="memoireIsChoose"><span class="material-icons text-danger">local_library</span>  Ajout d'un mémoire</span>
+        </h5>
+        <button type="button" mat-button data-dismiss="modal"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="NewLivreForm" (ngSubmit)="action === 'new'?submitForm():SubmitUpdateLivre()">
+
+          <div class="container col-4 p-2 d-flex justify-content-center">
+            <img [src]="imageOuvrage" width="170" height="200" alt="">
+
+          </div>
+
+          <div class="row">
+            <div [className]="livreIsChoose ? 'col p-2' : 'container col-12 p-2 shadow-sm'">
+              <div class="shadow-sm p-1" style="border-radius: 10px">
+
+                <div class="form-group mt-1">
+                  <label for="image">Image <span class="text-danger">*</span></label>
+                  <input type="file" id="image" class="form-control" formControlName="image" (change)="onselectFile($event)">
+                </div>
+
+                <div class="form-group" hidden>
+                  <label for="typeOuvrage">Type d'ouvrage  <span class="text-danger">*</span></label>
+                  <select  id="typeOuvrage" class="form-control custom_Input" formControlName="typeOuvrage">
+                    <option value=""></option>
+                    <option value="LIVRE">LIVRE</option>
+                    <option value="ARTICLE">ARTICLE</option>
+                    <option value="MEMOIRE">MEMOIRE</option>
+
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="titr">Titre <span class="text-danger">*</span></label>
+                  <input type="text" id="titr" class="form-control custom_Input" formControlName="titre">
+                </div>
+
+                <div class="form-group" *ngIf="livreIsChoose">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Auteur</mat-label>
+                    <mat-select formControlName="_auteur" multiple>
+                      <mat-option [value]="auteur" *ngFor="let auteur of allAuteurs">{{auteur}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                </div>
+
+                <div class="form-group" *ngIf="livreIsChoose">
+                  <label for="editeur2">Editeur <span class="text-danger">*</span></label>
+                  <input type="text" id="editeur2" class="form-control custom_Input" formControlName="editeur">
+                </div>
+
+                <div class="form-group" *ngIf="livreIsChoose">
+                  <label for="genre2">Genre <span class="text-danger">*</span></label>
+                  <input type="text" id="genre2" class="form-control custom_Input" formControlName="genre">
+                </div>
+
+<!--                CAS DE TYPE MEMOIRE-->
+                <div class="form-group" *ngIf="memoireIsChoose">
+
+                  <div>
+                    <label for="anneeF">Année scolaire de l'éudiant</label>
+                    <select class="form-control custom_Input" id="anneeF" (change)="changeEtudiantAnnee($event)" formControlName="anneeScolaire">
+                      <option value=""></option>
+                      <option value="{{annees.anneeScolaire}}" *ngFor="let annees of StructureAnnees">{{annees.anneeScolaire}}</option>
+                    </select>
+                  </div>
+
+                  <div class="ng-autocomplete form-group mt-1">
+                    <label for="id_option">Etudiant concerné <span class="text-danger">*</span></label>
+                    <span *ngIf="_spinner" style="text-align: center;">
+                     <img src="../../../../assets/gif/spinner.gif" width="25" alt="">
+                      Veuillez patienter ...
+                    </span>
+                    <ng-autocomplete id="id_option" formControlName="anneeScolaire"
+                                     [data]="Etudiants" [searchKeyword]="keyword"
+                                     (selected)='EtudiantSelectEvent($event)'
+                                     [itemTemplate]="itemTemplate"
+                                     [notFoundTemplate]="notFoundTemplate">
+                    </ng-autocomplete>
+
+                    <ng-template #itemTemplate let-item>
+                      <a [innerHTML]="item.nom"></a>
+                    </ng-template>
+
+                    <ng-template #notFoundTemplate let-notFound>
+                      <div [innerHTML]="notFound">Pas de corespondance .</div>
+                    </ng-template>
+                  </div>
+                  <p *ngIf="NewLivreForm.controls.student.invalid"><span class="text-info"><i class="fa fa-info-circle text-danger"></i> Sélectionnez dans la liste proposée!</span></p>
+                </div>
+
+                <div class="form-group" *ngIf="memoireIsChoose || articleIsChoose">
+
+                  <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label *ngIf="memoireIsChoose">Directeur de mémoire </mat-label>
+                    <mat-label *ngIf="articleIsChoose">Enseignant concerné </mat-label>
+                    <input type="text" matInput [formControl]="enseignantControl" [matAutocomplete]="auto">
+                    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"> <!---->
+                      <mat-option *ngFor="let enseignant of EnseignantOptions | async" [value]="enseignant">
+                        {{enseignant.user.nom}} {{enseignant.user.prenom}}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                  <p *ngIf="NewLivreForm.controls.teacher.invalid"><span class="text-info"><i class="fa fa-info-circle text-danger"></i> Sélectionnez dans la liste proposée!</span></p>
+                </div>
+<!--                *******************-->
+
+                <div class="form-group">
+                  <label for="datePub">date de publication <span class="text-danger">*</span></label>
+                  <input type="date" id="datePub" class="form-control custom_Input" formControlName="dateDePublication">
+                </div>
+
+                <div class="form-group" *ngIf="articleIsChoose">
+                  <label for="journal">Journal <span class="text-danger">*</span></label>
+                  <input type="text" id="journal" class="form-control custom_Input" formControlName="journal">
+                </div>
+
+
+              </div>
+            </div>
+
+            <div class="col p-2">
+              <div class="shadow-sm p-1" style="border-radius: 10px">
+                <div class="form-group" *ngIf="livreIsChoose">
+                  <label for="numIs">Numéro ISB-Issn  <span class="text-danger">*</span></label>
+                  <input type="text" id="numIs" class="form-control custom_Input" formControlName="isbnIssn">
+                </div>
+
+                <div class="form-group">
+                  <label for="dispo">Disponibilité  <span class="text-danger">*</span></label>
+                  <select  id="dispo" class="form-control custom_Input" formControlName="disponibilite">
+                    <option value=""></option>
+                    <option value="EN_LECTURE">En lecture</option>
+                    <option value="EN_LECTURE_EMPRUNT">En lecture & prêt</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="langue">Langue  <span class="text-danger">*</span></label>
+                  <select  id="langue" class="form-control custom_Input" formControlName="langue">
+                    <option value=""></option>
+                    <option value="Français">Français</option>
+                    <option value="Anglais">Anglais</option>
+                  </select>
+                </div>
+
+                <!--                <div class="form-group">-->
+                <!--                  <label for="nbreExemplaireDisponible">Nbre d'exemplaire disponible  <span class="text-danger">*</span></label>-->
+                <!--                  <input type="text" id="nbreExemplaireDisponible" class="form-control custom_Input" formControlName="nbreExemplaireDisponible">-->
+                <!--                </div>-->
+
+                <div class="form-group" *ngIf="livreIsChoose">
+                  <label for="nbreExemplaireTotal">Nbre d'exemplaire total <span class="text-danger">*</span></label>
+                  <input type="text" id="nbreExemplaireTotal" class="form-control custom_Input" formControlName="nbreExemplaireTotal">
+                </div>
+
+                <div class="form-group">
+                  <label for="nbrePage">Nombre de page  <span class="text-danger">*</span></label>
+                  <input type="text" id="nbrePage" class="form-control custom_Input" formControlName="nbrePage">
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="row">
+            <div class="col p-2">
+              <div class="form-group">
+                <label for="description">Description <span class="text-danger">*</span></label>
+                <textarea id="description" class="form-control custom_Input" cols="30" rows="10" formControlName="description"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!--|| auteurValidatorInvalid-->
+          <div class="text-center p-1">
+            <button mat-raised-button color="primary" type="submit" [disabled]="action === 'new'? NewLivreForm.invalid || !this.ImageSelectEvent : NewLivreForm.invalid ">
+              <i class="fa fa-save"></i> {{action === 'new'?'Ajouter':'Enregistrer les modifications'}}
+            </button>
+            <!-- <pre>{{ this.NewLivreForm.value | json }}</pre> -->
+          </div>
+        </form>
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="AuteurModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampbel">Formulaire de la réclamation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <div *ngFor="let auteur of AuteursList">
+          <input type="checkbox" >{{auteur.nom}}
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!---->
+
+<!-- Modal -->
+<div class="modal fade" id="EmpruntFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">history_toggle_off</span> Emprunt</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="row form-group">
+          <div class="col">
+            <label for="dateDebut">Date de retour <span class="text-danger">*</span></label>
+            <input type="date" class="form-control custom_Input" id="dateDebut" [(ngModel)]="dateRetour">
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="ng-autocomplete form-group mt-1">
+            <label for="userEmp"><strong>Emprunteur </strong> <span class="text-danger">*</span> <i class="fa fa-info-circle text-info"></i> [Sélectionnez un département avant.] (eventuel)</label>
+            <ng-autocomplete [(ngModel)]="userEmprunt" name="userEmprunt" id="userEmp"
+                             [data]="UserEmprunts" [searchKeyword]="keyword"
+                             (selected)='userSelectEvent($event)'
+                             [itemTemplate]="itemTemplate"
+                             [notFoundTemplate]="notFoundTemplate">
+            </ng-autocomplete>
+
+            <ng-template #itemTemplate let-item>
+              <a [innerHTML]="item.nom"></a>
+            </ng-template>
+
+            <ng-template #notFoundTemplate let-notFound>
+              <div [innerHTML]="notFound">Pas de corespondance .</div>
+            </ng-template>
+          </div>
+        </div>
+        <hr>
+        <div *ngIf="SendDataArray.length > 0">
+          <h6>Liste des ouvrages a emprunter</h6>
+          <div *ngFor="let emprunt of this.SendDataArray">
+            <div class="mt-2">
+              <span>- {{emprunt.data.titre}}</span>
+            <div class="shadow-sm mt-2">
+              <span>
+                Auteur(s) :
+                [ <span class="badge badge-secondary" *ngFor="let auteur of emprunt.data.auteurs">
+                 {{auteur.nom}}
+              </span> ]
+              </span>
+              <span class="badge badge-secondary">
+                Editeur: {{emprunt.data.editeur.nom}}
+              </span>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="AddEmprunt()">Valider</button>
+      </div>
+    </div>
+  </div>
+</div>
+

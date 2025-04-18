@@ -1,0 +1,67 @@
+<mat-card>
+    <mat-card-header>
+      Liste des ECs
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+          <div class="col-sm-4">
+          <mat-form-field class="search-form-field" floatLabel="never">
+            <input matInput [(ngModel)]="searchKey" placeholder="Recherche" autocomplete="off" (keyup)="applyFilter()">
+            <button mat-button matSuffix mat-icon-button aria-label="Clear"*ngIf="searchKey"  (click)="onSearchClear()">
+              <i class="fa fa-times"></i>
+            </button>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <div>
+            <span *ngIf="_spinner" style="text-align: center;">
+              <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+              Veuillez patienter ...
+            </span>
+          </div>
+        </div>
+      </div>
+  
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" style="width: 100%;" matSort>
+  
+        <ng-container matColumnDef="nomEC">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom EC</th>
+          <td style="cursor: pointer;" (click)="showModalUE(element)" mat-cell *matCellDef="let element"> {{element.nomEC}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="codeEC">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Code EC</th>
+          <td style="cursor: pointer;" (click)="showModalUE(element)" mat-cell *matCellDef="let element"> {{element.codeEC}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="poid">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Poid</th>
+          <td style="cursor: pointer;" (click)="showModalUE(element)" mat-cell *matCellDef="let element"> {{element.poid}} </td>
+        </ng-container>
+        <ng-container matColumnDef="volumeHoraire">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Volume Horaire</th>
+          <td style="cursor: pointer;" (click)="showModalUE(element)" mat-cell *matCellDef="let element"> {{element.volumeHoraire}} </td>
+        </ng-container>
+        <ng-container matColumnDef="chapitre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Chapitre</th>
+          <td style="cursor: pointer;" (click)="showModalUE(element)" mat-cell *matCellDef="let element"> {{element.chapitre}} </td>
+        </ng-container>
+        <ng-container matColumnDef="ue">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Code UE</th>
+          <td style="cursor: pointer;" (click)="showModalUE(element)" mat-cell *matCellDef="let element"> {{element.ue.codeUE}} </td>
+        </ng-container>
+  
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+  
+  
+      <mat-paginator
+        [length]="length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions">
+  
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+  

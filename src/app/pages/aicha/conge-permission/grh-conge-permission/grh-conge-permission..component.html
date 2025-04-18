@@ -1,0 +1,285 @@
+<p-toast [style]="{marginTop: '80px'}" position="top-right"></p-toast>
+
+
+<!--  Form view -->
+<div *ngIf="formPanel" class="formPanel" style="margin-top: 4%;width: 80%;margin-left: 10%;margin-bottom: 4%">
+
+  <div class="mat-elevation-z8" style="padding: 2%" >
+    <h3 class="card-title">Congé permission</h3>
+    <form [formGroup]="form" novalidate="" role="form">
+
+
+      <div class="multiple-fields">
+        <mat-form-field appearance="outline">
+          <mat-label>Utilisateur demandeur </mat-label>
+          <mat-select [compareWith]="compareFn" placeholder="Utilisateur" formControlName="demandeur_id" name="users" required [disabled]="congePermission.id">
+            <mat-option *ngFor="let u of users" [value]="u.id"> {{u.prenom}} {{u.nom}} </mat-option>
+          </mat-select>
+
+          <mat-error
+            *ngIf="form.controls['demandeur_id'].invalid && form.controls['demandeur_id'].dirty && form.controls['demandeur_id'].errors['required']">
+            Ce champ est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+      </div>
+
+      <div class="multiple-fields">
+
+        <mat-form-field appearance="fill">
+          <mat-label>Statut</mat-label>
+          <mat-select [compareWith]="compareFn" formControlName="statut"
+                      name="statut" placeholder="Statut" required >
+            <mat-option *ngFor="let d of congePermissionStatuts; index as i;" [value]="d">
+              {{d}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+
+        <mat-form-field appearance="fill">
+          <mat-label>Type</mat-label>
+          <mat-select [compareWith]="compareFn" formControlName="type"
+                      name="type" placeholder="Type" required [disabled]="congePermission.id">
+            <mat-option *ngFor="let d of congePermissionTypes; index as i;" [value]="d">
+              {{d}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+      </div>
+
+
+      <div class="multiple-fields">
+
+        <mat-form-field appearance="fill">
+          <mat-label>Date depart</mat-label>
+          <input [matDatepicker]="picker2" formControlName="dateDepart" matInput name="dateDepart" required [disabled]="congePermission.id">
+          <mat-datepicker-toggle [for]="picker2" matSuffix></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+          <mat-error
+            *ngIf="form.controls['dateDepart'].invalid && form.controls['dateDepart'].dirty && form.controls['dateDepart'].errors['dateDepart']">
+            Ce champs est obligatoire!
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Date retour</mat-label>
+          <input [matDatepicker]="picker4" formControlName="dateRetour" matInput name="dateRetour" required [disabled]="congePermission.id">
+          <mat-datepicker-toggle [for]="picker4" matSuffix></mat-datepicker-toggle>
+          <mat-datepicker #picker4></mat-datepicker>
+          <mat-error
+            *ngIf="form.controls['dateRetour'].invalid && form.controls['dateRetour'].dirty && form.controls['dateRetour'].errors['dateRetour']">
+            Ce champs est obligatoire!
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+
+
+      <div class="multiple-fields">
+        <mat-form-field appearance="fill">
+          <mat-label>Motif de la demande </mat-label>
+          <textarea matInput matInput name="motifDemande" placeholder="Motif de la demande"
+                    matTooltip="Motif de la demande"
+                    formControlName="motifDemande"
+                    required
+                    cdkAutosizeMinRows="1"
+                    cdkAutosizeMaxRows="5"
+
+          ></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="multiple-fields" *ngIf="congePermission.statut==='REFUSER'">
+        <mat-form-field appearance="fill">
+          <mat-label>Motif du rejet </mat-label>
+          <textarea matInput matInput name="motifRejet" placeholder="Motif du rejet"
+                    matTooltip="Motif du rejet"
+                    formControlName="motifRejet"
+                    required
+                    cdkAutosizeMinRows="1"
+                    cdkAutosizeMaxRows="5"
+          ></textarea>
+          <mat-error
+            *ngIf="form.controls['motifRejet'].invalid && form.controls['motifRejet'].dirty && form.controls['motifRejet'].errors['required']">
+            Ce champ est obligatoire
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+
+      <div class="multiple-fields">
+        <input type="file" placeholder="choisir un justificatif" multiple
+               (change)="onFileChanged($event)" accept="application/pdf,.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
+      </div>
+
+      <div class="multiple-fields" *ngIf="selectedFiles">
+        <div *ngFor="let file of selectedFiles; let i = index" style="text-align: center;">
+          <img src="../assets/aicha/file.png"
+               style="width:50px;height:50px;"
+               [title]="file.name"
+          /><br/>
+          <span>{{file.name}}</span>
+        </div>
+      </div>
+
+
+      <div class="multiple-fields" style="width: 210px;margin-left: 38%;">
+        <button (click)="uploadAdd()" [disabled]="!form.valid" class="btn btn-primary mt-3  mr-20" type="submit" *ngIf="!congePermission.id">Enregistrer</button>
+        <button (click)="uploadUpdate()" [disabled]="!form.valid" class="btn btn-primary mt-3 ml-20 mr-20" type="submit" *ngIf="congePermission.id">Valider</button>
+
+        <button (click)="applyAnnuler()"  class="btn btn-warning mt-3 ml-20" type="submit">Annuler</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+
+<!--  List view-->
+<div class="col-lg-12" *ngIf="!formPanel">
+
+
+  <div class="mb-3 d-flex">
+    <div style="display: flex; justify-content: space-between; margin:auto;text-align: center;">
+
+      <button class="btn btn-sm btn-success mr-2" type="button" *ngIf="!formPanel" (click)="newCongePermission()">
+        <em class="fa fa-plus mr-2"></em> Nouveau
+      </button>&nbsp;
+
+      <button class="btn btn-sm btn-{{selectedButton==='all'? 'primary':'outline-primary'}} btn-sm mr-2"
+              (click)="initData(structureId)">Tous
+      </button>
+
+      <button class="btn btn-sm btn-{{selectedButton==='ACCEPTER'? 'primary':'outline-primary'}} btn-sm mr-2"
+           (click)="findAllBy(null,'ACCEPTER')">Accepté
+      </button>
+
+      <button class="btn btn-sm btn-{{selectedButton==='EN_ATTENTE_DE_TRAITEMENT'? 'primary':'outline-primary'}} btn-sm mr-2"
+              (click)="findAllBy(null,'EN_ATTENTE_DE_TRAITEMENT')">En traitement
+      </button>
+
+      <button class="btn btn-sm btn-{{selectedButton==='REFUSER'? 'primary':'outline-primary'}} btn-sm mr-2"
+              (click)="findAllBy(null,'REFUSER')">Refusé
+      </button>
+
+    </div>
+
+    <div style="float: right; width: 40%;
+    margin-right: auto;margin-left: auto;">
+
+        <mat-form-field appearance="fill">
+          <mat-label>Type</mat-label>
+          <mat-select placeholder="Type" (selectionChange)="setCongePermissionType($event)">
+            <mat-option *ngFor="let d of congePermissionTypes; index as i;" [value]="d">
+              {{d}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+    </div>
+  </div>
+
+
+
+  <!--    list-->
+  <div class="card b">
+    <div class="card-body">
+      <div class="table-responsive">
+
+        <table mat-table [dataSource]="dataSource" matSort>
+
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> #</th>
+            <td mat-cell *matCellDef="let row;let i = index;"> {{i+1}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="dateDepart">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date depart</th>
+            <td mat-cell *matCellDef="let row"> {{row.dateDepart | date:'dd/MM/yyyy'}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="dateRetour">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date d'arrivée</th>
+            <td mat-cell *matCellDef="let row"> {{row.dateRetour | date:'dd/MM/yyyy'}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Statut</th>
+            <td mat-cell *matCellDef="let row"> {{row.statut}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="motifDemande">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Motif de la demande</th>
+            <td mat-cell *matCellDef="let row"> {{row.motifDemande}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="motifRejet">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Motif du Rejet</th>
+            <td mat-cell *matCellDef="let row"> {{row.motifRejet}} </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Type</th>
+            <td mat-cell *matCellDef="let row"> {{row.type}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fichier">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Fichiers</th>
+            <td mat-cell *matCellDef="let row">
+              <div *ngIf="row.fichiers && row.fichiers!=null && row.fichiers.length>0">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <mat-icon>description</mat-icon>{{row.fichiers.length}}
+                </button>
+                <mat-menu #menu="matMenu">
+                  <a mat-menu-item *ngFor="let file of row.fichiers, let i=index;" target="_blank" href="http://{{file.fileUrl}}">
+                    <mat-icon>description</mat-icon>
+                    <span>Voir fichier {{i+1}}</span>
+                  </a>
+                </mat-menu>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header style="float: right;padding-right: 10px;"> Action</th>
+            <td mat-cell *matCellDef="let row" style="float: right;padding-right: 10px;">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+
+              <mat-menu #menu="matMenu">
+
+                <button mat-menu-item *ngIf="row.statut==='EN_ATTENTE_DE_TRAITEMENT' || row.statut==='REFUSER'" (click)="showForm(row)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Modifier</span>
+                </button>
+
+<!--                <button mat-menu-item *ngIf="row.statut==='EN_ATTENTE_DE_TRAITEMENT' || row.statut==='REFUSER'" (click)="showForm(row)">-->
+<!--                  <mat-icon>edit</mat-icon>-->
+<!--                  <span>Accepter</span>-->
+<!--                </button>-->
+
+<!--                <button mat-menu-item *ngIf="row.statut==='EN_ATTENTE_DE_TRAITEMENT'" (click)="showForm(row)">-->
+<!--                  <mat-icon>edit</mat-icon>-->
+<!--                  <span>REFUSER</span>-->
+<!--                </button>-->
+
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [length]="congePermissions?.length"></mat-paginator>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+

@@ -1,0 +1,13 @@
+<div class="wrapper">
+  <div class="overlay" *ngIf="service.loading$ | async">
+    <div class="spinner-wrapper">
+      <div class="container">
+        <div class="row">
+          <mat-progress-spinner [mode]="'indeterminate'" *ngIf="service.loading$ | async" [diameter]="50"></mat-progress-spinner>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

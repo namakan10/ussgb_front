@@ -1,0 +1,308 @@
+
+<h2 class="text-center font-weight-bold">Formulaire de {{formTitle}}  <span class="font-weight-bold">{{structureSigle}}</span></h2>
+
+<div class="container p-3">
+  <mat-horizontal-stepper  #stepper>
+    <!-- -->
+    <!--    STEP 1 FORM-->
+    <!-- -->
+    <mat-step [stepControl]="firstFormGroup" label="Filière & Option">
+      <div class="container col-7 p-2 shadow-sm">
+        <form [formGroup]="firstFormGroup">
+          <div class="row">
+            <div class="col-12">
+              <mat-form-field>
+                <mat-label>Niveau</mat-label>
+                <input matInput autocomplete="off" formControlName="niveau" required>
+              </mat-form-field>
+            </div>
+            <div class="col-12">
+              <mat-form-field appearance="fill">
+                <mat-label>{{univ_fil}} <span class="text-danger">*</span></mat-label>
+                <select matNativeControl  formControlName="filiere" (change)="selectOptions($event)" required>
+                  <option *ngFor="let filiere of Filieres" value="{{filiere.id}}">{{filiere.nom}} ({{filiere.codeFiliere}})</option>
+                </select>
+              </mat-form-field>
+              <span *ngIf="Fil_spinner" style="text-align: center;">
+            <img src="../../../../../assets/gif/spinner.gif" width="30" alt="">
+          </span>
+              <div class="badge badge-danger"  *ngIf="firstFormGroup.get('filiere').touched &&
+                    firstFormGroup.get('filiere').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+            </div>
+            <div class="col-12">
+
+              <mat-form-field appearance="fill">
+                <mat-label>{{univ_opt}} <span class="text-danger">*</span></mat-label>
+                <select matNativeControl  formControlName="option" [disabled]="enablebOptions" (change)="getOptionSelect($event)" required>
+                  <option *ngFor="let opt of Options" value="{{opt.id}}">{{opt.nom}}</option>
+                </select>
+              </mat-form-field>
+              <span *ngIf="Opt_spinner" style="text-align: center;">
+            <img src="../../../../../assets/gif/spinner.gif" width="30" alt="">
+          </span>
+              <div class="badge badge-danger"  *ngIf="firstFormGroup.get('option').touched &&
+                                                  firstFormGroup.get('option').invalid">Champs obligatoire</div>
+
+              <div class="badge badge-info"  *ngIf="firstFormGroup.get('option').touched &&
+                    firstFormGroup.get('filiere').invalid"><i class="fa fa-info-circle"></i> Veuillez selectionner dabord l'{{univ_fil}} !</div>
+            </div>
+          </div>
+
+          <div class="text-right mt-3">
+            <p class="text-info"  *ngIf="firstFormGroup.invalid"><i class="fa fa-info-circle text-danger"></i> Veuillez remplir tous les champs avec
+              <span class="text-danger">*</span> s'il vous plaît!</p>
+          </div>
+          <div class="text-center mt-2">
+            <button mat-raised-button color="primary" matStepperNext [disabled]="firstFormGroup.invalid">
+              Suivant <span class="material-icons">chevron_right</span></button>
+          </div>
+        </form>
+      </div>
+    </mat-step>
+
+    <!-- -->
+    <!--    STEP 2 FORM-->
+    <!-- -->
+
+    <mat-step [stepControl]="secondFormGroup" label="Contacts & addresses">
+      <form [formGroup]="secondFormGroup">
+        <div class="row">
+          <div class="col-4" matTooltip="Info about the action"
+               aria-label="Button that displays a tooltip when focused or hovered over">
+            <mat-form-field matTooltip="Info about the action"
+                            aria-label="Button that displays a tooltip when focused or hovered over">
+              <mat-label>Téléphone <span class="text-danger">*</span> </mat-label>
+              <input matInput autocomplete="off" type="tel"  formControlName="telephone" required>
+            </mat-form-field>
+            <div class="badge badge-danger"  *ngIf="secondFormGroup.get('telephone').touched &&
+                                                    secondFormGroup.get('telephone').invalid">Champs obligatoire</div>
+
+            <div class="badge badge-info"  *ngIf="secondFormGroup.get('telephone').touched &&
+                                                    secondFormGroup.get('telephone').invalid"><i class="fa fa-info-circle"></i> un numéro de téléphone correct est attendut !</div>
+          </div>
+
+          <div class="col-4">
+            <mat-form-field>
+              <mat-label>Email <span class="text-danger">*</span> </mat-label>
+              <input matInput autocomplete="off" type="email"  formControlName="email" (change)="emailAlert()" required>
+            </mat-form-field>
+            <h5>{{alertt}}</h5>
+            <div class="badge badge-danger"  *ngIf="secondFormGroup.get('email').touched &&
+                                                    secondFormGroup.get('email').invalid">Champs obligatoire</div>
+
+            <p class="text-info"  *ngIf="secondFormGroup.get('email').touched &&
+                                                  secondFormGroup.get('email').invalid;"><i class="fa fa-info-circle"></i>
+              un email correct de la forme : <strong>monemail@gmail.com</strong> est attendut !</p>
+          </div>
+
+
+
+          <div class="col-4">
+            <mat-form-field>
+              <mat-label>Téléphone tuteur <span class="text-danger"></span> </mat-label>
+              <input matInput autocomplete="off" type="tel" formControlName="telephoneTuteur" required>
+            </mat-form-field>
+
+            <div class="badge badge-info"  *ngIf="secondFormGroup.get('telephoneTuteur').touched &&
+                                                    secondFormGroup.get('telephoneTuteur').invalid"><i class="fa fa-info-circle"></i> Entrez un numéro de téléphone correct</div>
+
+            <div class="badge badge-info"  *ngIf="secondFormGroup.get('telephoneTuteur').touched &&
+                                                    secondFormGroup.get('telephoneTuteur').invalid">
+              si vous avez un tuteur, sinon laissé le vide !</div>
+          </div>
+
+        </div>
+        <hr>
+        <div class="row">
+          <div class="form-group col-4">
+            <mat-form-field appearance="fill">
+              <mat-label>Nationalité <span class="text-danger">*</span></mat-label>
+
+              <select matNativeControl  formControlName="nationalite" required>
+                <option value=""></option>
+                <option value="{{pays}}" *ngFor="let pays of Pays">{{pays}}</option>
+              </select>
+            </mat-form-field>
+            <div class="badge badge-danger"  *ngIf="secondFormGroup.get('nationalite').touched &&
+                                                    secondFormGroup.get('nationalite').invalid">Champs obligatoire</div>
+          </div>
+
+          <div class="form-group col-4">
+            <mat-form-field appearance="fill">
+              <mat-label>Pays de naissance <span class="text-danger">*</span></mat-label>
+              <select matNativeControl  formControlName="paysDeNaissance" required>
+                <option value=""></option>
+                <option value="{{pays}}" *ngFor="let pays of Pays">{{pays}}</option>
+              </select>
+            </mat-form-field>
+            <div class="badge badge-danger"  *ngIf="secondFormGroup.get('paysDeNaissance').touched &&
+                                                    secondFormGroup.get('paysDeNaissance').invalid">Champs obligatoire</div>
+          </div>
+
+
+          <div class="form-group col-4">
+            <mat-form-field>
+              <mat-label>Résidence (ville) <span class="text-danger">*</span></mat-label>
+              <input matInput autocomplete="off" formControlName="ville" required>
+            </mat-form-field>
+            <div class="badge badge-danger"  *ngIf="secondFormGroup.get('ville').touched &&
+                                                    secondFormGroup.get('ville').invalid">Champs obligatoire</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-4">
+            <mat-form-field>
+              <mat-label>Quartier</mat-label>
+              <input matInput autocomplete="off" formControlName="quartier" required>
+            </mat-form-field>
+            <div class="badge badge-danger"  *ngIf="secondFormGroup.get('quartier').touched &&
+                                                    secondFormGroup.get('quartier').invalid">Champs obligatoire</div>
+          </div>
+
+          <div class="form-group col-4">
+            <mat-form-field>
+              <mat-label>Rue </mat-label>
+              <input matInput autocomplete="off" formControlName="rue">
+            </mat-form-field>
+
+          </div>
+
+          <div class="form-group col-4">
+            <mat-form-field>
+              <mat-label>Porte </mat-label>
+              <input matInput autocomplete="off" formControlName="porte">
+            </mat-form-field>
+
+          </div>
+        </div>
+
+
+        <div class="text-right mt-3">
+          <p class="text-info"  *ngIf="secondFormGroup.invalid"><i class="fa fa-info-circle text-danger"></i> Veuillez remplir tous les champs avec
+            <span class="text-danger">*</span> s'il vous plaît!</p>
+        </div>
+        <div class="text-center">
+          <button mat-raised-button color="warn" matStepperPrevious>
+            <span class="material-icons">chevron_left</span> Précédent</button>
+            |
+          <button mat-raised-button color="primary" matStepperNext [disabled]="secondFormGroup.invalid">Suivant
+            <span class="material-icons">chevron_right</span></button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- -->
+    <!--    STEP 3FORM-->
+    <!-- -->
+
+    <mat-step>
+      <ng-template matStepLabel>Documents</ng-template>
+      <form [formGroup]="troisFormGroup">
+
+        <div class="alert alert-info">
+          la taille maximum autorisé par fichier est de 2Mo
+        </div>
+
+
+        <div class="container col-10 shadow-sm mt-4 p-3" style="border-radius: 7px">
+<!--          <img [src]="srcIMG" alt="">-->
+
+          <label for="photo">Photo <span class="text-danger">*</span> </label>
+          <div class="text-right mr-2"><div [className]="idPhotoOk?'fa fa-check-circle text-success':'fa fa-check-circle text-light'"></div></div>
+          <div class="row">
+            <div class="col-7">
+              <p class="smallWord">format: ["jpeg", "jpg", "png"]</p>
+              <input type="file" id="photo" formControlName="idPhoto" (change)="FileSelect($event,'idPhoto')" accept="image/*" required>
+              <p class="smallWord text-danger" *ngIf="idPhotoAlert"><i class="fa fa-info-circle"></i> Champ Obligatoire! Ce fichier doit respecter les contraintes de taille et de format</p>
+            </div>
+            <div class="col-8 d-flex align-items-center">
+            </div>
+          </div>
+        </div>
+
+        <div class="container col-10 shadow-sm mt-4 p-3" style="border-radius: 7px">
+          <label for="photo">Acte de naissance <span class="text-danger">*</span> </label>
+          <div class="text-right mr-2"><div [className]="acteDeNaissanceOk?'fa fa-check-circle text-success':'fa fa-check-circle text-light'"></div></div>
+          <div class="row">
+            <div class="col-7">
+              <p style="font-size: 10px">format: ["jpeg", "jpg", "png", "pdf"]</p>
+              <input type="file" id="acteDeNaissance" formControlName="acteDeNaissance" (change)="FileSelect($event,'acteDeNaissance')" required>
+              <p class="smallWord text-danger" *ngIf="acteDeNaissanceAlert"><i class="fa fa-info-circle"></i> Champ Obligatoire! Ce fichier doit respecter les contraintes de taille et de format</p>
+            </div>
+            <div class="col-8 d-flex align-items-center">
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="container col-10 shadow-sm mt-4 p-3" style="border-radius: 7px">
+          <label for="photo">Diplôme <span class="text-danger">*</span> </label>
+          <div class="text-right mr-2"><div [className]="attestationBacOk?'fa fa-check-circle text-success':'fa fa-check-circle text-light'"></div></div>
+          <div class="row">
+            <div class="col-7">
+              <p style="font-size: 10px">format: ["jpeg", "jpg", "png", "pdf"]</p>
+              <input type="file" id="attestationBac" formControlName="attestationBac" (change)="FileSelect($event,'attestationBac')" required>
+              <p class="smallWord text-danger" *ngIf="attestationBacAlert"><i class="fa fa-info-circle"></i> Champ Obligatoire! Ce fichier doit respecter les contraintes de taille et de format</p>
+            </div>
+            <div class="col-8 d-flex align-items-center">
+            </div>
+          </div>
+        </div>
+
+
+        <div class="container col-10 shadow-sm mt-4 p-3" style="border-radius: 7px">
+          <label for="photo">Rélévé <span class="text-danger">*</span> </label>
+          <div class="text-right mr-2"><div [className]="releveBacOk?'fa fa-check-circle text-success':'fa fa-check-circle text-light'"></div></div>
+          <div class="row">
+            <div class="col-7">
+              <p style="font-size: 10px">format: ["jpeg", "jpg", "png", "pdf"]</p>
+              <input type="file" id="releveBac" formControlName="releveBac" (change)="FileSelect($event,'releveBac')" required>
+              <p class="smallWord text-danger" *ngIf="releveBacAlert"><i class="fa fa-info-circle"></i> Champ Obligatoire! Ce fichier doit respecter les contraintes de taille et de format</p>
+            </div>
+            <div class="col-8 d-flex align-items-center">
+            </div>
+          </div>
+        </div>
+
+        <div class="container col-10 shadow-sm mt-4 p-3" style="border-radius: 7px">
+          <label for="photo">Certificat de nationalité <span class="text-danger">*</span> </label>
+          <div class="text-right mr-2"><div [className]="autreOk?'fa fa-check-circle text-success':'fa fa-check-circle text-light'"></div></div>
+          <div class="row">
+            <div class="col-7">
+              <p style="font-size: 10px">format: ["jpeg", "jpg", "png", "pdf"]</p>
+              <input type="file" id="autre" formControlName="autre" (change)="FileSelect($event,'autre')" required>
+              <p class="smallWord text-danger" *ngIf="autreAlert"><i class="fa fa-info-circle"></i> Champ Obligatoire! Ce fichier doit respecter les contraintes de taille et de format</p>
+            </div>
+            <div class="col-8 d-flex align-items-center">
+            </div>
+          </div>
+        </div>
+
+
+        <hr>
+        <div class="text-center mt-2">
+          <span *ngIf="submit_spinner" style="text-align: center;">
+                  <img src="../../../../../assets/gif/spinner.gif" width="60" alt="">
+                </span>
+
+
+          <button mat-raised-button color="warn" matStepperPrevious><span class="material-icons">chevron_left</span> Précédent</button>
+
+          | <button mat-raised-button color="primary" (click)="recapitulatifAlert()" [disabled]="!idPhotoOk || !acteDeNaissanceOk ||
+        !attestationBacOk || !releveBacOk|| !autreOk || firstFormGroup.invalid || secondFormGroup.invalid" *ngIf="!submit_spinner">
+            Récapituler <i class="fa fa-save"></i></button>
+
+
+        </div>
+      </form>
+
+<!--      <div>-->
+<!--        -->
+<!--        <button mat-button matStepperPrevious>Back</button>-->
+<!--        <button mat-button (click)="stepper.reset()">Reset</button>-->
+<!--      </div>-->
+    </mat-step>
+  </mat-horizontal-stepper>
+</div>
+

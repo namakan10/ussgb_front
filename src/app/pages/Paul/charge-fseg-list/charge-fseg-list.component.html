@@ -1,0 +1,193 @@
+<h2 class="text-center">Chargement de la liste des Etudiants</h2>
+
+
+<!--*****************-->
+<div class="container bg-white shadow-sm p-2 mt-2" style="border-radius: 7px">
+  <div class="row">
+    <div class="col-sm-12 col-md-9 col-lg-9">
+      <h3 class="font-weight-bold">LES NORMES </h3>
+      <h6 class="text-danger">Notes : </h6>
+      <h6 class="text-danger">Assurez vous que le fichier réponde aux critères énoncés ci-dessous sans quoi l'import échouera</h6>
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-3 text-right">
+      <button mat-raised-button color="primary" (click)="ChargementsModal()"><i class="fa fa-upload"></i> charger une liste</button>
+    </div>
+  </div>
+  <!--      <a href="../assets/inscriptibles_FSEG_2018_2019.xlsx">Liste des inscriptibles FSEG 2018 2019</a>-->
+  <hr>
+  <div class="alert alert-warning">
+    <h6><strong>Recommander:</strong></h6>
+    Veuillez télécharger un exemplaire de fichier à charger en cliquant
+    <a href="../assets/list_to_charge_exemple.xlsx">  ici <i class="fa fa-download"></i> Liste exemple de liste</a>
+    . La prémière ligne dans le fichier excel est un exemple, veuillez la supprimer.
+
+  </div>
+
+  <!--STATUS-->
+  <div class="mb-3" style="border-left: 1px solid #999595; border-top-left-radius: 7px">
+    <h4><i class="fa fa-dot-circle-o"></i> Valeur des <strong> statuts </strong> possibles</h4>
+    <div class="pl-3">
+      <div class="text-danger">
+        <strong>NB: </strong>*Les tirets du bas sont obligatoires et ne peuvent pas être substitués par tout autre chose*
+      </div>
+      <div>L1 </div>
+      <div>REDOUBLANT_L1 </div>
+      <div>REDOUBLANT_L2 </div>
+      <div>REDOUBLANT_L3 </div>
+      <div>ADMIS_CREDIT_L2 </div>
+      <div>ADMIS_PURS_S3 </div>
+      <div>ADMIS_PURS_L2 </div>
+      <div>ADMIS_PURS_L3 </div>
+      <div>ADMIS_CREDIT_L3 </div>
+      <div>M1 </div>
+      <div>REDOUBLANT_M1 </div>
+      <div>REDOUBLANT_M2 </div>
+      <div>ADMIS_CREDIT_M2 </div>
+      <div>ADMIS_PURS_M2 </div>
+      <div>ADMIS_EQUIVALENCE_L3 </div>
+      <div>ADMIS_EQUIVALENCE_L2 </div>
+      <div>EXCLUS </div>
+      <div>ABANDON </div>
+      <div>DIPLOME_LICENCE</div>
+    </div>
+  </div>
+  <!--TYPE CANDIDATS-->
+  <div class="mb-3" style="border-left: 1px solid #999595; border-top-left-radius: 7px">
+    <h4><i class="fa fa-dot-circle-o"></i> Valeur des <strong> types de candidats </strong> possibles</h4>
+    <div class="pl-3">
+      <div class="text-danger">
+        <strong>NB: </strong>*Les tirets du bas sont obligatoire et ne peuvent pas être substituer par tout autre chose*
+      </div>
+
+      <div>REGULIER </div>
+      <div>MALIEN_DE_L_EXTERIEUR </div>
+      <div>TITRE </div>
+      <div>CANDIDAT_LIBRE </div>
+      <div>ADMIS_PAR_TRANSFERT_DE_CREDIT </div>
+      <div>ETRANGER_UEMOA </div>
+      <div>ETRANGER_HORS_UEMOA </div>
+      <div>MASTER_BOURSIER </div>
+      <div>MASTER </div>
+    </div>
+  </div>
+
+
+  <!--NIVEAUX-->
+  <div class="mb-3" style="border-left: 1px solid #999595; border-top-left-radius: 7px">
+    <h4><i class="fa fa-dot-circle-o"></i> Valeur des <strong> niveaux </strong> possibles</h4>
+    <div class="pl-3">
+      <div> L1 </div>
+      <div> L2 </div>
+      <div> L3 </div>
+      <div> M1 </div>
+      <div> M2 </div>
+    </div>
+  </div>
+
+
+  <!--GENRE-->
+  <div class="mb-3" style="border-left: 1px solid #999595; border-top-left-radius: 7px">
+    <h4><i class="fa fa-dot-circle-o"></i>  Valeur de  <strong>genre </strong> possibles </h4>
+    <div class="pl-3">
+      <div> HOMME </div>
+      <div> FEMME </div>
+
+    </div>
+  </div>
+
+
+  <!--DATE-->
+  <div class="mb-3" style="border-left: 1px solid #999595; border-top-left-radius: 7px">
+    <h4><i class="fa fa-dot-circle-o"></i>  <strong> Format de date à respecter </strong> </h4>
+    <div class="pl-3">
+      <div> annee-mois-jours </div>
+      <div>  <strong>exemple :</strong>  1989-08-15 </div>
+    </div>
+  </div>
+
+
+  <!--ANNEE SCOLAIRE-->
+  <div class="mb-3" style="border-left: 1px solid #999595; border-top-left-radius: 7px">
+    <h4><i class="fa fa-dot-circle-o"></i> <strong>Format de l'année scolaire à respecter </strong> </h4>
+    <div class="pl-3">
+      <div> annee1 - annee2 </div>
+      <div> <strong>exemple :</strong> 2020 - 2021 </div>
+
+      <div class="text-danger">
+        <strong>NB: </strong>*Ne pas oublier l'espace entre le tiret(-) et les années*
+      </div>
+    </div>
+  </div>
+
+  <hr>
+  <h6 class="text-danger">Notes : </h6>
+  <h6 class="text-danger">Assurez vous que le fichier réponde aux critères énoncés ci-dessus sans quoi l'import échouera</h6>
+</div>
+<!--*****************-->
+
+<!--CHARGEMENT MODALE-->
+<div class="modal fade" id="chargementModal" tabindex="-1" aria-labelledby="exel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="exalLabel"><span class="material-icons">point_of_sale</span> Chargement de fichier</h5>
+        <button mat-button data-dismiss="modal"><span class="material-icons text-white">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="shadow-sm p-2" style="border-radius: 7px">
+          <div class="alert alert-info">
+            <div><span><i class="fa fa-info-circle text-danger"></i> </span> <strong> NB:</strong> Veuillez vous assurer que le fichier respect les règles de structurations </div>, de formatages et la bonne année scolaire.</div>
+
+          <div class="form-group">
+            <label for="fil">Fichier <span class="text-danger">*</span></label>
+            <p class="small text-info"><i class="fa fa-info-circle text-danger small"></i>
+              Format excel : [<a href="../assets/exempleListeFSEG.xlsx">expemple de format</a>]</p>
+            <input type="file" id="fil" class="form-control custom_Input" [(ngModel)]="fichierInp" (change)="FileSelect($event)">
+            <div class="form-group">
+              <label for="option">Options <span class="text-danger">*</span></label>
+              <div class="ng-autocomplete" id="option" style="width: 100%">
+                <ng-autocomplete
+                  [data]="Options"
+                  (selected)='OptionSelectEvent($event)'
+                  (inputCleared)="cancel($event)"
+                  [searchKeyword]="keyword"
+                  placeholder="{{uni_fil}} ..."
+                  [itemTemplate]="itemTemplateStatic"
+                  [notFoundTemplate]="notFoundTemplate"
+                  [(ngModel)]="optionInp"
+                >
+                </ng-autocomplete>
+
+                <ng-template #itemTemplateStatic let-item>
+                  <a [innerHTML]="item.nom"></a>
+                </ng-template>
+
+                <ng-template #notFoundTemplate let-notFound>
+                  <div [innerHTML]="notFound"></div>
+                </ng-template>
+              </div>
+
+
+            </div>
+          </div>
+          <div class="text-center mt-2">
+       <span *ngIf="_spinner" style="text-align: center;">
+       <img src="../../../../assets/gif/spinner.gif" width="40" alt="">
+   </span>
+            <button mat-raised-button color="accent" [disabled]="!fileOk || !checkIfNotNull(optionSelect)" (click)="Charger()">
+              Charger
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+

@@ -1,0 +1,230 @@
+
+<mat-card *ngIf="!modifSelct && !creatSelct">
+  <mat-card-content>
+
+    <h2 class="font-weight-bold mt-2 mb-2 text-uppercase text-center">Liste des Enseignants</h2>
+
+    <div class="text-left like-love-list mb-2 mt-2">
+      <button (click)="AjouterEnseignant()" mat-raised-button color="primary">
+        <i class="fa fa-plus"></i>&nbsp;&nbsp; Ajouter un enseignant
+      </button>
+    </div>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Filtre</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="" #input>
+    </mat-form-field>
+
+      <hr/>
+
+    <button (click)="resetToDefaultPassword(selection.selected)" mat-raised-button color="primary" *ngIf="!selection.isEmpty()" style="margin-bottom: 20px;">
+      <i class="fa fa-lock"></i>&nbsp;&nbsp; Reinitialiser mot de passe {{selection.selected.length}}
+    </button>
+
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+
+      <ng-container matColumnDef="selection">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        [aria-label]="checkboxLabel()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+           <div *ngIf="row.user">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row.user.id) : null"
+                        [checked]="selection.isSelected(row.user.id)"
+                        [aria-label]="checkboxLabel(row.user.id)">
+          </mat-checkbox>
+         </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+        <td mat-cell *matCellDef="let element"> {{element.user.nom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="prenom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Prenom</th>
+        <td mat-cell *matCellDef="let element"> {{element.user.prenom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="telephone">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Telephone</th>
+        <td mat-cell *matCellDef="let element"> {{element.user.telephone}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="dateAffectation">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date d'embauche</th>
+        <td type='mediumDate' mat-cell *matCellDef="let element"> {{element.dateEmbauche | date: "dd-MM-yyyy"}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="grade">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Grade</th>
+        <td mat-cell *matCellDef="let element"> {{element.grade}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="statut">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+        <td mat-cell *matCellDef="let element"> {{element.statut}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>
+          <mat-menu #action="matMenu">
+            <button mat-menu-item *ngIf="element.user" (click)="resetToDefaultPassword([element.user.id])">
+              <i class="fa fa-lock text-primary"></i>
+              <span>&nbsp;&nbsp;Reinitialiser mot de passe</span>
+            </button>
+
+            <button mat-menu-item (click)="modifierEnseignant(element.id)">
+              <i class="fa fa-edit text-primary"></i>
+              <span>&nbsp;&nbsp;Modifier</span>
+            </button>
+
+            <button mat-menu-item (click)="ShowEnseignantCarte(element)">
+              <span class="material-icons">print</span>
+              <span> Imprimer la carte </span>
+            </button>
+
+            <button mat-menu-item (click)="supprimerEnseignant(element.id)">
+              <i class="fa fa-trash text-danger"></i>
+              <span>&nbsp;&nbsp;Supprimer</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="loading">
+        <td mat-footer-cell *matFooterCellDef colspan="6">
+          Chargement des données...
+        </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="noData">
+        <td mat-footer-cell *matFooterCellDef colspan="6">
+          Pas de données...
+        </td>
+      </ng-container>
+
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    </table>
+
+    <mat-paginator
+      [length]="length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions">
+
+    </mat-paginator>
+
+  </mat-card-content>
+  <br><br>
+</mat-card>
+
+
+
+<div class="modal fade" id="carteEnseignantModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog  modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+                    <span style="text-align: center;" *ngIf="carteSpinner">
+                        <img src="../../../../assets/media/loading/squard.gif" width="25" alt="">
+		                <span>Veuillez patienter ...</span>
+                    </span>
+          <button *ngIf='select != undefined && !carteSpinner' (click)="imprimerCarte()" type="button" class="btn btn-primary">Imprimer la carte</button>
+        </div>
+
+        <div class="container mt-3">
+          <div class="row">
+            <div class="col">
+              <!--                            // TODO Consulter pierre pour le redimentionnement de la cartes des enseignants-->
+              <div id="face" style="border-radius: 1em 1em; height: 353px; width: 543px; background-image: url('../assets/images/card4.jpg'); border: 7px solid #1a1a27;">
+<!---->
+                <div class="text-dark" style="background-color: white; text-align: center; border-radius: 15px">
+                  <div class="d-flex justify-content-start position-absolute">
+                    <img src="../assets/images/drapeau-mali3.jpg" style="height: 57px; width: 75px" alt="">
+                  </div>
+                  <h1 style="color: #0a0a0a; font-weight: bold">{{user.structure.sigle}}</h1>
+                  <p style="margin-top:-5px; font-size: 10px"><strong>{{user.structure.nom}}</strong></p>
+                </div>
+
+                <div class="d-flex justify-content-center" style="float: right; text-align: center;" *ngIf="select != undefined">
+                  <div>
+                    <div>
+                      <!--                    <img style="border-radius: 50%; height: 130px; width: 130px" src="assets/uploads/photo/{{photo(select.photo)}}" alt="">-->
+                      <img style="border-radius: 50%; height: 130px; width: 130px" src="assets/images/profile.png" alt="">
+                    </div>
+                    <ngx-qrcode qrc-element-type="text" [qrc-value]="select.user.numMatricule">
+                    </ngx-qrcode>
+                  </div>
+                </div>
+                <div style="margin-left: 10px; line-height:8px; padding-top:25px; padding-lef:10px;" *ngIf='select != undefined'>
+                  <p style="word-wrap: break-word; font-weight: bold;"><span style="color: #ffffff; font-weight: bold;" class="text-uppercase font-italic">N° enseignant : &nbsp;</span> <span style="color: black;">{{select.user.numMatricule}}</span></p>
+                  <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: #ffffff; font-weight: bold;" class="text-uppercase font-italic">Nom :&nbsp;</span> {{select.nom}}</p>
+                  <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: #ffffff; font-weight: bold;" class="text-uppercase font-italic">Prénom : &nbsp;</span> {{select.prenom}}</p>
+                  <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: #ffffff; font-weight: bold;" class="text-uppercase font-italic">Nationalité : &nbsp;</span> {{select.nationalite}}</p>
+                  <p style=" color: black; font-weight: bold;"><span style="color: #ffffff; font-weight: bold;" class="text-uppercase font-italic">Téléphone :&nbsp;</span> {{select.user.telephone}}</p>
+                  <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: #ffffff; font-weight: bold;" class="text-uppercase font-italic">Fonction : &nbsp;</span> {{select.specialiteFonction.nom}}</p>
+                  <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: #ffffff; font-weight: bold;" class="text-uppercase font-italic">Fait le :&nbsp;</span> {{ toDay | date: 'dd/MM/yyyy'}}</p>
+
+<!--                  <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: #ffffff; font-weight: bold;" class=text-uppercase font-italic>Né(e) le : &nbsp;</span> {{select.user.dateDeNaissance | date: 'dd-MM-yyyy'}}</p>-->
+<!--                  <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: #ffffff; font-weight: bold;" class=text-uppercase font-italic>A : &nbsp;</span> {{select.user.lieuDeNaissance}}</p>-->
+                  <!--                  <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: #ffffff; font-weight: bold;" class=text-uppercase font-italic>Adresse : &nbsp;</span> {{select.user.quartier}}</p>-->
+
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div id="dos" style="border-radius: 1em 1em; height: 353px; width: 543px; background: white; border: 7px solid #1a1a27;">
+                <br>
+                <h6 style="color: #17a2b8; text-align: center;">
+                  Cette carte ne peut être utilisée que par le signataire autorisé.
+                  <br>
+                  En cas de découverte, veuillez déposer &nbsp;cette carte à la structure {{user.structure.sigle}}.
+                  <br>
+                  <div style="font-weight: bold; color: black; padding-top: 5px;">
+                    En cas de perte, l'intéressé est tenu d'informer le Service des Ressources Humaines de la structure {{user.structure.sigle}} en fournissant un certificat de perte.
+                  </div>
+                </h6>
+                <hr style="border: 1px solid #17a2b8;">
+                <div>
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <img style="border-top-left-radius: 1em; border-top-right-radius: 1em;" height="80" width="180" src="assets/images/ussgb.png" alt="" crossorigin="anonymous">
+                    </div>
+                    <div class="col-sm-6" style="text-align: end;">
+                      <img style="border-top-left-radius: 1em; border-top-right-radius: 1em;" height="80" width="160" src="assets/uploads/logo/{{logo(user.structure.logo)}}" alt="" crossorigin="anonymous">
+                    </div>
+                  </div>
+                </div>
+                <hr style="border: 1px solid #17a2b8;">
+                <h6 style="color: black; text-align: center;">
+                  {{user.structure.adresse}}
+                </h6>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+

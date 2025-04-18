@@ -1,0 +1,493 @@
+<div class="container col-10 mb-4 mt-3 p-3 bg-white shadow-sm">
+
+
+  <h2 class="text-center font-weight-bold">{{id_personnel ? "MODIFICATION" : "AJOUT"}} DES INFORMATIONS
+    D'UN {{typeListe === "enseignants" ? "ENSEIGNANT" : "VACATAIRE"}}</h2>
+  <h6 class="text-center"><strong>les Champs obligatoires ont une <span class="text-danger">*</span></strong></h6>
+
+  <hr>
+  <div class="ml-2">
+    <button mat-raised-button color="warn" (click)="cancel()">
+      <span class="material-icons">
+        reply
+      </span>
+      Annuler
+    </button>
+  </div>
+
+
+  <mat-horizontal-stepper labelPosition="top" #stepper>
+
+    <mat-step [stepControl]="infoFormGroup" errorMessage="Informations personnelles invalides">
+      <form [formGroup]="infoFormGroup">
+
+        <ng-template matStepLabel>Etat civil</ng-template>
+
+        <input type="file" class="file-input" accept="image/*"
+               (change)="onFileSelected($event)" #fileUpload>
+
+        <div style="display: flex; justify-content: center;align-items:center;height: 200px;">
+
+          <mat-card class="example-card" (click)="fileUpload.click()" matTooltip="Choisir une photo">
+            <mat-card-content style="padding: 5px;">
+              <div style="display: flex;justify-content: center;max-height: 190px;max-width: 200px;">
+                <img *ngIf="this.fichierUrl " [src]="this.fichierUrl"
+                alt="fichierUrl" class="center" style="object-fit: fill;" height="190" width="200">
+                
+                <img *ngIf="!this.fichierUrl " [src]="'https://www.creativefabrica.com/wp-content/uploads/2021/10/05/Photo-Upload-Icon-Graphics-18349170-1-1-580x386.jpg'"
+                alt="fichierUrl2" class="center" style="object-fit: fill;" height="190" width="200">
+
+                <!-- <img
+                  [src]="fichierUrl ? _http+fichierUrl : 'https://www.creativefabrica.com/wp-content/uploads/2021/10/05/Photo-Upload-Icon-Graphics-18349170-1-1-580x386.jpg'"
+                  alt="fichierUrl" class="center" style="object-fit: fill;" height="190" width="200"> -->
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Nom</mat-label>
+              <input matInput placeholder="Nom" formControlName="nom" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Prénom</mat-label>
+              <input matInput placeholder="Prénom" formControlName="prenom" required>
+            </mat-form-field>
+
+          </div>
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Genre</mat-label>
+              <mat-select formControlName="genre" required>
+                <mat-option value="Homme">Homme</mat-option>
+                <mat-option value="Femme">Femme</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Date de naissance</mat-label>
+              <input matInput [max]="maxDate" (focus)="picker?.open()"
+                     [matDatepicker]="picker" formControlName="dateDeNaissance" required>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Lieu de naissance</mat-label>
+              <input matInput placeholder="Lieu de naissance" formControlName="lieuDeNaissance" required>
+            </mat-form-field>
+
+          </div>
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Téléphone</mat-label>
+              <input type="tel" matInput placeholder="Téléphone" formControlName="telephone" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Email</mat-label>
+              <input type="email" matInput placeholder="Email" formControlName="email" required>
+            </mat-form-field>
+
+          </div>
+
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Ville</mat-label>
+              <input matInput formControlName="ville" matInput placeholder="Ville" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Quartier</mat-label>
+              <input matInput placeholder="Quartier" formControlName="quartier" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Rue</mat-label>
+              <input matInput placeholder="Rue" formControlName="rue">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Porte</mat-label>
+              <input matInput placeholder="Porte" formControlName="porte">
+            </mat-form-field>
+
+          </div>
+
+        </div>
+
+        <div class="step-btn">
+          <!-- {{this.infoFormGroup.value | json}} -->
+          <button mat-raised-button matStepperNext [disabled]="infoFormGroup.invalid">Carrière</button>
+        </div>
+
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="carriereFormGroup" errorMessage="Carrière invalide">
+      <form [formGroup]="carriereFormGroup">
+
+        <ng-template matStepLabel>Carrière</ng-template>
+
+        <div class="row">
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+            <mat-label>Statut</mat-label>
+            <mat-select formControlName="statut" required>
+              <mat-option [value]="etatFonc"
+                          *ngFor="let etatFonc of PersonnelDonnees.statusFonction">{{etatFonc}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Nationalité</mat-label>
+              <mat-select formControlName="nationalite" required>
+                <mat-option *ngFor="let pays of Pays" [value]="pays">
+                  {{pays}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+
+            <mat-form-field appearance="fill">
+              <mat-label>Numero de matricule</mat-label>
+              <input matInput placeholder="Numero de matricule" formControlName="numMatricule">
+            </mat-form-field>
+
+          </div>
+
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Situation matrimoniale</mat-label>
+              <mat-select formControlName="situation_matrimoniale" required>
+                <mat-option
+                  *ngFor="let statutMatrimo of PersonnelDonnees.situationMatrimoniale" [value]="statutMatrimo">
+                  {{statutMatrimo}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Régime du mariage</mat-label>
+              <mat-select formControlName="regime_mariage" required>
+                <mat-option
+                  *ngFor="let regimeMaria of PersonnelDonnees.regimeMariage"
+                  [value]="regimeMaria">{{regimeMaria}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+
+            <mat-form-field appearance="fill">
+              <mat-label>Nombre d'enfants</mat-label>
+              <input matInput type="number" formControlName="nbreEnfant" placeholder="Nombre d'enfants" required>
+            </mat-form-field>
+
+
+          </div>
+
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Date d'embauche</mat-label>
+              <input matInput [max]="maxDate" (focus)="picker?.open()"
+                     [matDatepicker]="pickerEmbauche" formControlName="dateEmbauche" placeholder="Date d'embauche" required>
+              <mat-datepicker-toggle matSuffix [for]="pickerEmbauche"></mat-datepicker-toggle>
+              <mat-datepicker #pickerEmbauche></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" *ngIf="typeListe !== 'vacataires'">
+              <mat-label>Date dernier avancement</mat-label>
+              <input matInput [max]="maxDate" (focus)="picker?.open()"
+                     [matDatepicker]="pickerDernierAvancement" formControlName="dateDernierAvancement"
+                     placeholder="Date dernier avancement">
+              <mat-datepicker-toggle matSuffix [for]="pickerDernierAvancement"></mat-datepicker-toggle>
+              <mat-datepicker #pickerDernierAvancement></mat-datepicker>
+            </mat-form-field>
+
+          </div>
+
+          <div class="multiple-fields" *ngIf="typeListe !== 'vacataires'">
+
+            <mat-form-field appearance="fill" >
+              <mat-label>Grade</mat-label>
+              <mat-select formControlName="grade" placeholder="grade" required>
+                <mat-option value="ASSISTANT">ASSISTANT</mat-option>
+                <mat-option value="MAITRE_ASSISTANT">MAÎTRE ASSISTANT</mat-option>
+                <mat-option value="MAITRE_CONF">MAÎTRE DE CONFERENCE</mat-option>
+                <mat-option value="MAITRE_RECHERCHE">MAÎTRE DE RECHERCHE</mat-option>
+                <mat-option value="DIRECTEUR_RECHERCHE">DIRECTEUR DE RECHERCHE</mat-option>
+                <mat-option value="CHARGE_RECHERCHE">CHARGE DE RECHERCHE</mat-option>
+                <mat-option value="ATTACHE_RECHERCHE">ATTACHE DE RECHERCHE</mat-option>
+                <mat-option value="PROFESSEUR">PROFESSEUR</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" *ngIf="this.typeListe !== 'vacataires'">
+              <mat-label>Corps</mat-label>
+              <mat-select formControlName="corps" required>
+                <mat-option>--</mat-option>
+                <mat-option *ngFor="let corp of corpPersonnels" [value]="corp">
+                  {{corp}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+
+          <div class="multiple-fields">
+
+<!--          <mat-form-field appearance="fill">-->
+<!--            <mat-label>Département</mat-label>-->
+<!--            <mat-select formControlName="departement_id" required [compareWith]="compareWithId">-->
+<!--              <mat-option>&#45;&#45;</mat-option>-->
+<!--              <mat-option *ngFor="let model of departements" [value]="model.id">-->
+<!--                {{model.nom}}-->
+<!--              </mat-option>-->
+<!--             </mat-select>-->
+<!--          </mat-form-field>-->
+
+<!--            ICI -->
+            <mat-form-field appearance="fill">
+              <mat-label>Département</mat-label>
+              <mat-select formControlName="departement" required [compareWith]="compareWithId">
+                <mat-option>--</mat-option>
+                <mat-option *ngFor="let depart of departements" [value]="depart.id"
+                            (onSelectionChange)="DepSelect(depart.id)">{{depart.nom}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Etat de service</mat-label>
+            <mat-select placeholder="Etat de service" required formControlName="etatService">
+              <mat-option>--</mat-option>
+              <mat-option *ngFor="let etatSerV of etatServicePersonnels" [value]="etatSerV.nom">
+                {{etatSerV.nom}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          </div>
+<!--*ngIf="_RECTORAT" -->
+          <div class="multiple-fields">
+            <mat-form-field appearance="fill">
+              <mat-label>Service</mat-label>
+              <mat-select formControlName="service">
+                <mat-option>--</mat-option>
+                <mat-option *ngFor="let serv of Struc_Services" [value]="serv.id"
+                            (onSelectionChange)="ServiceChange(serv.id)">
+                  {{serv.nom}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Division</mat-label>
+              <mat-select formControlName="division">
+                <mat-option>--</mat-option>
+                <mat-option *ngFor="let division of Divisions" [value]="division.id">
+                  {{division.nom}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </div>
+
+          <div class="multiple-fields" *ngIf="typeListe !== 'vacataires'">
+
+            <mat-form-field appearance="fill" >
+              <mat-label>Spécialite</mat-label>
+              <mat-select formControlName="specialiteFonction" required>
+                <mat-option [value]="model.id" *ngFor="let model of Specialites">{{model.nom}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </div>
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Niveau d'étude</mat-label>
+              <mat-select formControlName="niveau_etude" required>
+                <mat-option *ngFor="let niveauEtud of PersonnelDonnees.niveauxEtude"
+                            [value]="niveauEtud">{{niveauEtud}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" *ngIf="typeListe !== 'vacataires'">
+              <mat-label>Indice</mat-label>
+              <input matInput formControlName="indice" placeholder="indice">
+            </mat-form-field>
+
+          </div>
+
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>
+                Catégorie
+              </mat-label>
+              <mat-select formControlName="categorie" >
+                <mat-option [value]="catego" *ngFor="let catego of PersonnelDonnees.categorie">{{catego}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" *ngIf="typeListe !== 'vacataires'">
+              <mat-label>Echelon</mat-label>
+              <mat-select formControlName="echelon" [required]="this.typeListe !== 'vacataires'">
+                <mat-option [value]="echelon" *ngFor="let echelon of PersonnelDonnees.echelons">{{echelon}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" *ngIf="typeListe !== 'vacataires'">
+              <mat-label>Classe</mat-label>
+              <mat-select formControlName="classe" [required]="this.typeListe !== 'vacataires'">
+                <mat-option [value]="cl" *ngFor="let cl of PersonnelDonnees.classes">{{cl}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+
+          </div>
+
+          <div class="multiple-fields" *ngIf="typeListe !== 'vacataires'">
+            <mat-form-field appearance="fill" >
+              <mat-label>Discipline</mat-label>
+              <input matInput formControlName="discipline" placeholder="Discipline" [required]="this.typeListe !== 'vacataires'">
+            </mat-form-field>
+          </div>
+
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Numéro NINA</mat-label>
+              <input matInput formControlName="numNina" placeholder="Numéro NINA">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Numéro AMO</mat-label>
+              <input matInput formControlName="numAmo" placeholder="Numéro AMO">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Numéro INPS</mat-label>
+              <input matInput formControlName="numInps" placeholder="Numéro INPS">
+            </mat-form-field>
+
+          </div>
+
+
+
+        </div>
+
+        <!-- {{this.carriereFormGroup.value | json}} -->
+
+        <div style="display: flex;justify-content: space-between;">
+          <button mat-raised-button matStepperPrevious>Etat civil</button>
+          <button mat-raised-button matStepperNext [disabled]="carriereFormGroup.invalid" class="mat-btn">Documents
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel>Documents</ng-template>
+
+
+      <div class="row" style="min-height: 400px;">
+
+        <mat-form-field appearance="fill">
+          <mat-label>Type de fichier</mat-label>
+          <mat-select [(ngModel)]="typeFichier">
+            <mat-option *ngFor="let cl of fypeFichiers" [value]="cl.value">{{cl.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div style="display: flex;flex-grow: 2; justify-content: center;flex-wrap: nowrap;"
+             *ngIf="typeFichier">
+
+          <input type="file" class="file-input"
+                 (change)="onDocSelected($event)" #docUpload>
+
+          <mat-card class="example-card" (click)="docUpload.click()">
+            <mat-card-content style="padding: 5px;max-height: 200px;max-width: 200px">
+              <div
+                style="display: flex;flex-direction:column;justify-content: space-between;align-items: center;"
+                matTooltip="Ajouter un nouveau fichier">
+
+                <img mat-card-image
+                     src="https://www.creativefabrica.com/wp-content/uploads/2021/10/05/Photo-Upload-Icon-Graphics-18349170-1-1-580x386.jpg"
+                     alt="fichierUrl" height="180" width="180" style="object-fit: fill">
+
+                <div>Nouveau document</div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+        </div>
+
+
+        <div style="min-height: 90%;
+        min-width: 100%; display: flex;flex-grow: 4;
+         justify-content: flex-start;flex-wrap: wrap;margin-top: 20px">
+
+          <mat-card class="example-card" *ngFor="let doc of docData; let i=index;" style="height: 200px;width: 200px;">
+
+            <mat-card-content style="padding: 5px;display: flex;justify-content: space-between;flex-direction:column;">
+              <div
+                style="display: flex;justify-content: center;align-items: center;">
+
+                <img mat-card-image [src]="doc.docUrl" alt="fichierUrl" style="position: relative;object-fit: fill;"
+                     height="180" width="180">
+
+                <mat-icon color="warn" matTooltip="Supprimer le document {{typeWording(doc.type) | lowercase}}"
+                          (click)="removeDoc(doc)"
+                          style="position: absolute;top: 10px;right: 10px">delete
+                </mat-icon>
+              </div>
+
+              <div style="display: flex;justify-content:center;align-items:center;font-size: 13px;font-weight: bold;">
+                <div>{{typeWording(doc.type) | uppercase}}</div>
+              </div>
+            </mat-card-content>
+
+          </mat-card>
+
+        </div>
+
+      </div>
+
+
+      <div style="margin-top: 20px;display: flex;justify-content: space-between;">
+        <button mat-raised-button matStepperPrevious>Carrière</button>
+        <button mat-raised-button color="primary" class="mat-btn"
+                [disabled]="infoFormGroup.invalid || carriereFormGroup.invalid" (click)="apply()">
+          VALIDER {{id_personnel ? "LA MODIFICATION" : "L'AJOUT"}}
+        </button>
+      </div>
+
+    </mat-step>
+
+  </mat-horizontal-stepper>
+
+
+</div>
+
+

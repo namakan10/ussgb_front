@@ -1,0 +1,192 @@
+<div class="widget-text-box">
+
+  <div class="row">
+    <div class="col-8">
+      <h2
+        style="float: left;">{{formPanel ? (affectationSelected.id ? 'Modifier' : 'Affecter un enseignant') : 'Affectations des enseignants'}}</h2>
+    </div>
+    <div class="col-4">
+      <button (click)="addAffectation()" *ngIf="!formPanel" color="primary" mat-raised-button style="float: right;"><i
+        class="fa fa-user-times"></i> <i class="fa fa-plus"></i> Affecter un enseignant
+      </button>
+      <button (click)="changePanel()" *ngIf="formPanel" color="primary" mat-raised-button style="float: right;"><i
+        class="fa fa-user-times"></i> <i class="fa fa-plus"></i> Affectations des enseignants
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="error && error">
+  <br>
+  <br>
+  <div class="alert alert-danger" role="alert">
+    {{error}}
+  </div>
+</div>
+<div *ngIf="message != null">
+  <br>
+  <br>
+  <div class="alert alert-success" role="alert">
+    {{message}}
+  </div>
+</div>
+
+
+<div *ngIf="formPanel" class="formPanel" style="margin-top: 5%;width: 60%;margin-left: 20%">
+  <div class="mat-elevation-z8" style="padding: 2%">
+
+    <form [formGroup]="form" novalidate="" role="form">
+
+      <div class="multiple-fields">
+        <mat-form-field appearance="fill">
+          <mat-label>Date d'affectation</mat-label>
+          <input [matDatepicker]="picker1" formControlName="dateAffection" matInput name="dateAffection" required>
+          <mat-datepicker-toggle [for]="picker1" matSuffix></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+          <mat-error
+            *ngIf="form.controls['dateAffection'].invalid && form.controls['dateAffection'].dirty && form.controls['dateAffection'].errors['required']">
+            Ce champs est obligatoire!
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="multiple-fields">
+        <mat-form-field appearance="fill">
+          <mat-label>Enseignant</mat-label>
+          <mat-select [compareWith]=compareById formControlName="user" name="user" placeholder="Enseignant" required>
+            <mat-option *ngFor="let u of enseignants" [value]="u.user">
+              {{u.user.prenom}} {{u.user.nom}} | {{u.grade}} | {{u.specialiteFonction.nom}}
+            </mat-option>
+          </mat-select>
+
+          <mat-error
+            *ngIf="form.controls['user'].invalid && form.controls['user'].dirty && form.controls['user'].errors['required']">
+            Ce champ est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+
+
+      </div>
+
+
+      <div class="multiple-fields">
+        <mat-form-field appearance="fill">
+          <mat-label>Fonctions</mat-label>
+          <mat-select (selectionChange)="onFonction($event.value)" [compareWith]=compareById formControlName="fonction"
+                      name="fonction" placeholder="Fonctions" required>
+            <mat-option *ngFor="let d of fonctions; index as i;" [value]="d">
+              {{d.nom}}
+            </mat-option>
+          </mat-select>
+          <mat-error
+            *ngIf="form.controls['fonction'].invalid && form.controls['fonction'].dirty && form.controls['fonction'].errors['required']">
+            Ce champ est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Département</mat-label>
+          <mat-select (selectionChange)="onDepartement($event.value)" [compareWith]=compareById formControlName="departement"
+                      name="service" placeholder="Services" required>
+            <mat-option *ngFor="let d of departements; index as i;" [value]="d">
+              {{d.nom}}
+            </mat-option>
+          </mat-select>
+
+          <mat-error
+            *ngIf="form.controls['departement'].invalid && form.controls['departement'].dirty && form.controls['departement'].errors['required']">
+            Ce champ est obligatoire
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+
+      <div class="multiple-fields">
+        <input
+          #fileInput
+          (change)="onFileChanged($event)" accept="application/pdf,.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+          style="display: none"
+          type="file">
+        <button (click)="fileInput.click()">Selectionnez le document</button>
+      </div>
+
+      <div class="text-right">
+        <button type="reset" class="btn btn-info mt-3" *ngIf="!affectationSelected.id"><i class="fa fa-history text-danger"></i></button>
+        <button (click)="applySave()" [disabled]="!form.valid" class="btn btn-block btn-primary mt-3" type="submit" *ngIf="!affectationSelected.id">Enregistrer</button>
+        <button (click)="applyEdite()" [disabled]="!form.valid" class="btn btn-block btn-primary mt-3" type="submit" *ngIf="affectationSelected.id">Modifier</button>
+      </div>
+
+
+    </form>
+
+  </div>
+</div>
+
+<div *ngIf="!formPanel" class="formPanel">
+
+  <div class="multiple-fields" style="width: 50%;float: right;margin-top: 40px;">
+    <mat-form-field appearance="fill">
+      <mat-label>Chercher une affectation</mat-label>
+      <input #input (keyup)="applyFilter($event)" matInput placeholder="Chercher ...">
+    </mat-form-field>
+  </div>
+
+  <div class="mat-elevation-z8">
+    <table [dataSource]="dataSource" mat-table matSort>
+
+      <ng-container matColumnDef="id">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> #</th>
+        <td *matCellDef="let row" mat-cell> {{row.id}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="date">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Date affection</th>
+        <td *matCellDef="let row" mat-cell> {{row.dateAffection | date: "dd-MM-yyyy"}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="enseignant">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Enseignant</th>
+        <td *matCellDef="let row" mat-cell> {{row.user.prenom }} {{row.user.nom }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fonction">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Fonction</th>
+        <td *matCellDef="let row" mat-cell> {{row.fonction?.nom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="departement">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Département</th>
+        <td *matCellDef="let row" mat-cell> {{row.departement?.nom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Action</th>
+        <td *matCellDef="let row" mat-cell>
+          <div class="btn-group" dropdown>
+            <div style="margin-left: 50px;">
+              <i [matMenuTriggerFor]="menu" class="fa fa-ellipsis-v" style="font-size: 20px; cursor: pointer;"></i>
+            </div>
+            <mat-menu #menu="matMenu">
+              <a mat-menu-item href="http://{{row.document}}" target="_blank">Document</a>
+              <button  mat-menu-item>Historique</button>
+            </mat-menu>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+
+      <tr *matNoDataRow class="mat-row">
+        <td class="mat-cell" colspan="4">Pas d'affectation pour le moment"</td>
+      </tr>
+    </table>
+    <mat-paginator
+      [length]="length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions">
+
+    </mat-paginator>
+  </div>
+</div>

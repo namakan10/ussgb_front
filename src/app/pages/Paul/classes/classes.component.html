@@ -1,0 +1,181 @@
+<div class="container">
+  <div class="row" style="padding: 20px;">
+
+<!--    (change)="changeAnnee($event)"-->
+    <div class="col-sm-3">
+      <label for="annee_scolaire">Année scolaire <span class="text-danger">*</span></label>
+      <select  class="form-control" [(ngModel)]="annee_scolaire" name="annee_scolaire" id="annee_scolaire">
+        <option value=""></option>
+        <option *ngFor="let annee of anneeStructure" [value]="annee.anneeScolaire">{{annee.anneeScolaire}}</option>
+      </select>
+    </div>
+<!--    <div class="col-sm-3">-->
+<!--      <label for="niveau">Niveau <span class="text-danger">*</span></label>-->
+<!--      <select  [(ngModel)]="niveau" class="form-control" name="niveau" id="niveau" aria-label="Default select example">-->
+<!--        <option value="all">Tout</option>-->
+<!--        <option value="L1">L1</option>-->
+<!--        <option value="L2">L2</option>-->
+<!--        <option value="L3">L3</option>-->
+<!--        <option value="M1">M1</option>-->
+<!--        <option value="M2">M2</option>-->
+<!--      </select>-->
+<!--      </div>-->
+    <div class="col-sm-3">
+      <button (click)="GetClasses()" mat-raised-button color="accent"> Afficher </button>
+
+    </div>
+  </div>
+</div>
+  <hr>
+  <button type="button" (click)="exportexcel()" class="btn btn-success">Exporter en Excel</button>
+  <div class="row">
+    <div class="col-12">
+      <div class="col-4">
+        <mat-form-field>
+          <mat-label>FILTRE</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+        </mat-form-field>
+      </div>
+      
+      <div id="excel-table">
+        <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+
+          <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+
+          <ng-container matColumnDef="Libelle">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Sigle</th>
+            <td mat-cell *matCellDef="let element"> {{element.libelle}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Nom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+            <td mat-cell *matCellDef="let element"> {{element.nom}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="niveau">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Niveau</th>
+            <td mat-cell *matCellDef="let element"> {{element.niveau}} </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>
+              <mat-menu #action="matMenu">
+
+                <button mat-menu-item (click)="getEtudiants(element)">
+                  <i class="fa fa-users"></i>
+                  <span>&nbsp;&nbsp;Etudiants</span>
+                </button>
+
+
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="loading">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Chargement des données...
+            </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="noData">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Pas de données...
+            </td>
+          </ng-container>
+
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator
+          [length]="length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions">
+
+        </mat-paginator>
+
+
+      </div>
+    </div>
+  </div>
+
+<div class="modal fade" id="ListClassEtudiantsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">list</span>Etudiants {{classeName}} </h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+       <div class="form-group">
+         <label for="group">Groupes</label>
+         <select name="group" id="group" class="form-control custom_Input"
+                 (change)="filterGroup($event)">
+           <option value=""></option>
+           <option value="{{gp}}" *ngFor="let gp of Groups">{{gp}}</option>
+         </select>
+       </div>
+        <div>
+          <button class="btn btn-sm btn-danger" (click)="PrintPDF()"><i class="fa fa-file-pdf-o"></i> PDF</button>|
+          <button class="btn btn-sm btn-success" (click)="exportexcel()"><i class="fa fa-file-excel-o"></i> Excel</button>
+        </div>
+        <div id="print">
+          <h3 class="text-center">{{this.classeName}}</h3>
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <th>Num matricule</th>
+              <th>Prénom</th>
+              <th>Nom</th>
+              <th>nationalité</th>
+              <th>Groupe</th>
+              <th>Tel</th>
+              <th>Scolarité</th>
+              <th>Statut</th>
+              <th>Type de candidat</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr cla *ngFor="let etudiants of classeEtudiants">
+              <td class="text-center">
+                <img src="{{parseImage(etudiants.user.photo)}}" style="height: 50px; width: 50px" alt="">
+                <h6 class="text-center">
+                  <span *ngIf="etudiants.isResponsableGroupe">
+                    <i class="fa fa-star text-warning"></i>
+                    <span class="small text-info">Responsable <span class="text-dark font-weight-bolder">G{{etudiants.groupe.libelle}}</span></span>
+                  </span>
+                  {{etudiants.numEtudiant}}
+                </h6>
+              </td>
+              <td>{{etudiants.prenom}}</td>
+              <td>{{etudiants.nom}}</td>
+              <td>{{etudiants.nationalite}}</td>
+              <td>{{etudiants.groupe.libelle}}</td>
+              <td>{{etudiants.user.telephone}}</td>
+              <td>{{etudiants.scolarite}}</td>
+              <td>{{etudiants.statut}}</td>
+              <td>{{etudiants.typeCandidat}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <span *ngIf="loading" style="text-align: center;">
+          <img src="../../../../assets/gif/spinner.gif" width="45" alt="">
+        </span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

@@ -1,0 +1,177 @@
+<div class="row">
+    <div class="col-sm-12">
+<h2 style="float: left;">Gestion des questionnaires</h2>
+
+<div style="float: right;">
+    <button type="button" mat-button style="background-color: green; color: white;" (click)="showModal()">Ajouter des questions</button>
+</div>
+<div *ngIf="error && error.error">
+    <br>
+    <br>
+    <div class="alert alert-danger" role="alert">
+    {{error.error}}
+  </div>
+</div>
+<div *ngIf="message != null" >
+    <br>
+    <br>
+  <div class="alert alert-success" role="alert">
+    {{message}}
+  </div>
+</div>
+<div *ngIf="spinner">
+  <br>
+  <br>
+  <img src="assets/gif/spinner.gif" width="70" alt="">
+</div>
+
+</div>
+    <div class="col-sm-12">
+        <br>
+        <br>
+        <h3 style="background-color: #1e88e5; padding: 5px 10px; width: 400px;">Cours magistral</h3>
+        <table class="table bg-white">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Question</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="allQuestion">
+              <tr *ngFor="let question of allQuestion.questionsCM">
+                <td>{{question.question}}</td>
+                <td (click)="deleteQuestion(question.id)"><mat-icon style="cursor: pointer;"> delete_outline </mat-icon></td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+    <div class="col-sm-12">
+        <br>
+        <br>
+        <h3 style="background-color: #1e88e5; padding: 5px 10px; width: 400px;">Syllabus</h3>
+        <table class="table bg-white">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Question</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="allQuestion">
+              <tr *ngFor="let question of allQuestion.questionsSyllabus">
+                <td>{{question.question}}</td>
+                <td (click)="deleteQuestion(question.id)"><mat-icon style="cursor: pointer;"> delete_outline </mat-icon></td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+    <div class="col-sm-12">
+        <br>
+        <br>
+        <h3 style="background-color: #1e88e5; padding: 5px 10px; width: 400px;">TD/TP</h3>
+        <table class="table bg-white">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Question</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="allQuestion">
+              <tr *ngFor="let question of allQuestion.questionsTD_TP">
+                <td>{{question.question}}</td>
+                <td (click)="deleteQuestion(question.id)"><mat-icon  style="cursor: pointer;"> delete_outline </mat-icon></td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+    <div class="col-sm-12">
+        <br>
+        <br>
+        <h3 style="background-color: #1e88e5; padding: 5px 10px; width: 400px;">Evaluation</h3>
+        <table class="table bg-white">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Question</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="allQuestion">
+              <tr *ngFor="let question of allQuestion.questionsEvaluation">
+                <td>{{question.question}}</td>
+                <td (click)="deleteQuestion(question.id)"><mat-icon  style="cursor: pointer;"> delete_outline </mat-icon></td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+</div>
+
+
+
+
+<!-- POUR LA CREATION DEVALUATION -->
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: #1e88e5; color: white;">
+          <h5 class="modal-title" id="staticBackdropLabel">{{action}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true" style="color: white;">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div style="float: right;">
+                <button type="button" mat-button style="background-color: green; color: white;" (click)="addQuantity()"><mat-icon> add </mat-icon></button>
+            </div>
+          <form class="border border-light p-5">
+            <div style="overflow-y: auto; max-height: 450px;" class="modal-body">
+              <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+                {{error.error}}
+              </div>
+              <div *ngIf="message != null" class="alert alert-success" role="alert">
+                {{message}}
+              </div>
+              <div *ngIf="spinner">
+                <img src="assets/gif/spinner.gif" width="70" alt="">
+              </div>
+              
+              <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+                <div class="col-sm-12">
+                    <mat-form-field appearance="fill">
+                      <mat-label>Type</mat-label>
+                      <mat-select id="name" name="type" formControlName="type">
+                          <mat-option value="Syllabus">Syllabus</mat-option>
+                          <mat-option value="CM">Cours magistral</mat-option>
+                          <mat-option value="TD_TP">TD/TP</mat-option>
+                          <mat-option value="Evaluation">Evaluation</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div  formArrayName="quantities">
+                        <div class="row" *ngFor="let quantity of quantities().controls; let i=index" [formGroupName]="i">
+                                <div class="col-sm-10">
+                                    <mat-form-field class="example-full-width">
+                                      <mat-label>Question</mat-label>
+                                      <input type="text" formControlName="question" matInput
+                                      >
+                                    </mat-form-field>
+                                  </div>
+                                <div class="col-sm-2">
+                                    <button (click)="removeQuantity(i)" class="btn btn-danger"><mat-icon> delete_outline </mat-icon></button>
+                                </div>
+                            </div>
+                        </div>
+                        </form>
+                          
+            </div>
+              <div class="modal-footer">
+                <div *ngIf="spinner">
+                  <img src="assets/gif/spinner.gif" width="70" alt="">
+              </div>
+                <button type="button" mat-button style="background-color: coral; color: white;" class="waves-light" data-dismiss="modal"mdbWavesEffect>Fermer</button>
+                <button *ngIf="action == 'Ajout des questions'" (click)="onSubmit()" type="button" mat-button style="background-color: #1e88e5; color: white;" class="relative waves-light" mdbWavesEffect>Ajouter</button>
+                <button *ngIf="action == 'Modification des questions'" (click)="onUpdate()" type="button" mat-button style="background-color: #1e88e5; color: white;" class="relative waves-light" mdbWavesEffect>Modifier</button>
+              </div>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>

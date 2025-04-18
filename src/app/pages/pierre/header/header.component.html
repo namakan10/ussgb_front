@@ -1,0 +1,398 @@
+<nav class="sticky-top">
+  <input type="checkbox" id="check">
+  <label for="check" class="checkbtn">
+    <i class="fas fa-bars"></i>
+  </label>
+  <label class="logo bg-white" style="border-bottom-right-radius: 50%">
+    <img [src]="src" style="height: 79px" alt="">
+  </label>
+<!--  class="homeLogo"-->
+  <ul>
+    <li>
+      <a routerLinkActive="active" routerLink="/pages/utilisateur/home" (click)="navigateHome()">
+      <span class="material-icons">home</span>
+        Accueil
+      </a>
+    </li>
+    <li>
+      <a href="../assets/manuels/{{env === 'usttb' ? 'usttb' : 'ussgb'}}/Manuel-Etudiant.pdf"
+         (click)="offreSelected = true">
+        <span class="material-icons">download</span>
+        Manuel étudiants
+      </a>
+<!--      <a routerLinkActive="active" routerLink="/pages/utilisateur/home" (click)="navigateHome()">-->
+<!--      <span class="material-icons">home</span>-->
+<!--        Accueil-->
+<!--      </a>-->
+    </li>
+<!--    <li>-->
+<!--      <a href="assets/mobile.apk">-->
+<!--        <span class="material-icons text-success small">android</span>-->
+<!--        Android-->
+<!--      </a>-->
+<!--    </li>-->
+        <li *ngIf="hasRoleEtudiant()">
+          <a routerLinkActive="active" routerLink="/" (click)="deconnection()">
+            <span class="material-icons text-success small">list</span>
+            Deconnexion
+          </a>
+        </li>
+
+    <li *ngIf="structureSelected">
+      <a [matMenuTriggerFor]="Offresmenu" [className]="offreSelected?'active':''" style="cursor: pointer">
+        Offres
+        <span class="material-icons small">expand_more</span>
+      </a>
+    </li>
+<!--    <li>-->
+<!--      <a >-->
+<!--        -->
+<!--        -->
+<!--      </a>-->
+<!--    </li>-->
+    <li>
+      <a (click)="color('connexion')" *ngIf="!user" [matMenuTriggerFor]="profile">
+        <span class="material-icons">login</span>
+        Connexion
+      </a>
+    </li>
+  </ul>
+
+  <mat-menu #Offresmenu="matMenu">
+
+    <button mat-menu-item routerLink="/pages/utilisateur/offre/structure" (click)="offreSelected = true">
+      <span class="material-icons">card_giftcard</span>
+      Offres
+    </button>
+
+
+<!--    <button mat-menu-item routerLink="/pages/utilisateur/List_offre_entreprise" (click)="offreSelected = true">-->
+<!--      <span class="material-icons">card_membership</span>-->
+<!--      Offres entreprises-->
+<!--    </button>-->
+  </mat-menu>
+
+  <mat-menu  #profile="matMenu" class="mymegamenu">
+
+    <div (click)="$event.stopPropagation()">
+
+      <div *ngIf="spinner" style="text-align: right;">
+        <img style="position: absolute; margin-left: -100px;" src="assets/gif/spinner.gif" width="70" alt="">
+      </div>
+
+      <form  *ngIf="state == 0" class="p-5" [formGroup]="loginForm" (ngSubmit)="login()">
+        <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+          {{error.error}}
+        </div>
+
+        <p class="h4 mb-4">Connexion</p>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Nom d'utilisateur</mat-label>
+          <span matPrefix><i class="fa fa-user" style="font-size: 20px;"></i></span>
+          <input (change)="change()" matInput type="text" formControlName="username" id="form1"
+                 class="form-control form-control-sm black-text"
+                 [ngClass]="{'is-invalid' : loginForm.get('username').touched && loginForm.get('username').invalid}"
+                 autocomplete="off">
+        </mat-form-field>
+        <ng-container *ngIf="loginForm.get('username').touched && loginForm.get('username').errors?.required">
+          <p class="caption status-danger text-danger" style="font-size: 15px;">
+            Veuillez saisir le nom d'utilisateur !
+          </p>
+        </ng-container>
+
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Mot de passe</mat-label>
+          <span matPrefix><i class="fa fa-key" style="font-size: 20px;"></i></span>
+          <input (change)="change()" matInput type="password" formControlName="password" id="form2"
+                 class="form-control form-control-sm black-text"
+                 [ngClass]="{'is-invalid' : loginForm.get('password').touched && loginForm.get('password').invalid}"
+                 autocomplete="off">
+        </mat-form-field>
+        <ng-container>
+          <p class="caption status-danger text-danger" style="font-size: 15px;"
+             *ngIf="loginForm.get('password').touched && loginForm.get('password').errors?.required">
+            Mot de passe réquis !
+          </p>
+        </ng-container>
+
+        <!-- Send button -->
+        <button mat-raised-button color="primary" type="submit" [disabled]="disabledSubmitButton">Se connecter</button>
+        <p (click)="state = 1" style="text-align: right; color: green; cursor: pointer; padding-top: 20px;">Mot de passe oublié ?</p>
+
+      </form>
+
+      <form *ngIf="state == 1" class="p-5" [formGroup]="emailForm" (ngSubmit)="reset()">
+        <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+          {{error.error}}
+        </div>
+        <br>
+        <p class="h4 mb-4">Demande de code</p>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Votre email</mat-label>
+          <span matPrefix><i class="fa fa-envelope" style="font-size: 20px;"></i></span>
+          <input (change)="change()" matInput type="text" formControlName="email" id="form6"
+                 class="form-control form-control-sm black-text"
+                 [ngClass]="{'is-invalid' : emailForm.get('email').touched && emailForm.get('email').invalid}"
+                 autocomplete="off">
+        </mat-form-field>
+        <ng-container *ngIf="emailForm.get('email').touched && emailForm.get('email').errors?.required">
+          <p class="caption status-danger text-danger" style="font-size: 15px;">
+            Veuillez saisir une adresse email valide !
+          </p>
+        </ng-container>
+        <!-- Send button -->
+        <button mat-raised-button color="primary" type="submit" [disabled]="disabledSubmitButton2">Envoyer</button>
+
+        <p (click)="state = 0" style=" padding-top: 20px; text-align: right; color: green; cursor: pointer;">Se connecter ?</p>
+
+      </form>
+
+      <form *ngIf="state == 2" class="p-5" [formGroup]="tokenForm" (ngSubmit)="sendToken()">
+        <div *ngIf="messageRes != null" class="alert alert-success" role="alert">
+          {{this.messageRes}}
+        </div>
+        <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+          {{error.error}}
+        </div>
+
+        <p class="h4 mb-4">Changement</p>
+
+        <div>
+          {{message}}
+        </div>
+
+        <mat-form-field class="example-full-width">
+          <mat-label>Code de réinitialisation</mat-label>
+          <span matPrefix><i class="fa fa-pencil" style="font-size: 20px;"></i></span>
+          <input (change)="change()" matInput type="text" formControlName="token" id="form3"
+                 class="form-control form-control-sm black-text"
+                 [ngClass]="{'is-invalid' : tokenForm.get('token').touched && tokenForm.get('token').invalid}"
+                 autocomplete="off">
+        </mat-form-field>
+
+        <ng-container *ngIf="tokenForm.get('token').touched && tokenForm.get('token').errors?.required">
+          <p class="caption status-danger text-danger" style="font-size: 15px;">
+            Veuillez saisir le code de réinitialisation envoyé !
+          </p>
+        </ng-container>
+        <!-- Password -->
+        <mat-form-field class="example-full-width">
+          <mat-label>Nouveau mot de passe</mat-label>
+          <span matPrefix><i class="fa fa-key" style="font-size: 20px;"></i></span>
+          <input (change)="change()" matInput type="password" formControlName="newPassword" id="form4"
+                 class="form-control form-control-sm black-text"
+                 [ngClass]="{'is-invalid' : tokenForm.get('newPassword').touched && tokenForm.get('newPassword').invalid}"
+                 autocomplete="off">
+        </mat-form-field>
+        <ng-container>
+          <p class="caption status-danger text-danger" style="font-size: 15px;"
+             *ngIf="tokenForm.get('newPassword').touched && tokenForm.get('newPassword').errors?.required">
+            Nouveau mot de passe réquis !
+          </p>
+        </ng-container>
+        <!-- Password -->
+        <mat-form-field class="example-full-width">
+          <mat-label>Retapez le mot de passe</mat-label>
+          <span matPrefix><i class="fa fa-key" style="font-size: 20px;"></i></span>
+          <input (change)="change()" matInput type="password" formControlName="confirmPassword" id="form5"
+                 class="form-control form-control-sm black-text"
+                 [ngClass]="{'is-invalid' : tokenForm.get('confirmPassword').touched && tokenForm.get('confirmPassword').invalid}"
+                 autocomplete="off">
+        </mat-form-field>
+
+        <ng-container>
+          <p class="caption status-danger text-danger" style="font-size: 15px;"
+             *ngIf="tokenForm.get('confirmPassword').touched && tokenForm.get('confirmPassword').errors?.required">
+            Retapez le nouveau mot de passe !
+          </p>
+        </ng-container>
+
+        <!-- Send button -->
+        <button mat-raised-button color="primary" type="submit" [disabled]="disabledSubmitButton3">Changer</button>
+
+        <p (click)="state = 0" style=" padding-top: 20px; text-align: right; color: green; cursor: pointer;">Se connecter ?</p>
+
+      </form>
+
+    </div>
+
+  </mat-menu>
+
+  <button (click)="color('')" *ngIf="user" [matMenuTriggerFor]="profile2" mat-icon-button class="m-r-5"> <img src="https://{{user.users.photo}}" alt="user" class="profile-pic"></button>
+  <mat-menu #profile2="matMenu" class="mymegamenu">
+    <button mat-menu-item [routerLink]="['/pages/utilisateur/profil' ]">
+      <mat-icon> assignment_ind </mat-icon> Mon profil </button>
+    <button mat-menu-item (click)="ShowEMploi()">
+      <mat-icon> calendar_today </mat-icon> Emploi du temps </button>
+    <button *ngIf="!hasRoleEtudiant()" mat-menu-item [routerLink]="['/admin' ]">
+      <mat-icon>settings</mat-icon> Administration </button>
+    <button mat-menu-item (click)="deconnection()">
+      <mat-icon>exit_to_app</mat-icon> Déconnexion </button>
+  </mat-menu>
+
+
+
+
+  <!--  <div *ngIf="structureSelected">-->
+
+<!--    <button *ngIf="hasRoleEtudiant()" (click)="gestionReclamationEtudiants()" class="m-r-20 hidden-sm-up" mat-raised-button [color]="active ==='reclamation'? 'warn':''">-->
+<!--      <i class="fa fa-money"></i> Mes réclamations-->
+<!--    </button>-->
+
+<!--    <button *ngIf="hasRoleEtudiant()" (click)="navigateOffreEntreprise()" class="m-r-20 hidden-sm-up" mat-raised-button [color]="active ==='offreEntre'? 'warn':''">-->
+<!--      <i class="fa fa-money"></i> offre des entreprise-->
+<!--    </button>-->
+
+<!--&lt;!&ndash;    <button (click)="navigateOffreStage()" class="m-r-20 hidden-sm-up" mat-raised-button [color]="active ==='offre'? 'warn':''">&ndash;&gt;-->
+<!--&lt;!&ndash;      <i class="fa fa-money"></i> offre&ndash;&gt;-->
+<!--&lt;!&ndash;    </button>&ndash;&gt;-->
+<!--  </div>-->
+
+
+</nav>
+
+
+<div class="modal fade" id="staticBackdrop12" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header"  style="background-color: #1e88e5; color: white;">
+        <h5 class="modal-title" id="staticBackdropLabel">Mon emploi du temps</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th scope="col">Lundi</th>
+            <th scope="col">Mardi</th>
+            <th scope="col">Mercredi</th>
+            <th scope="col">Jeudi</th>
+            <th scope="col">Vendredi</th>
+            <th scope="col">Samedi</th>
+            <th scope="col">Dimanche</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr >
+
+            <td>
+              <div *ngFor="let em of AllSeance.lundi; let i = index">
+                <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                <strong style="color: red;">{{em.typeSeance}}</strong>
+                <br>
+                <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                <br>
+                <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                <br>
+                <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut[0]}}h:{{em.heureDebut[1]}} à {{em.heureFin[0]}}h:{{em.heureFin[1]}}
+                <br>
+                <strong style="color: green;">{{em.enseignant.user.prenom}} {{em.enseignant.user.nom}}</strong>
+              </div>
+            </td>
+
+            <td>
+              <div *ngFor="let em of AllSeance.mardi; let i = index">
+                <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                <strong style="color: red;">{{em.typeSeance}}</strong>
+                <br>
+                <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                <br>
+                <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                <br>
+                <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut[0]}}h:{{em.heureDebut[1]}} à {{em.heureFin[0]}}h:{{em.heureFin[1]}}
+                <br>
+                <strong style="color: green;">{{em.enseignant.user.prenom}} {{em.enseignant.user.nom}}</strong>
+              </div>
+            </td>
+
+            <td>
+              <div *ngFor="let em of AllSeance.mercredi; let i = index">
+                <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                <strong style="color: red;">{{em.typeSeance}}</strong>
+                <br>
+                <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                <br>
+                <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                <br>
+                <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut[0]}}h:{{em.heureDebut[1]}} à {{em.heureFin[0]}}h:{{em.heureFin[1]}}
+                <br>
+                <strong style="color: green;">{{em.enseignant.user.prenom}} {{em.enseignant.user.nom}}</strong>
+              </div>
+            </td>
+
+            <td>
+              <div *ngFor="let em of AllSeance.jeudi; let i = index">
+                <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                <strong style="color: red;">{{em.typeSeance}}</strong>
+                <br>
+                <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                <br>
+                <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                <br>
+                <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut[0]}}h:{{em.heureDebut[1]}} à {{em.heureFin[0]}}h:{{em.heureFin[1]}}
+                <br>
+                <strong style="color: green;">{{em.enseignant.user.prenom}} {{em.enseignant.user.nom}}</strong>
+              </div>
+            </td>
+
+            <td>
+              <div *ngFor="let em of AllSeance.vendredi; let i = index">
+                <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                <strong style="color: red;">{{em.typeSeance}}</strong>
+                <br>
+                <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                <br>
+                <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                <br>
+                <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut[0]}}h:{{em.heureDebut[1]}} à {{em.heureFin[0]}}h:{{em.heureFin[1]}}
+                <br>
+                <strong style="color: green;">{{em.enseignant.user.prenom}} {{em.enseignant.user.nom}}</strong>
+              </div>
+            </td>
+
+            <td>
+              <div *ngFor="let em of AllSeance.samedi; let i = index">
+                <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                <strong style="color: red;">{{em.typeSeance}}</strong>
+                <br>
+                <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                <br>
+                <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                <br>
+                <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut[0]}}h:{{em.heureDebut[1]}} à {{em.heureFin[0]}}h:{{em.heureFin[1]}}
+                <br>
+                <strong style="color: green;">{{em.enseignant.user.prenom}} {{em.enseignant.user.nom}}</strong>
+              </div>
+            </td>
+
+            <td>
+              <div *ngFor="let em of AllSeance.dimanche; let i = index">
+                <hr *ngIf="i != 0" style="border-bottom: 2px solid black;">
+                <strong style="color: red;">{{em.typeSeance}}</strong>
+                <br>
+                <strong style="text-decoration: underline;">UE: </strong> {{em.ue.codeUE}}
+                <br>
+                <strong style="text-decoration: underline;">Salle: </strong>{{em.salle.numSalle}}
+                <br>
+                <strong style="text-decoration: underline;">Heures: </strong>{{em.heureDebut[0]}}h:{{em.heureDebut[1]}} à {{em.heureFin[0]}}h:{{em.heureFin[1]}}
+                <br>
+                <strong style="color: green;">{{em.enseignant.user.prenom}} {{em.enseignant.user.nom}}</strong>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--<section></section>-->

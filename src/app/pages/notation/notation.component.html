@@ -1,0 +1,167 @@
+<!-- POUR L'INSERTION DES NOTES -->
+
+          <div class="alert alert-warning" role="alert">
+            <span style="color: red;">NB: </span> Utiliser <strong>le point(.)</strong> à la place de <strong>la virgule(,)</strong>
+          </div>
+          <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+            {{error.error}}
+          </div>
+          <div *ngIf="message != null" class="alert alert-success" role="alert">
+            {{message}}
+          </div>
+          <button mat-raised-button color="warn" (click)="goBack()">
+            <span class="material-icons">arrow_back</span>
+          </button>
+          <mat-tab-group animationDuration="0ms" (selectedTabChange)= "getGroupe($event)">
+            <mat-tab label="Les étudiants notés"></mat-tab>
+            <mat-tab label="Les étudiants non notés"></mat-tab>
+            <mat-tab label="Les étudiants non notés par groupe" ></mat-tab>
+            <!-- <mat-tab label="Noter par personne"></mat-tab> -->
+          </mat-tab-group>
+
+          <div *ngIf="eventSelect === 1">
+            <div class="row">
+              <div class="col-2">
+                <label for="presence">type de liste</label>
+                <select [(ngModel)]="presence" class="form-control"  id="presence" (change)="this.GetListeNonNoteEvaluation(eventSelcted)">
+                  <option value="false">tous</option>
+                  <option value="true"> présent uniquement</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+
+
+        <div class="row" *ngIf="eventSelect == 2">
+          <div class="col-sm-6">
+            <mat-form-field appearance="fill">
+              <mat-label>Choisissez le groupe</mat-label>
+              <mat-select [(ngModel)]="idGroupe" name="idGroupe">
+                <mat-option *ngFor="let groupe of allGroupe" value="{{groupe.id}}"> {{groupe.libelle}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6">
+            <label for="groupPresence">type de liste</label>
+            <select [(ngModel)]="groupPresence" class="form-control"  id="groupPresence">
+              <option value="false">tous</option>
+              <option value="true"> présent uniquement</option>
+            </select>
+          </div>
+          <div class="col-sm-6">
+            <div>
+              <button type="button" mat-button style="background-color: green; color: white;" (click)="getEtudiantGroupe()">Afficher</button>
+          </div>
+          </div>
+        </div>
+
+
+        <div *ngIf="spinner">
+          <img src="assets/gif/spinner.gif" width="70" alt="">
+      </div>
+
+      <div style="float: right;" *ngIf="trouver && eventSelect != 0">
+        <button type="button" mat-button style="background-color: orange; color: white;" (click)="enregistrer()">Enregistrer</button>
+    </div>
+
+
+         <div class="row">
+           <div class="col-sm col-sm-12 col-md-8 col-lg-8">
+             <mat-form-field *ngIf="trouver">
+               <mat-label>Filtrer</mat-label>
+               <input matInput (keyup)="applyFilter3($event)" placeholder="Ex. Mia" #input>
+             </mat-form-field>
+           </div>
+           <div class="col-sm col-sm-12 col-md-4 col-lg-4" *ngIf="eventSelect === 0">
+             <!-- <button mat-raised-button color="warn" (click)="DeleAllNoteOfEvaluation()">
+               <i class="fa fa-trash"></i>
+               <span class="small">Supprimer toutes les notes de l'evaluation</span>
+             </button> -->
+           </div>
+         </div>
+
+          <div class="d-flex align-items-center" *ngIf="selectedState && eventSelect === 0">
+            <button mat-raised-button color="warn" (click)="ConfirmeDelete()">
+              <i class="fa fa-trash"></i>
+               Supprimer la/les notes
+            </button>
+          </div>
+
+          <div class="mat-elevation-z8" *ngIf="trouver" style="overflow-y: auto; max-height: 500px;">
+            <table mat-table [dataSource]="dataSource"  style="width: 100%;" matSort>
+
+              <ng-container matColumnDef="check">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="eventSelect !== 0">
+                  <input type="checkbox" class="form-check-input" name="allSelector" (change)="isCheckedOrNot($event)">
+                </th>
+                <td mat-cell *matCellDef="let row" [hidden]="eventSelect !== 0">
+                  <button class="btn" (click)="ConfirmeSingleDelete(row)"><i class="fa fa-trash text-danger"></i></button>
+                  |
+                  <input type="checkbox" class="ck"  name="check{{row.id}}"
+                         (change)="isCheckedOrNot($event)" value="{{row.id}}">
+                </td>
+              </ng-container>
+
+              <!-- ID Column -->
+              <ng-container matColumnDef="numEtudiant">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Numéro matricule </th>
+                <td mat-cell *matCellDef="let row"> {{row.numEtudiant}} </td>
+              </ng-container>
+
+              <!-- Progress Column -->
+              <ng-container matColumnDef="prenom">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Prénom </th>
+                <td mat-cell *matCellDef="let row"> {{row.prenom}} </td>
+              </ng-container>
+
+
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="nom">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> nom </th>
+                <td mat-cell *matCellDef="let row"> {{row.nom}} </td>
+              </ng-container>
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="dateDeNaissance">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> date de naissance </th>
+                <td mat-cell *matCellDef="let row"> {{row.dateDeNaissance}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="telephone">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Téléphone </th>
+                <td mat-cell *matCellDef="let row"> {{row.telephone}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="niveau">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Niveau </th>
+                <td mat-cell *matCellDef="let row"> {{row.niveau}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="note">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Note </th>
+                <td mat-cell *matCellDef="let row">
+                  <input style="width: 70px;" (change)="add(row.id, $event)" value="{{row.note}}" type="number" name="note" id="">
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="action" >
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+                <td mat-cell *matCellDef="let row">
+                  <button *ngIf="eventSelect == 0" type="button" mat-button style="background-color: green; color: white; margin-left: 20px;" (click)="update(noteNew)">Modifier</button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+              <!-- Row shown when there is no matching data. -->
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="4">Pas de données pour le moment</td>
+              </tr>
+            </table>
+
+            <mat-paginator [pageSizeOptions]="[10, 20, 50, 100,500]"></mat-paginator>
+          </div>
+
+

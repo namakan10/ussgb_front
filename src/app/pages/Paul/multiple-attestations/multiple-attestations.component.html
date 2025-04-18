@@ -1,0 +1,202 @@
+<h3>Génération des {{param === 'diplo' ? 'diplômes' :'attestations'}}</h3>
+<div class="row">
+
+
+<!--  <div class="col-sm-12 col-md-3 col-lg-3" *ngIf="_RECTORAT">-->
+<!--    <label for="struc">Structure <span class="text-danger">*</span></label>-->
+
+<!--    <select name="struc" id="struc" class="form-control custom_Input"-->
+<!--              [(ngModel)]="structure" (change)="structureChange($event)">-->
+<!--        <option value=""></option>-->
+<!--        <option value="{{struc.id}}" *ngFor="let struc of Structures">{{struc.sigle}}</option>-->
+<!--      </select>-->
+<!--    <span *ngIf="spinnerS" style="text-align: center;">-->
+<!--       <img src="../../../../assets/gif/spinner.gif" width="35" alt="">-->
+<!--   </span>-->
+<!--  </div>-->
+  <div class="col-sm-12 col-md-3 col-lg-3">
+    <label for="anneeScolaire">Année scolaire <span class="text-danger">*</span></label>
+    <select class="form-control custom_Input" id="anneeScolaire" [(ngModel)]="anneeScolaire">
+      <option value=""></option>
+      <option value="{{annee.anneeScolaire}}" *ngFor="let annee of structureAnnees">{{annee.anneeScolaire}}</option>
+    </select>
+    <span *ngIf="spinner" style="text-align: center;">
+       <img src="../../../../assets/gif/spinner.gif" width="35" alt="">
+   </span>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-3">
+    <label for="numEtudiant">Numéro d'étudiant <span class="text-info">optionel</span></label>
+    <input type="text" class="form-control custom_Input" id="numEtudiant" [(ngModel)]="numEtudiant">
+  </div>
+  <div class="col-sm-12 col-md-7 col-lg-7 mt-2">
+    <button type="button" [disabled]="!checkIfNotNull(anneeScolaire)"
+            (click)="GetEtudiantsAdmis()" class="btn btn-info">
+             <span *ngIf="spinnerS" style="text-align: center;">
+              <img src="../../../../assets/gif/spinner.gif" width="35" alt="">
+            </span>
+            Aficher
+    </button>
+  </div>
+</div>
+<hr>
+<div *ngIf="AttestationDATA.length > 0">
+  <div class="row">
+<!--    <div class="col-sm-12 col-md-3 col-lg-3">-->
+<!--      <label for="directeur">Nom du directeur</label>-->
+<!--      <input type="text" class="form-control custom_Input" id="directeur" [(ngModel)]="directeur">-->
+<!--    </div>-->
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <label for="recteur">Nom du recteur</label>
+      <input type="text" class="form-control custom_Input" id="recteur" [(ngModel)]="recteur">
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <label for="Delivrance">Délivrance</label>
+      <input type="text" class="form-control custom_Input" id="Delivrance" [(ngModel)]="Delivrance">
+    </div>
+    <div class="col-lg-12">
+      <label for="entete">En tête</label>
+      <textarea type="text" class="form-control custom_Input" id="entete" [(ngModel)]="entete"></textarea>
+    </div>
+  </div>
+  <hr>
+</div>
+<div class="justify-content-end d-flex" *ngIf="show">
+<span *ngIf="!numEtudiant">
+  <button type="button" (click)="precent()" class="btn btn-secondary"> <i class="fa fa-chevron-left"></i> précédent </button> |
+  <span class="badge badge-warning small">page {{currentLot}} / {{lotLength ? lotLength : "0" }}</span>|
+  <button type="button" (click)="next()" class="btn btn-info">suivant <i class="fa fa-chevron-right"></i></button> |
+</span>
+  <button type="button" (click)="param === 'attest' ? multiplePDF_0() : multiplePDF()" class="btn btn-info">Exporter Multiple en Pdf</button> |
+</div>
+
+<mat-card class="filigragme p-2" id="export-part">
+  <div *ngFor="let attestData of AttestationDATA">
+<!-- <button></button> -->
+<!-- ========================================================================================-->
+    <!--    ATTESTATION PART -->
+<!-- ========================================================================================-->
+<div class="filG">
+    <div class="container mt-3 p-3" style="height: 230mm" *ngIf="this.param === 'attest'">
+      <div class="row mt-2" style="font-weight: bold;">
+        <div class="col mt-3 text-center" style="font-weight: bold;">
+          {{univ_Minist}}
+          <div>
+            ******************
+          </div>
+          <div class="text-uppercase">
+            {{univ_name}}
+          </div>
+          <div>
+            ******************
+          </div>
+        </div>
+
+        <div class="col mt-3 text-right mr-3" style="font-weight: bold;">
+          <div class="mr-4">REPUBLIQUE DU MALI </div>
+          <div>
+            <span style="color: green;">Un Peuple</span> - <span style="color: gold;">Un But</span> - <span style="color: red;">Une Foi</span>
+          </div>
+        </div>
+      </div>
+      <div class="container col-12">
+            <div class="row">
+              <div class="col-sm-12" style="text-align: center; font-weight: bold;">
+                <!-- <img src="{{_asset_image}}" class="structLogo" style="background-size: cover;" alt="" width="100" height="100"> -->
+                <img *ngIf="_RECTORAT" src="{{_http}}{{retoratStructure.logo}}" crossorigin="anonymous"
+                      class="structLogo" style="background-size: cover;" alt="" width="100" height="100">
+                  <img *ngIf="!_RECTORAT" src="{{_http}}{{user.structure.logo}}" crossorigin="anonymous"
+                      class="structLogo" style="background-size: cover;" alt="" width="100" height="100">
+              </div>
+              <div class="col-sm-12">
+                    <h1 style="text-align: center; text-transform: uppercase; font-weight: bold;"> {{level(attestData.niveau)}}</h1>
+                    <p style="text-align: center;">LE RECTEUR,</p>
+              </div>
+          </div>
+      </div>
+      <div class="container col-12">
+        <pre style="white-space: pre-wrap">{{entete}}</pre>
+        <p style="padding-left: 20px;">atteste que M. / Mme / Mlle <strong style="font-style: italic; font-size: 20px; font-weight: bold;">{{attestData.prenom}} {{attestData.nom}}</strong></p>
+        <p>Né(e) le : <strong style="font-style: italic; font-weight: bold;">{{attestData.dateDeNaissance | date: 'dd MMMM yyyy'}}</strong> à  <strong style="font-style: italic; font-weight: bold;">{{attestData.lieuDeNaissance}}</strong></p>
+        <p>a satisfait aux conditions prescrites pour l'obtention du <strong style="font-weight: bold;">{{level(attestData.niveau)}}</strong></p>
+        <p>
+          <span><strong style="font-weight: bold;">Spécialité : </strong> <strong style="font-style: italic;">{{attestData.optionNom}} ({{attestData.optionCode}})</strong></span>
+          <span style="float: right; font-weight: bold;"><strong>Avec la mention : </strong> <strong style="font-style: italic;">Bien</strong></span>
+        </p>
+        <p>Pour en jouir avec les droits et prérogatives qui y sont attachés.</p>
+        <p>
+          <span style="font-weight: bold; font-size: 12px;" *ngIf="Delivrance !== undefined"><strong>N° de délivrance : </strong> <strong style="font-style: italic;">{{Delivrance}}</strong></span>
+          <span style="float: right;">Fait à Bamako, le {{Today | date: 'dd MMMM yyyy'}}</span>
+        </p>
+        <br><br>
+        <div class="row">
+          <div class="col-4" style="font-weight: bold; text-align: right;">Le Titulaire</div>
+          <div class="col-4" style="font-weight: bold; text-align: right;"></div>
+          <div class="col-4" style="font-weight: bold; text-align: right;">Le Recteur</div>
+          <br><br><br><br>
+          <div class="col-4" style="font-weight: bold; text-align: right;">{{" "}}</div>
+          <div class="col-4" style="font-weight: bold; text-align: right;"></div>
+          <div class="col-4" style="font-weight: bold; text-align: right;">{{recteur}}</div>
+          <div class="col-12">Ce diplôme n'est délivré qu'une seule fois</div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- ========================================================================================-->
+<!--    DIMPLOME PART -->
+<!-- ========================================================================================-->
+    <div class="container mt-1 fondDiplome" style="font-weight: bold; height: 210mm;
+    border: 3px solid red;"
+         *ngIf="this.param === 'diplo'">
+      <div class="col mt-1 text-center" style="font-weight: bold;">
+        <h3 class="font-weight-bold">{{univ_Minist}}</h3>
+        <h3 class="font-weight-bold text-uppercase">{{univ_name}} (MALI)</h3>
+        <h6 class="text-center">**************</h6>
+      </div>
+      <br>
+      <div class="container col-6">
+        <h2 class="text-center font-weight-bold text-uppercase">DIPLÔME</h2>
+        <hr>
+      </div>
+
+      <br>
+      <br>
+      <h4 class="font-weight-bold text-uppercase text-center">CECI ATTESTE QUE </h4>
+
+      <div class="container p-3 col-10 d-flex justify-content-center text-white" style="font-weight: bold;">
+        <h1 class="modeText">{{attestData.prenom}} {{attestData.nom}}</h1>
+      </div>
+      <br>
+
+      <h4  class="text-center">Satisfait les exigences requis pour le/la : {{attestData.filiereNom}} ({{attestData.filiereCode}}) </h4>
+      <br>
+      <h4 class="text-center">En foi de quoi, le présent attestation lui est délivré pour servir et valoir ce que de droit.</h4>
+          <br>
+          <br>
+          <br>
+      <div class="row">
+        <div class="col-5">
+          <h5 class="text-uppercase text-center">Rectorat</h5>
+
+        </div>
+        <div class="col-2 d-flex justify-content-center">
+          <!--                  <ngx-qrcode qrc-element-type="text" [qrc-value]="CodeQR.qrCode">-->
+          <!--                  </ngx-qrcode>-->
+          <!-- <img src="../../../../assets/images/QRcode.png" style="height: 100px; width: 100px" alt=""> -->
+
+        </div>
+        <div class="col-5 ">
+          <h5 class="text-uppercase text-center">FACULTE</h5>
+        </div>
+      </div>
+
+<!--      <div class="small" style="bottom: 0">-->
+<!--        <ul>-->
+<!--          <li class="small">La présente diplôme n'est délivrée qu'une seule fois. Il appartient à son titulaire d'en faire autant de copies certifiées conformes que de besoin</li>-->
+<!--          <li class="small">Elle sera exigée lors du retrait du Diplôme correspondant.</li>-->
+<!--        </ul>-->
+<!--      </div>-->
+
+    </div>
+  </div>
+
+</mat-card>

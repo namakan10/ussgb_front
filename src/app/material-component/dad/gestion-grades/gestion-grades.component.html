@@ -1,0 +1,191 @@
+<mat-card>
+    <mat-card-header>
+      Liste des grades
+    </mat-card-header>
+    <mat-card-content>
+      <div class="search-div">
+        <button (click)="showModal()" mat-raised-button>
+          <i class="fa fa-plus"></i>&nbsp;&nbsp;Ajouter
+          
+        </button>
+        <div class="col-sm-4" style="float: right;">
+        <mat-form-field class="search-form-field" floatLabel="never">
+          <input matInput [(ngModel)]="searchKey" placeholder="Recherche" autocomplete="off" (keyup)="applyFilter()">
+          <button mat-button matSuffix mat-icon-button aria-label="Clear"*ngIf="searchKey"  (click)="onSearchClear()">
+            <i class="fa fa-times"></i>
+          </button>
+        </mat-form-field>
+      </div>
+      </div>
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" style="width: 100%;" matSort>
+  
+        <!--- Note that these columns can be defined in any order.
+              The actual rendered columns are set as a property on the row definition" -->
+  
+  
+        <ng-container matColumnDef="Grade">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Grade</th>
+          <td mat-cell *matCellDef="let element"> {{element.grade}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="HeureSemaine">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Heures par semaine</th>
+          <td mat-cell *matCellDef="let element"> {{element.heureSemaine}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="tauxHoraire">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Taux horaire</th>
+          <td mat-cell *matCellDef="let element"> {{element.tauxHoraire}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="anneeDebut">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Année début</th>
+          <td mat-cell *matCellDef="let element"> {{element.anneeDebut}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="anneeFin">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Année fin</th>
+          <td mat-cell *matCellDef="let element"> {{element.anneeFin}} </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="statut">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+          <td mat-cell *matCellDef="let element"> {{element.statut}} </td>
+        </ng-container>
+        
+        
+  
+        <ng-container matColumnDef="Actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>
+            <mat-menu #action="matMenu">
+              
+              <button mat-menu-item (click)="editGrade(element)">
+                <i class="fa fa-edit"></i>
+                <span>&nbsp;&nbsp;Modifier</span>
+              </button>
+              <button mat-menu-item (click)="deleteGrade(element.id)">
+                <i class="fa fa-trash"></i>
+                <span>&nbsp;&nbsp;Supprimer</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+  
+       
+  
+  
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <div style="display: flex;justify-content: center;align-items: center;" *ngIf="isloading">
+          <img src="assets/gif/spinner.gif" width="70" 
+           alt="">
+      </div>
+      <mat-paginator [length]="100"
+                     [pageSize]="10"
+                     [pageSizeOptions]="[10, 20,30,50,100,1000]">
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+
+
+  <!-- POUR LA CREATION du grade -->
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: #1e88e5; color: white;">
+          <h5 class="modal-title" id="staticBackdropLabel">{{action}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true" style="color: white;">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form class="border border-light p-5">
+            <div style="overflow-y: auto; max-height: 450px;" class="modal-body">
+              <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+                {{error.error}}
+              </div>
+              <div *ngIf="message != null" class="alert alert-success" role="alert">
+                {{message}}
+              </div>
+                  <div class="row">
+                    
+                    <div class="col-sm-4">
+                      <mat-form-field appearance="fill" >
+                        <mat-label>Sélectionnez Grade</mat-label>
+                        <mat-select [(ngModel)]="nomGrade" name="nomGrade" [disabled]="type == 'Modifier'">
+                          <mat-option  value="ASSISTANT"> ASSISTANT </mat-option>
+                          <mat-option  value="MAITRE_ASSISTANT"> MAITRE_ASSISTANT</mat-option>
+                          <mat-option  value="MAITRE_CONF"> MAITRE_CONF</mat-option>
+                          <mat-option  value="MAITRE_RECHERCHE"> MAITRE_RECHERCHE</mat-option>
+                          <mat-option  value="DIRECTEUR_RECHERCHE"> DIRECTEUR_RECHERCHE</mat-option>
+                          <mat-option  value="CHARGE_RECHERCHE"> CHARGE_RECHERCHE</mat-option>
+                          <mat-option  value="ATTACHE_RECHERCHE"> ATTACHE_RECHERCHE</mat-option>
+                          <mat-option  value="PROFESSEUR"> PROFESSEUR</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="col-sm-4">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>Heures par semaine</mat-label>
+                        <input  [(ngModel)]="HeureSemaine"  type="number" name="codeUE" matInput
+                        >
+                      </mat-form-field>
+                    </div>
+                    
+                    <div class="col-sm-4">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>Taux horaire</mat-label>
+                        <input [(ngModel)]="tauxHoraire"  type="number" name="tauxHoraire" matInput
+                        >
+                      </mat-form-field>
+                    </div>
+                    
+                    <div class="col-sm-4">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>Année début</mat-label>
+                        <input [(ngModel)]="anneeDebut"  type="number" name="anneeDebut" matInput
+                        >
+                      </mat-form-field>
+                    </div>
+                    
+                    <div class="col-sm-4">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>Année fin</mat-label>
+                        <input [(ngModel)]="anneeFin"  type="number" name="anneeFin" matInput
+                        >
+                      </mat-form-field>
+                    </div>
+
+                    <div class="col-sm-4">
+                      <mat-form-field appearance="fill" >
+                        <mat-label>Statut</mat-label>
+                        <mat-select [(ngModel)]="statut" name="statut">
+                          <mat-option  value="EN_COURS"> EN_COURS </mat-option>
+                          <mat-option  value="PASSE"> PASSE</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+
+                  </div>
+                   
+                      </div>
+                  
+                  
+           
+              <div class="modal-footer">
+                <div *ngIf="spinner">
+                  <img src="assets/gif/spinner.gif" width="70" alt="">
+              </div>
+                <button type="button" mat-button style="background-color: coral; color: white;" class="waves-light" data-dismiss="modal"mdbWavesEffect>Annuler</button>
+                <button *ngIf="type == 'Ajouter'" (click)="onSubmitGrade()" type="button" mat-button style="background-color: #1e88e5; color: white;" class="relative waves-light" mdbWavesEffect>Ajouter</button>
+                <button *ngIf="type == 'Modifier'" (click)="onUpdateGrade()" type="button" mat-button style="background-color: #1e88e5; color: white;" class="relative waves-light" mdbWavesEffect>Modifier</button>
+              </div>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>

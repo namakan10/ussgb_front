@@ -1,0 +1,771 @@
+<h2 style="float: left;">Liste des évaluations</h2>
+
+
+<div style="float: right;">
+  <button type="button" mat-button style="background-color: green; color: white;" (click)="showModal()">Créer une évaluation Pour UE</button>
+</div>
+<div style="float: right;" *ngIf="env !== 'fsap'">
+  <button type="button" mat-button style="background-color: green; color: white;" (click)="showModalEC()">Créer une évaluation EC</button>
+</div>
+<div *ngIf="error && error.error">
+  <br>
+  <br>
+  <div class="alert alert-danger" role="alert">
+    {{error.error}}
+  </div>
+</div>
+<div *ngIf="message != null" >
+  <br>
+  <br>
+  <div class="alert alert-success" role="alert">
+    {{message}}
+  </div>
+</div>
+<div *ngIf="spinner">
+  <br>
+  <br>
+  <img src="assets/gif/spinner.gif" width="70" alt="">
+</div>
+
+
+<div class="col-md-3">
+  <div class="form-group">
+    <mat-form-field appearance="fill">
+      <mat-label>Annee Scolaire : <span class="text-danger">*</span></mat-label>
+      <mat-select id="anneeSc" name="anneeSc" [(ngModel)]="anneeSc">
+        <mat-option value=""></mat-option>
+        <mat-option value="{{annees.anneeScolaire}}" *ngFor="let annees of StructureAnnees">{{annees.anneeScolaire}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <button mat-button style="margin-top: -15px; background-color: #363675; color: white;" (click)="GetEnseignantEvaluation()">Afficher</button>
+</div>
+
+<mat-form-field>
+  <mat-label>Filter</mat-label>
+  <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+</mat-form-field>
+
+<div class="mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" matSort>
+<!--    {{row.id}}-->
+    <ng-container matColumnDef="anneeScolaire">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Année scolaire </th>
+      <td mat-cell *matCellDef="let row">{{row.anneeScolaire}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ue">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> UE </th>
+      <td mat-cell *matCellDef="let row">{{row.ue}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ec">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Ec </th>
+      <td mat-cell *matCellDef="let row"> {{row.ec}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Type de l'évaluation </th>
+      <td mat-cell *matCellDef="let row"> {{row.type}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="session">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Session </th>
+      <td mat-cell *matCellDef="let row"> {{row.session}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Date de l'évaluation </th>
+      <td mat-cell *matCellDef="let row">
+        {{row.date | date:"dd/MM/yyyy"}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="heure">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Heure de l'évaluation </th>
+      <td mat-cell *matCellDef="let row"> {{row.heure}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Action">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+      <td mat-cell *matCellDef="let row">
+        <div class="btn-group" dropdown>
+          <div style="margin-left: 50px;">
+            <i class="fa fa-ellipsis-v" style="font-size: 20px; cursor: pointer;" [matMenuTriggerFor]="menu"></i>
+          </div>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="details(row, 'detail')">Détails</button>
+            <button mat-menu-item (click)="modifier(row)">Modifier</button>
+            <button mat-menu-item (click)="supprimer(row)">Supprimer</button>
+            <button mat-menu-item (click)="surveillant(row)">Gestion des surveillants</button>
+            <button mat-menu-item (click)="change_list = false; presence(row)">Liste d'émargement</button>
+            <button mat-menu-item (click)="notes(row)">Gestion des notes</button>
+          </mat-menu>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">Pas d'évaluation pour le moment"</td>
+    </tr>
+  </table>
+
+  <mat-paginator
+    [pageSizeOptions]="[10, 20, 50,100]"
+
+  >
+  </mat-paginator>
+</div>
+
+
+<!-- POUR LA CREATION DEVALUATION -->
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #1e88e5; color: white;">
+        <h5 class="modal-title" id="staticBackdropLabel">{{action}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" style="color: white;">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="border border-light p-5">
+          <div style="overflow-y: auto; max-height: 450px;" class="modal-body">
+            <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+              {{error.error}}
+            </div>
+            <div *ngIf="message != null" class="alert alert-success" role="alert">
+              {{message}}
+            </div>
+            <div class="row">
+              <div class="col-sm-4"></div>
+              <div class="col-sm-4">
+                <div class="form-group">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Annee Scolaire : <span class="text-danger">*</span></mat-label>
+                    <mat-select id="annee" name="annee" [(ngModel)]="annee">
+                      <mat-option value=""></mat-option>
+                      <mat-option value="{{annees.anneeScolaire}}" *ngFor="let annees of StructureAnnees">{{annees.anneeScolaire}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="col-sm-4"></div>
+
+
+              <div class="col-sm-4">
+                <label for="ueLab">Type d'évaluation<span class="text-danger">*</span></label>
+                <select name="type" id="type1" [(ngModel)]="type" [disabled]="desactiver()" class="form-control custom_Input">
+                  <option value="TP" *ngIf="env !== 'fsap'">TP</option>
+                  <option value="TD" *ngIf="env === 'fsap'">TD</option>
+                  <option value="DEVOIR">Devoir</option>
+                  <option value="EXAMEN">Examen</option>
+                  <option value="RATTRAPAGE">Rattrapage</option>
+                </select>
+              </div>
+              <div class="col-sm-4">
+                 <label for="ueLab">UE concernée<span class="text-danger">*</span></label>
+                <select name="ue" id="ueLab" [(ngModel)]="ue" [disabled]="desactiver()" class="form-control custom_Input">
+                  <option value="">-UE concernée-</option>
+                  <option value="{{ue.id}}" *ngFor="let ue of AllUe"> {{ue.codeUE}} | {{ue.nomUE}}</option>
+                </select>
+
+              </div>
+              <div class="col-sm-4">
+                <label for="ueLab">Session <span class="text-danger">*</span></label>
+                <select name="session" id="session" [(ngModel)]="session" [disabled]="desactiver()" class="form-control custom_Input">
+                  <option value="1">Session 1</option>
+                  <option value="2">Session 2</option>
+                </select>
+
+              </div>
+              <div class="col-sm-4">
+
+                <label for="dateEval">Date de l'évaluation <span class="text-danger">*</span></label>
+                <input type="date" id="dateEval" name="dateEvaluation" class="form-control custom_Input" [disabled]="desactiver()" [(ngModel)]="dateEvaluation">
+              </div>
+              <div class="col-sm-4">
+
+                <label for="Heure1">Heure de début <span class="text-danger">*</span></label>
+                <input type="time" id="Heure1" name="heureDebut" class="form-control custom_Input" [disabled]="desactiver()" [(ngModel)]="heureDebut" (change)="getSalles()">
+              </div>
+              <div class="col-sm-4">
+
+                <label for="Heure2">Heure de fin <span class="text-danger">*</span></label>
+                <input type="time" id="Heure2" name="heureFin" class="form-control custom_Input" [disabled]="desactiver()" [(ngModel)]="heureFin" (change)="getSalles()">
+              </div>
+              <div class="col-sm-12" *ngIf="salle">
+                <div class="row">
+                  <div class="col-sm-4">
+                    <label>Salles disponibles</label>
+                    <select [(ngModel)]="salleDispo" style="height: 200px;" name="salleDispo" class="browser-default custom-select mb-4" multiple>
+                      <option *ngFor="let sallechoix of allSalleNonChoix" value="{{sallechoix}}">
+                                            <span *ngFor="let salle of allSalle">
+                                              <span *ngIf="salle.id == sallechoix">{{salle.numSalle}} = {{salle.nbrePlace}} places</span>
+                                            </span>
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-sm-4" style="text-align: center; margin-top: 80px;">
+                    <div *ngIf="!desactiver()">
+                      <button (click)="change('remove')" type="button" style=" background-color: red; color: white;" mat-button title="Retirer les sélections" placement="left"
+                      >
+                        <i class="fa fa-angle-left"></i>
+                      </button> &nbsp;
+                      <button (click)="change('add')" type="button" style=" background-color: green; color: white;" mat-button title="Ajouter les sélections" placement="right"
+                      >
+                        <i class="fa fa-angle-right"></i>
+                      </button>
+                      <br>
+                      <br>
+                      <button (click)="change('removeAll')" type="button" style="background-color: red; color: white;" mat-button title="Retirer toutes" placement="left"
+                      >
+                        <i class="fa fa-angle-double-left"></i>
+                      </button>
+                      &nbsp;
+                      <button (click)="change('addAll')" type="button" style=" background-color: green; color: white;" mat-button title="Ajouter toutes" placement="right">
+                        <i class="fa fa-angle-double-right"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <label>Salles choisies</label>
+                    <select [disabled]="desactiver()" [(ngModel)]="salleChoisi" style="height: 200px;" name="salleChoisi" class="browser-default custom-select mb-4" multiple>
+                      <option *ngFor="let sallechoix of allSalleChoisi" value="{{sallechoix}}">
+                                            <span *ngFor="let salle of allSalle">
+                                              <span *ngIf="salle.id == sallechoix">{{salle.numSalle}} = {{salle.nbrePlace}} places</span>
+                                            </span>
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div *ngIf="spinner">
+              <img src="assets/gif/spinner.gif" width="70" alt="">
+            </div>
+            <button type="button" mat-button style="background-color: coral; color: white;" class="waves-light" data-dismiss="modal"mdbWavesEffect>Fermer</button>
+            <button *ngIf="action == 'Création d\'évaluation'"
+                    (click)="onSubmit()" type="button" mat-raised-button color="primary"
+                    class="relative waves-light" mdbWavesEffect
+                    [disabled]="!checkIfIsEmpty(salleChoisi) || !checkIfIsEmpty(heureDebut) || !checkIfIsEmpty(heureFin) ||
+                     !checkIfIsEmpty(dateEvaluation) || !checkIfIsEmpty(session) || !checkIfIsEmpty(type)">
+              Créer l'évaluation
+            </button>
+
+            <button *ngIf="action == 'Modification de l\'évaluation'"
+                    (click)="onUpdate()" type="button" mat-button style="background-color: #1e88e5; color: white;"
+                    class="relative waves-light" mdbWavesEffect
+                    [disabled]="!checkIfIsEmpty(salleChoisi) || !checkIfIsEmpty(heureDebut) || !checkIfIsEmpty(heureFin) ||
+                     !checkIfIsEmpty(dateEvaluation) || !checkIfIsEmpty(session) || !checkIfIsEmpty(type)">
+              Modifier l'évaluation</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POUR LA CREATION DEVALUATION POUR EC -->
+<div class="modal fade" id="staticBackdropec" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropecLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #1e88e5; color: white;">
+        <h5 class="modal-title" id="staticBackdropecLabel">{{action}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" style="color: white;">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="border border-light p-5">
+          <div style="overflow-y: auto; max-height: 450px;" class="modal-body">
+            <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+              {{error.error}}
+            </div>
+            <div *ngIf="message != null" class="alert alert-success" role="alert">
+              {{message}}
+            </div>
+            <div class="row">
+
+
+              <div class="col-sm-4"></div>
+              <div class="col-sm-4">
+                <div class="form-group">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Annee Scolaire : <span class="text-danger">*</span></mat-label>
+                    <mat-select id="annee2" name="annee" [(ngModel)]="annee">
+                      <mat-option value=""></mat-option>
+                      <mat-option value="{{annees.anneeScolaire}}" *ngFor="let annees of StructureAnnees">{{annees.anneeScolaire}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="col-sm-4"></div>
+
+
+
+              <div class="col-sm-4">
+                <label for="ueLab">Type d'évaluation <span class="text-danger">*</span></label>
+                <select name="type" id="type" [(ngModel)]="type" [disabled]="desactiver()" class="form-control custom_Input">
+                  <option value="TP">TP</option>
+                  <option value="DEVOIR">Devoir</option>
+                  <option value="EXAMEN">Examen</option>
+                  <option value="RATTRAPAGE">Rattrapage</option>
+                </select>
+                <!-- <mat-form-field appearance="fill">
+                  <mat-label>Type d'évaluation</mat-label>
+                  <mat-select [disabled]="desactiver()" [(ngModel)]="type" name="type">
+                    <mat-option value="TP">TP</mat-option>
+                    <mat-option value="DEVOIR">Devoir</mat-option>
+                    <mat-option value="EXAMEN">Examen</mat-option>
+                    <mat-option value="RATTRAPAGE">Rattrapage</mat-option>
+                  </mat-select>
+                </mat-form-field> -->
+              </div>
+
+              <div class="col-sm-4" >
+                <label for="ecLab">Ec concernée</label>
+                <select name="ec" id="ecLab" [(ngModel)]="ec" [disabled]="desactiver()" class="form-control custom_Input">
+                  <option value="">-Ec concernée-</option>
+                  <option *ngFor="let ec of allEc" [value]="ec.id">{{ec.codeEC}} | {{ec.nomEC}}-{{ec.poid}}</option>
+                </select>
+                <!--                          <mat-form-field appearance="fill">-->
+                <!--                            <mat-label>UE concernée</mat-label>-->
+                <!--                            <mat-select [(ngModel)]="ue" name="ue">-->
+                <!--                              <mat-option *ngFor="let ue of AllUe" value="{{ue.id}}"> {{ue.codeUE}}</mat-option>-->
+                <!--                            </mat-select>-->
+                <!--                          </mat-form-field>-->
+              </div>
+              <div class="col-sm-4">
+                <label for="ueLab">Session <span class="text-danger">*</span></label>
+                <select name="session" id="session" [(ngModel)]="session" [disabled]="desactiver()" class="form-control custom_Input">
+                  <option value="1">Session 1</option>
+                  <option value="2">Session 2</option>
+                </select>
+                <!-- <mat-form-field appearance="fill">
+                  <mat-label>Session <span class="text-danger">*</span></mat-label>
+                  <mat-select [disabled]="desactiver()" [(ngModel)]="session" name="session">
+                    <mat-option value="1">1</mat-option>
+                    <mat-option value="2">2</mat-option>
+                  </mat-select>
+                </mat-form-field> -->
+              </div>
+              <div class="col-sm-4">
+
+                <!--                          <mat-form-field class="example-full-width">-->
+                <!--                            <mat-label>Date de l'évaluation <span class="text-danger">*</span></mat-label>-->
+                <!--                            <input matInput [matDatepicker]="picker" [disabled]="desactiver()" [(ngModel)]="dateEvaluation" type="text"-->
+                <!--                            name="dateEvaluation"-->
+                <!--                                bsDatepicker (ngModelChange)="getSalles()">-->
+                <!--                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>-->
+                <!--                                <mat-datepicker #picker></mat-datepicker>-->
+                <!--                              </mat-form-field>-->
+                <label for="dateEval">Date de l'évaluation <span class="text-danger">*</span></label>
+                <input type="date" id="dateEval" name="dateEvaluation" class="form-control custom_Input" [disabled]="desactiver()" [(ngModel)]="dateEvaluation">
+              </div>
+              <div class="col-sm-4">
+                <!--                          <mat-form-field class="example-full-width">-->
+                <!--                            <mat-label></mat-label>-->
+                <!--                            <input [disabled]="desactiver()" [(ngModel)]="heureDebut" (change)="getSalles()" type="text" name="heureDebut" matInput-->
+                <!--                            >-->
+                <!--                          </mat-form-field>-->
+                <label for="Heure1">Heure de début <span class="text-danger">*</span></label>
+                <input type="time" id="Heure1" name="heureDebut" class="form-control custom_Input" [disabled]="desactiver()" [(ngModel)]="heureDebut" (change)="getSalles()">
+              </div>
+              <div class="col-sm-4">
+                <!--                          <mat-form-field class="example-full-width">-->
+                <!--                            <mat-label>Heure de fin</mat-label>-->
+                <!--                            <input [disabled]="desactiver()" [(ngModel)]="heureFin" (change)="getSalles()" type="text" name="heureFin" matInput-->
+                <!--                            >-->
+                <!--                          </mat-form-field>-->
+                <label for="Heure2">Heure de fin <span class="text-danger">*</span></label>
+                <input type="time" id="Heure2" name="heureFin" class="form-control custom_Input" [disabled]="desactiver()" [(ngModel)]="heureFin" (change)="getSalles()">
+              </div>
+              <div class="col-sm-12" *ngIf="salle">
+                <div class="row">
+                  <div class="col-sm-4">
+                    <label>Salles disponibles</label>
+                    <select [(ngModel)]="salleDispo" style="height: 200px;" name="salleDispo" class="browser-default custom-select mb-4" multiple>
+                      <option *ngFor="let sallechoix of allSalleNonChoix" value="{{sallechoix}}">
+                                            <span *ngFor="let salle of allSalle">
+                                              <span *ngIf="salle.id == sallechoix">{{salle.numSalle}} = {{salle.nbrePlace}} places</span>
+                                            </span>
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-sm-4" style="text-align: center; margin-top: 80px;">
+                    <div *ngIf="!desactiver()">
+                      <button (click)="change('remove')" type="button" style=" background-color: red; color: white;" mat-button title="Retirer les sélections" placement="left"
+                      >
+                        <i class="fa fa-angle-left"></i>
+                      </button> &nbsp;
+                      <button (click)="change('add')" type="button" style=" background-color: green; color: white;" mat-button title="Ajouter les sélections" placement="right"
+                      >
+                        <i class="fa fa-angle-right"></i>
+                      </button>
+                      <br>
+                      <br>
+                      <button (click)="change('removeAll')" type="button" style="background-color: red; color: white;" mat-button title="Retirer toutes" placement="left"
+                      >
+                        <i class="fa fa-angle-double-left"></i>
+                      </button>
+                      &nbsp;
+                      <button (click)="change('addAll')" type="button" style=" background-color: green; color: white;" mat-button title="Ajouter toutes" placement="right">
+                        <i class="fa fa-angle-double-right"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <label>Salles choisies</label>
+                    <select [disabled]="desactiver()" [(ngModel)]="salleChoisi" style="height: 200px;" name="salleChoisi" class="browser-default custom-select mb-4" multiple>
+                      <option *ngFor="let sallechoix of allSalleChoisi" value="{{sallechoix}}">
+                                            <span *ngFor="let salle of allSalle">
+                                              <span *ngIf="salle.id == sallechoix">{{salle.numSalle}} = {{salle.nbrePlace}} places</span>
+                                            </span>
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+          <div class="modal-footer">
+            <div *ngIf="spinner">
+              <img src="assets/gif/spinner.gif" width="70" alt="">
+            </div>
+            <button type="button" mat-button style="background-color: coral; color: white;" class="waves-light" data-dismiss="modal"mdbWavesEffect>Fermer</button>
+
+            <button *ngIf="action == 'Création d\'évaluation'"
+                    (click)="onSubmit()" type="button"
+                    mat-raised-button color="primary" class="relative waves-light" mdbWavesEffect
+                    [disabled]="!checkIfIsEmpty(salleChoisi) || !checkIfIsEmpty(heureDebut) || !checkIfIsEmpty(heureFin) ||
+                     !checkIfIsEmpty(dateEvaluation) || !checkIfIsEmpty(session) || !checkIfIsEmpty(ec) || !checkIfIsEmpty(type)">
+              Créer l'évaluation
+            </button>
+
+            <button *ngIf="action == 'Modification de l\'évaluation'"
+                    (click)="onUpdate()" type="button" mat-raised-button color="primary"
+                    class="relative waves-light" mdbWavesEffect
+                    [disabled]="!checkIfIsEmpty(salleChoisi) || !checkIfIsEmpty(heureDebut) || !checkIfIsEmpty(heureFin) ||
+                     !checkIfIsEmpty(dateEvaluation) || !checkIfIsEmpty(session) || !checkIfIsEmpty(ec) || !checkIfIsEmpty(type)">
+              Modifier l'évaluation
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POUR LES SURVEILLANT -->
+<div class="modal fade" id="staticBackdrop2" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #1e88e5; color: white;">
+        <h5 class="modal-title" id="staticBackdbel">{{action}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" style="color: white;">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="border border-light p-5">
+          <div style="overflow-y: auto; max-height: 500px; margin-top: -50px;" class="modal-body">
+            <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+              {{error.error}}
+            </div>
+            <div *ngIf="message != null" class="alert alert-success" role="alert">
+              {{message}}
+            </div>
+            <div class="row" *ngIf="!spinner">
+              <div class="col-sm-12">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div *ngIf="surveillantSelected">
+
+                      <label>Les surveillants disponibles</label>
+                      <select [(ngModel)]="surveillaDispo" style="height: 200px;" name="surveillaDispo" class="browser-default custom-select mb-4" multiple>
+                        <!--                                          <option *ngFor="let surveillant of allSurveillant" value="{{surveillant.id}}">-->
+                        <!--                                            <span *ngFor="let surveillantSelect of allSurveillantChoisi">-->
+                        <!--                                              <span *ngIf="surveillant.id !== surveillantSelect.id">{{surveillant.prenom}}  {{surveillant.nom}} ({{surveillant.telephone}}) : {{surveillant.genre}}</span>-->
+                        <!--                                            </span>-->
+                        <!--                                          </option>-->
+                        <option value="{{nonChoose.id}}" *ngFor="let nonChoose of allSurveillantNonChoix"><span>{{nonChoose.prenom}}  {{nonChoose.nom}} ({{nonChoose.telephone}}) : {{nonChoose.genre}}</span></option>
+                      </select>
+
+                    </div>
+
+                  </div>
+                  <div class="col-sm-12" style="text-align: center;">
+                    <div>
+                      <button (click)="change2('remove')" type="button" style=" background-color: red; color: white;" mat-button title="Retirer les sélections" placement="left"
+                      >
+                        <i class="fa fa-angle-up"></i>
+                      </button> &nbsp;
+                      <button (click)="change2('add')" type="button" style=" background-color: green; color: white;" mat-button title="Ajouter les sélections" placement="right"
+                      >
+                        <i class="fa fa-angle-down"></i>
+                      </button>
+                      <br>
+                      <br>
+                      <button (click)="change2('removeAll')" type="button" style="background-color: red; color: white;" mat-button title="Retirer toutes" placement="left"
+                      >
+                        <i class="fa fa-angle-double-up"></i>
+                      </button>
+                      &nbsp;
+                      <button (click)="change2('addAll')" type="button" style=" background-color: green; color: white;" mat-button title="Ajouter toutes" placement="right">
+                        <i class="fa fa-angle-double-down"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="col-sm-12">
+                    <label>Les surveillants choisis</label>
+                    <select [(ngModel)]="surveillaChoisi" style="height: 200px;" name="surveillaChoisi" class="browser-default custom-select mb-4" multiple>
+                      <!--                                          <option *ngFor="let surveilchoix of allSurveillantChoisi" value="{{surveilchoix.id}}">-->
+                      <!--                                            <span *ngFor="let surveillant of allSurveillant">-->
+                      <!--                                              <span *ngIf="surveillant.id == surveilchoix">{{surveilchoix}}-{{surveillant.prenom}}  {{surveillant.nom}} ({{surveillant.telephone}}) : {{surveillant.genre}}</span>-->
+                      <!--                                            </span>-->
+                      <!--                                          </option>-->
+                      <option value="{{listChoose.id}}" *ngFor="let listChoose of List_SurveillantChoisi"><span>{{listChoose.prenom}}  {{listChoose.nom}} ({{listChoose.telephone}}) : {{listChoose.genre}}</span></option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div *ngIf="spinner">
+              <img src="assets/gif/spinner.gif" width="70" alt="">
+            </div>
+            <button type="button" mat-button style="background-color: coral; color: white;" class="waves-light" data-dismiss="modal"mdbWavesEffect>Fermer</button>
+            <button (click)="onSubmitSurveillant()" type="button" mat-button style="background-color: #1e88e5; color: white;" class="relative waves-light" mdbWavesEffect>Soumettre</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- POUR LA LISTE DE PRESENCE -->
+<div class="modal fade" id="staticBackdrop3" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="staticBackdel">Liste sur l'evaluation de </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <button mat-raised-button [color]="List_action !== 'present'? 'accent': ''" (click)="change_list = true; List_action = 'tous'; this.GetListeEmargement()">
+          Tous les étudiants
+        </button> |
+        <button mat-raised-button [color]="List_action === 'present'? 'accent': ''" (click)="change_list = true; List_action = 'present'; this.GetListeEmargement()">
+          Que les présents
+        </button> |
+        <button mat-raised-button color="warn" (click)="imprimer()">
+          <span class="material-icons">print</span> Imprimer
+        </button>
+        <mat-form-field>
+          <mat-label>Filter</mat-label>
+          <input matInput (keyup)="applyFilter2($event)" placeholder="Ex. Mia" #input>
+        </mat-form-field>
+
+        <div class="" id="contentToConvert">
+          <h4 class="text-center mt-2"><strong>{{List_action === 'present' ? 'Liste des étudiants qui ont emargés' : 'Liste de tous les etudiants concernés par l\'evaluation '}}</strong></h4>
+          <span class="badge badge-light" *ngIf="action === 'Liste d\'émargement'">{{Eval.ue}} du {{Eval.date | date: 'dd-MM-yyyy'}} / type: {{Eval.type}}</span>
+          <table mat-table [dataSource]="dataSource2" matSort>
+
+            <!-- ID Column -->
+            <ng-container matColumnDef="numEtudiant">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Numéro matricule </th>
+              <td mat-cell *matCellDef="let row"> {{row.numEtudiant}} </td>
+            </ng-container>
+
+            <!-- Progress Column -->
+            <ng-container matColumnDef="prenom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Prénom </th>
+              <td mat-cell *matCellDef="let row"> {{row.prenom}} </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="nom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> nom </th>
+              <td mat-cell *matCellDef="let row"> {{row.nom}} </td>
+            </ng-container>
+
+            <!-- Color Column -->
+            <ng-container matColumnDef="genre">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Genre </th>
+              <td mat-cell *matCellDef="let row"> {{row.genre}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="telephone">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Téléphone </th>
+              <td mat-cell *matCellDef="let row"> {{row.telephone}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="nationalite">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> nationalite </th>
+              <td mat-cell *matCellDef="let row"> {{row.nationalite}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+
+            <!-- Row shown when there is no matching data. -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="4">Pas de données pour le moment</td>
+            </tr>
+          </table>
+
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+        </div>
+
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Understood</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+
+
+<!-- POUR L'INSERTION DES NOTES -->
+<div class="modal fade" id="staticBackdrop4" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticpLabel">{{action}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning" role="alert">
+          <span style="color: red;">NB: </span> Utiliser <strong>le point(.)</strong> à la place de <strong>la virgule(,)</strong>
+        </div>
+        <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+          {{error.error}}
+        </div>
+        <div *ngIf="message != null" class="alert alert-success" role="alert">
+          {{message}}
+        </div>
+        <mat-tab-group animationDuration="0ms" (selectedTabChange)= "getGroupe($event)">
+          <mat-tab label="Les étudiants notés"></mat-tab>
+          <mat-tab label="Les étudiants non notés"></mat-tab>
+          <mat-tab label="Les étudiants non notés par groupe" ></mat-tab>
+          <!-- <mat-tab label="Noter par personne"></mat-tab> -->
+        </mat-tab-group>
+
+
+
+        <div class="row" *ngIf="eventSelect == 2">
+          <div class="col-sm-6">
+            <mat-form-field appearance="fill">
+              <mat-label>Choisissez le groupe</mat-label>
+              <mat-select [(ngModel)]="idGroupe" name="idGroupe">
+                <mat-option *ngFor="let groupe of allGroupe" value="{{groupe.id}}"> {{groupe.libelle}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6">
+            <div>
+              <button type="button" mat-button style="background-color: green; color: white;" (click)="getEtudiantGroupe()">Afficher</button>
+            </div>
+          </div>
+        </div>
+
+
+        <div *ngIf="spinner">
+          <img src="assets/gif/spinner.gif" width="70" alt="">
+        </div>
+
+        <div style="float: right;" *ngIf="trouver && eventSelect != 0">
+          <button type="button" mat-button style="background-color: orange; color: white;" (click)="enregistrer()">Enregistrer</button>
+        </div>
+
+        <mat-form-field *ngIf="trouver">
+          <mat-label>Filtrer</mat-label>
+          <input matInput (keyup)="applyFilter3($event)" placeholder="Ex. Mia" #input>
+        </mat-form-field>
+
+
+        <div class="mat-elevation-z8" *ngIf="trouver" style="overflow-y: auto; max-height: 500px;">
+          <table mat-table [dataSource]="dataSource3" matSort>
+
+            <!-- ID Column -->
+            <ng-container matColumnDef="numEtudiant">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Numéro matricule </th>
+              <td mat-cell *matCellDef="let row"> {{row.numEtudiant}} </td>
+            </ng-container>
+
+            <!-- Progress Column -->
+            <ng-container matColumnDef="prenom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Prénom </th>
+              <td mat-cell *matCellDef="let row"> {{row.prenom}} </td>
+            </ng-container>
+
+
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="nom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> nom </th>
+              <td mat-cell *matCellDef="let row"> {{row.nom}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="telephone">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Téléphone </th>
+              <td mat-cell *matCellDef="let row"> {{row.telephone}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="niveau">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Niveau </th>
+              <td mat-cell *matCellDef="let row"> {{row.niveau}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="note">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Note </th>
+              <td mat-cell *matCellDef="let row">
+                <input style="width: 70px;" (change)="add(row.id, $event)" value="{{row.note}}" type="number" name="note" id="">
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="action" >
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+              <td mat-cell *matCellDef="let row">
+                <button *ngIf="eventSelect == 0" type="button" mat-button style="background-color: green; color: white; margin-left: 20px;" (click)="update(noteNew)">Modifier</button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns3"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns3;"></tr>
+
+            <!-- Row shown when there is no matching data. -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="4"></td>
+            </tr>
+          </table>
+
+          <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
+        </div>
+
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Understood</button>
+      </div> -->
+    </div>
+  </div>
+</div>

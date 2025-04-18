@@ -1,0 +1,39 @@
+<mat-card>
+  <mat-card-header>
+    Ajouter Frais d'inscription
+  </mat-card-header>
+  <mat-card-content>
+    <div class="search-div">
+      <form [formGroup]="ajouterFraisForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="type" class="control-label mb-1">Type de candidat<span style="color: red"> *</span></label>
+              <!-- <select class="form-control" id="type" formControlName="type"
+                      [ngClass]="{'is-invalid' : ajouterFraisForm.get('type').touched && ajouterFraisForm.get('type').invalid}"
+              >
+                <option *ngFor="let type of typeCandidat" value="{{type}}">{{type}}</option>
+              </select> -->
+              <div class="invalid-feedback">
+                <!-- <div *ngIf="ajouterFraisForm.get('type').errors?.required">Veuillez choisir le type de candidat</div> -->
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="frais" class="control-label mb-1">Frais<span style="color: red"> *</span></label>
+              <!-- <input type="number" min="1000" class="form-control" id="frais" formControlName="frais"
+                     [ngClass]="{'is-invalid' : ajouterFraisForm.get('frais').touched && ajouterFraisForm.get('frais').invalid}"
+              > -->
+              <div class="invalid-feedback">
+                <!-- <div *ngIf="ajouterFraisForm.get('frais').errors?.required">Veuillez le montant des frais d'inscription</div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="ajouterFraisForm.invalid">Enregister</button>
+      </form>
+    </div>
+  </mat-card-content>
+</mat-card>

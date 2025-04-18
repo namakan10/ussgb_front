@@ -1,0 +1,292 @@
+<div class="container col-10">
+  <div class="row">
+
+
+    <div class="col-sm-12 col-md-4 col-lg-4">
+     <div class="form-group">
+       <label for="startDate">Date de debut</label>
+       <input type="date" name="startDate" id="startDate"[(ngModel)]="startDate"  class="form-control custom_Input">
+     </div>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-4">
+     <div class="form-group">
+       <label for="endDate">Date de fin</label>
+       <input type="date" name="endDate" id="endDate" [(ngModel)]="endDate" class="form-control custom_Input">
+     </div>
+    </div>
+
+    <div class="col-sm-12 col-md-4 col-lg-4">
+      <label>{{uni_fil}}</label>
+      <ng-select [items]="Options"
+                 bindLabel="name"
+                 bindValue="id"
+                 [multiple]="false"
+                 groupBy="selectedAllGroup"
+                 [closeOnSelect]="true"
+                 placeholder="Sélectionner l’option"
+                 [(ngModel)]="option"
+      >
+
+        <ng-template ng-optgroup-tmp let-item="item"
+          let-item$="item$" let-index="index">
+          <input id="item-{{index}}" type="checkbox"
+                 [ngModel] ="item$.selected"/> Select All
+        </ng-template>
+      </ng-select>
+
+
+    </div>
+
+    <div class="col-sm-12 col-md-4 col-lg-4">
+      <mat-form-field class="example-full-width">
+        <mat-label>Numéro Téléphone</mat-label>
+        <input matInput [(ngModel)]="num_phone" type="text"
+               name="num_phone">
+      </mat-form-field>
+    </div>
+
+
+  </div>
+
+  <div class="text-right">
+    <span *ngIf="_spinner1" style="text-align: right;">
+      <img style="position: absolute; margin-left: -100px;" src="assets/gif/spinner.gif" width="70" alt="">
+    </span>
+
+    <button type="button" mat-raised-button color="accent"
+            (click)='afficher()' *ngIf="!_spinner1">
+      <mat-icon> search </mat-icon> Afficher</button>
+  </div>
+</div>
+
+<div>
+  <div class="row">
+    <div class="col-12">
+      <div class="col-4">
+        <mat-form-field>
+          <mat-label>FILTRE</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+        </mat-form-field>
+      </div>
+      <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+
+        <!--- Note that these columns can be defined in any order.
+              The actual rendered columns are set as a property on the row definition" -->
+
+
+        <ng-container matColumnDef="departStructure">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Structure départ</th>
+          <td mat-cell *matCellDef="let element"> {{element.departStructure.sigle}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="initiateBy">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Initié par</th>
+          <td mat-cell *matCellDef="let element"> {{element.initiateBy.prenom+" "+element.initiateBy.nom}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="numEtudiant">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>N°étudiant</th>
+          <td mat-cell *matCellDef="let element"> {{element.etudiant.numEtudiant}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="prenom">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Prénom</th>
+          <td mat-cell *matCellDef="let element"> {{element.etudiant.prenom}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+          <td mat-cell *matCellDef="let element"> {{element.etudiant.nom}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="telephone">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>N°tel</th>
+          <td mat-cell *matCellDef="let element"> {{element.etudiant.user.telephone}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="niveau">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Niveau</th>
+          <td mat-cell *matCellDef="let element"> {{element.etudiant.niveau}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="lastOption">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Anc option</th>
+          <td mat-cell *matCellDef="let element"> {{element.etudiant.option.codeOption}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="newOption">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nouv option</th>
+          <td mat-cell *matCellDef="let element"> {{element.newOption.codeOption}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="transferDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date transfert</th>
+          <td mat-cell *matCellDef="let element"> {{element.transferDate}} {{element.transferHour}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="statut">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+          <td mat-cell *matCellDef="let element"> {{element.statut}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>
+            <mat-menu #action="matMenu">
+
+
+              <button mat-menu-item (click)="TransfertDetail(element)">
+                <i class="fa fa-eye"></i>
+                <span>&nbsp;&nbsp;Consulter</span>
+              </button>
+
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="loading">
+          <td mat-footer-cell *matFooterCellDef colspan="6">
+            Chargement des données...
+          </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="noData">
+          <td mat-footer-cell *matFooterCellDef colspan="6">
+            Pas de données...
+          </td>
+        </ng-container>
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator
+        [length]="length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions">
+
+      </mat-paginator>
+    </div>
+
+
+  </div>
+</div>
+
+
+<!--MODAL-->
+<!-- Modal -->
+<div class="modal fade" id="TransfertModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">list</span> Détail</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="checkIfIsNotNull(TransfertData)">
+          <div style="color: #17a2b8">Date de demande {{TransfertData.transferDate}} à {{TransfertData.transferHour}}</div>
+
+          <div class="row" style="border-bottom: 2px solid #cccccc">
+            <div class="col-md-3 p-2 text-center">
+              <img src="{{parseImage(TransfertData.etudiant.user.photo)}}" style="height: 100px; width: 100px" alt="">
+            </div>
+            <div class="col-md-9">
+              <h5>{{TransfertData.etudiant.prenom +" "+TransfertData.etudiant.nom}}</h5>
+              <h6>{{TransfertData.etudiant.numEtudiant}} / {{TransfertData.etudiant.niveau}} : {{TransfertData.etudiant.option.codeOption}}</h6>
+              <h6>{{TransfertData.etudiant.user.telephone}}</h6>
+              <h6>{{TransfertData.etudiant.user.email}}</h6>
+              <h6>Genre: {{TransfertData.etudiant.user.genre}}</h6>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 col-md-4 col-lg-4 p-1" style="border-right: 2px solid #cccccc">
+              <span class="badge badge-secondary">Départ</span>
+             <h4>{{TransfertData.departStructure.sigle}}</h4>
+              <div>
+                <span class="small badge badge-secondary">Initié par</span>
+                <h6>{{TransfertData.initiateBy.fullName}}
+                  <span class="badge badge-info">{{TransfertData.initiateBy.numMatricule}}</span>
+                </h6>
+                <h6><i class="fa fa-phone"></i>{{TransfertData.initiateBy.telephone}}</h6>
+                <h6><i class="fa fa-mail-forward"></i>{{TransfertData.initiateBy.email}}</h6>
+              </div>
+            </div>
+
+            <div class="col-sm-12 col-md-8 col-lg-8 p-2">
+              <span class="badge badge-secondary">nouvelle {{uni_fil}}</span>
+              <h6>
+                <span class="badge badge-info">
+                  {{TransfertData.newOption.codeOption}}
+                </span> {{TransfertData.newOption.nom}}
+              </h6>
+
+              <div class="pl-4">
+                <input type="checkbox" class="form-check-input" (change)="changeInfo($event)">
+                <i class="fa fa-info-circle text-info"></i> Changer de niveau ou de statut
+              </div>
+              <div class="form-group">
+                <label for="newNiveau">changer de niveau <span class="text-info">eventuel</span></label>
+                <select name="newNiveau" class="form-control custom_Input" id="newNiveau" [disabled]="!activeInputs" [(ngModel)]="newNiveau">
+                  <option value=""></option>
+                  <option value="L1">L1</option>
+                  <option value="L2">L2</option>
+                  <option value="L3">L3</option>
+                  <option value="M1">M1</option>
+                  <option value="M2">M2</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="newStatus">changer de status <span class="text-info">eventuel</span></label>
+                <select name="newStatus" id="newStatus" class="form-control custom_Input" [disabled]="!activeInputs" [(ngModel)]="newStatus">
+                  <option value=""></option>
+                  <option value="L1">L1</option>
+                  <option value="REDOUBLANT_L1">REDOUBLANT L1</option>
+                  <option value="REDOUBLANT_L2">REDOUBLANT L2</option>
+                  <option value="REDOUBLANT_L3">REDOUBLANT L3</option>
+                  <option value="REDOUBLANT_L3">REDOUBLANT L3</option>
+                  <option value="ADMIS_CREDIT_L2">ADMIS CREDIT L2</option>
+                  <option value="ADMIS_PURS_S3">ADMIS PURS S3</option>
+                  <option value="ADMIS_PURS_L2">ADMIS PURS L2</option>
+                  <option value="ADMIS_PURS_L3">ADMIS PURS L3</option>
+                  <option value="ADMIS_CREDIT_L3">ADMIS CREDIT L3</option>
+                  <option value="M1">M1</option>
+                  <option value="REDOUBLANT_M1">REDOUBLANT M1</option>
+                  <option value="REDOUBLANT_M2">REDOUBLANT M2</option>
+                  <option value="ADMIS_CREDIT_M2">ADMIS CREDIT M2</option>
+                  <option value="ADMIS_PURS_M2">ADMIS PURS M2</option>
+                  <option value="ADMIS_EQUIVALENCE_L3">ADMIS EQUIVALENCE L3</option>
+                  <option value="ADMIS_EQUIVALENCE_L3">ADMIS EQUIVALENCE L2</option>
+                  <option value="EXCLUS">EXCLUS</option>
+                  <option value="ABANDON">ABANDON</option>
+                  <option value="DIPLOME_LICENCE">DIPLOME LICENCE</option>
+
+                </select>
+              </div>
+            </div>
+
+          </div>
+
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span *ngIf="loading" style="text-align: center;">
+           <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+       </span>
+        <button type="button" class="btn btn-danger" data-dismiss="modal"
+                (click)="Validation('REFUSEE', TransfertData)"
+        [disabled]="loading">Réfuser</button>
+        <button type="button" [disabled]="loading" class="btn btn-success" data-dismiss="modal" (click)="Validation('ACCEPTEE', TransfertData)">Valider</button>
+      </div>
+
+
+    </div>
+  </div>
+</div>

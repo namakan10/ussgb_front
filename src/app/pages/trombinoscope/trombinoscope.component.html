@@ -1,0 +1,345 @@
+<div class="container col-5 shadow-sm p-1 text-center text-white mb-2"
+     style="border-radius: 10px; background-color: #1e88e5">
+    <h4>Trombinoscope</h4>
+</div>
+
+<!---->
+
+<div class="col-12 p-2">
+    <form [formGroup]="User_searchForm" (ngSubmit)="User_searchFormSubmit()">
+        <div class="row">
+            <!--        <div class="col-4" *ngIf="_RECTORAT">-->
+            <!--          <div class="form-group">-->
+            <!--            <label for="struc">Structure <span class="text-danger">*</span></label>-->
+            <!--            <select name="struc" id="struc" class="form-control custom_Input"-->
+            <!--                    [(ngModel)]="structure" (change)="structureChange($event)">-->
+            <!--              <option value=""></option>-->
+            <!--              <option value="{{struc.id}}" *ngFor="let struc of Structures">{{struc.sigle}}</option>-->
+            <!--            </select>-->
+            <!--          </div>-->
+            <!--        </div>-->
+
+            <div class="col-4">
+                <div class="form-group">
+                    <label for="type_user">Type d'utilisateur <span class="text-danger">*</span></label>
+                    <select class="form-control" id="type_user" formControlName="type_user">
+                        <option value=""></option>
+                        <!--                        <option value="all">Tout</option>-->
+                        <option value="ETUDIANT">Etudiant</option>
+                        <option value="ENSEIGNANT">Enseignant</option>
+                        <option value="PERSONNEL_ADMINISTRATIF">Personnel Administratif</option>
+                        <!--                        <option value="PERSONNEL_TECHNIQUE">Personnel Technique</option>-->
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-4" *ngIf="User_searchForm.get('type_user')?.value === 'ETUDIANT'">
+                <div class="form-group">
+                    <label for="anneeS">Année scolaire <span class="text-danger">*</span></label>
+                    <select class="form-control" id="anneeS" formControlName="anneeS">
+                        <option value=""></option>
+                        <option value="{{annee.anneeScolaire}}"
+                                *ngFor="let annee of AnneeStructure">{{ annee.anneeScolaire }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="form-group">
+                    <label for="nom">Nom </label>
+                    <input type="text" class="form-control" id="nom" formControlName="nom">
+                </div>
+            </div>
+            <div class="col-4">
+                <label for="prenom">Prénom </label>
+                <input type="text" class="form-control" id="prenom" formControlName="prenom">
+            </div>
+            <div class="col-4">
+                <div class="text-right mt-1">
+          <span *ngIf="formValid_spinner" style="text-align: center;">
+            <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+            Veuillez patienter ...
+        </span>
+                    <div class="ml-3 pt-3">
+                        <button mat-raised-button type="submit" color="primary" [disabled]="User_searchForm.invalid"
+                                *ngIf="!formValid_spinner">valider
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<div class="mt-4" *ngIf="NotFind">
+    <h1 class="text-center">Aucun résultat trouvé</h1>
+    <h1 class="text-center mt-3">
+      <span>
+        <mat-icon> search_off </mat-icon>
+      </span>
+    </h1>
+</div>
+
+<div class="mt-4" *ngIf="!ListResponse || ListResponse.length==0">
+    <h1 class="text-center"><span class="material-icons"> search </span> Trombinoscope des utilisateurs !</h1>
+    <p class="text-center mt-3">
+        Veuillez renseigner les champs ci-dessus pour obténir d'eventuel résultat
+    </p>
+</div>
+
+<!--<mat-horizontal-stepper *ngIf="ListResponse && ListResponse.length>0">-->
+<!--    <mat-step label="Etudiants" state="phone">-->
+<!--        <p>Trompinoscope des étudiants</p>-->
+<!--        <div class="row">-->
+<!--            <div class="col-6 p-3" *ngFor="let list of ListResponse">-->
+
+<!--                <div class="shadow-sm p-2 bg-white">-->
+<!--                    <div class="row">-->
+<!--                        <div class="col-4">-->
+<!--                            <div *ngIf="list?.photo?.toLowerCase().includes('public')">-->
+<!--                                <img src="{{_https}}{{list.photo}}"-->
+<!--                                     (error)="onImageErrorPrint($event)"-->
+<!--                                     height="150px" alt="">-->
+<!--                            </div>-->
+<!--                            <div *ngIf="!list?.photo?.toLowerCase().includes('public')">-->
+<!--                                <img src="{{_http}}{{list.photo}}"-->
+<!--                                     (error)="onImageErrorPrint($event)"-->
+<!--                                     width="100%" alt="">-->
+<!--                            </div>-->
+
+<!--                        </div>-->
+<!--                        <div class="col-8">-->
+<!--                            <p><strong>Nom: </strong> <span> {{ list.nom !== null ? list.nom : '&#45;&#45;' }}</span></p>-->
+<!--                            <p><strong>Prénom:</strong> <span> {{ list.prenom !== null ? list.prenom : '&#45;&#45;' }}</span>-->
+<!--                            </p>-->
+
+<!--                            <p>-->
+<!--                                <strong>-->
+<!--              <span class="material-icons">-->
+<!--                call-->
+<!--                </span>-->
+<!--                                </strong> <span> {{ list.telephone !== null ? list.telephone : '&#45;&#45;' }}</span>-->
+<!--                            </p>-->
+
+<!--                            <p>-->
+<!--                                <strong>-->
+<!--                <span class="material-icons">-->
+<!--                  email-->
+<!--                  </span>-->
+<!--                                </strong> <span>{{ list.email !== null ? list.email : '&#45;&#45;' }}</span>-->
+<!--                            </p>-->
+
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div>-->
+<!--            <button mat-button matStepperNext>Next</button>-->
+<!--        </div>-->
+<!--    </mat-step>-->
+<!--    <mat-step label="Enseignants" state="chat">-->
+<!--        <p>Trompinoscope des enseignants</p>-->
+
+<!--        <div class="row">-->
+<!--            <div class="col-6 p-3" *ngFor="let ens_list of ListResponse">-->
+
+<!--                <div class="shadow-sm p-2 bg-white" *ngIf="ens_list.typeUtilisateur === 'ENSEIGNANT'">-->
+<!--                    <div class="row">-->
+<!--                        <div class="col-4">-->
+<!--                            <img src="{{_http}}{{ens_list.photo}}" width="100%" height="125px" alt="">-->
+<!--                        </div>-->
+<!--                        <div class="col-8">-->
+<!--                            <p><strong>Nom: </strong> <span> {{ ens_list.nom }}</span></p>-->
+<!--                            <p><strong>Prénom:</strong> <span> {{ ens_list.prenom }}</span></p>-->
+<!--                            <p><strong>Spécialité:</strong> <span> {{ ens_list.specialite }}</span></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="mt-2">-->
+<!--                        <hr>-->
+<!--                        <p>-->
+<!--                            <strong>-->
+<!--                  <span class="material-icons">-->
+<!--                    call-->
+<!--                    </span>-->
+<!--                            </strong> <span> {{ ens_list.telephone }}</span></p>-->
+
+<!--                        <p>-->
+<!--                            <strong>-->
+<!--                    <span class="material-icons">-->
+<!--                      email-->
+<!--                      </span>-->
+<!--                            </strong> <span> {{ ens_list.email }}</span></p>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div>-->
+<!--            <button mat-button matStepperPrevious>Back</button>-->
+<!--            <button mat-button matStepperNext>Next</button>-->
+<!--        </div>-->
+<!--    </mat-step>-->
+<!--    <mat-step label="personnels administratifs">-->
+<!--        <p>Trompinoscope des personnels administratif</p>-->
+
+<!--        <div class="row">-->
+<!--            <div class="col-6 p-3" *ngFor="let perso_list of ListResponse">-->
+
+<!--                <div class="shadow-sm p-2 bg-white" *ngIf="perso_list.typeUtilisateur == 'administratif'">-->
+<!--                    <div class="row">-->
+<!--                        <div class="col-4">-->
+<!--                            <img src="http://{{perso_list.photo}}" width="100%" height="125px" alt="">-->
+<!--                        </div>-->
+<!--                        <div class="col-8">-->
+<!--                            <p><strong>Nom: </strong> <span> {{ perso_list.nom }}</span></p>-->
+<!--                            <p><strong>Prénom:</strong> <span> {{ perso_list.prenom }}</span></p>-->
+<!--                            <p><strong>fonction:</strong> <span> {{ perso_list.fonction }}</span></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="mt-2">-->
+<!--                        <hr>-->
+<!--                        <p>-->
+<!--                            <strong>-->
+<!--                  <span class="material-icons">-->
+<!--                    call-->
+<!--                    </span>-->
+<!--                            </strong> <span> 71074927</span></p>-->
+
+<!--                        <p>-->
+<!--                            <strong>-->
+<!--                    <span class="material-icons">-->
+<!--                      email-->
+<!--                      </span>-->
+<!--                            </strong> <span> {{ perso_list.email }}</span></p>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--            </div>-->
+<!--        </div>-->
+<!--    </mat-step>-->
+
+<!--    &lt;!&ndash; Icon overrides. &ndash;&gt;-->
+<!--    <ng-template matStepperIcon="phone">-->
+<!--        <mat-icon>call_end</mat-icon>-->
+<!--    </ng-template>-->
+<!--    <ng-template matStepperIcon="chat">-->
+<!--        <mat-icon>forum</mat-icon>-->
+<!--    </ng-template>-->
+<!--</mat-horizontal-stepper>-->
+
+<!--ETUDIANTS-->
+<div class="row" *ngIf="onlyEtudiant">
+    <div class="col-6 p-3" *ngFor="let list of ListResponse">
+
+        <div class="shadow-sm p-2 bg-white">
+            <div class="row">
+                <div class="col-4">
+                    <div *ngIf="list?.photo?.toLowerCase().includes('public')">
+                        <img src="{{_https}}{{list.photo}}"
+                             (error)="onImageErrorPrint($event)"
+                             height="150px" alt="">
+                    </div>
+                    <div *ngIf="!list?.photo?.toLowerCase().includes('public')">
+                        <img src="{{_http}}{{list.photo}}"
+                             (error)="onImageErrorPrint($event)"
+                             width="100%" alt="">
+                    </div>
+                </div>
+                <div class="col-8">
+                    <p><strong>Nom: </strong> <span> {{ list.nom !== null ? list.nom : '--' }}</span></p>
+                    <p><strong>Prénom:</strong> <span> {{ list.prenom !== null ? list.prenom : '--' }}</span></p>
+
+                    <p>
+                        <strong>
+                <span class="material-icons">
+                  call
+                  </span>
+                        </strong> <span> {{ list.telephone !== null ? list.telephone : '--' }}</span>
+                    </p>
+
+                    <p>
+                        <strong>
+                  <span class="material-icons">
+                    email
+                    </span>
+                        </strong> <span>{{ list.email !== null ? list.prenom : '--' }}</span>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--ETUDIANTS-->
+<!--===================================================-->
+<!-- ENSEIGNANT-->
+<div class="row" *ngIf="onlyEnseignant">
+    <div class="col-6 p-3" *ngFor="let ens_list of ListResponse">
+
+        <div class="shadow-sm p-2 bg-white">
+            <div class="row">
+                <div class="col-4">
+                    <div *ngIf="ens_list?.photo?.toLowerCase().includes('public')">
+                        <img src="{{_https}}{{ens_list.photo}}"
+                             (error)="onImageErrorPrint($event)"
+                             height="150px" alt="">
+                    </div>
+                    <div *ngIf="!ens_list?.photo?.toLowerCase().includes('public')">
+                        <img src="{{_http}}{{ens_list.photo}}"
+                             (error)="onImageErrorPrint($event)"
+                             width="100%" alt="">
+                    </div>
+                </div>
+                <div class="col-8">
+                    <p><strong>Nom: </strong> <span> {{ ens_list.nom }}</span></p>
+                    <p><strong>Prénom:</strong> <span> {{ ens_list.prenom }}</span></p>
+                    <p><strong>Spécialité:</strong> <span> {{ ens_list?.personnel?.specialiteFonction?.nom }}</span></p>
+                    <p><strong><span class="material-icons">call</span></strong> <span> {{ ens_list.telephone !== null ? ens_list.telephone : '--' }}</span></p>
+                    <p><strong><span class="material-icons">email</span></strong> <span> {{ ens_list.email !== null ? ens_list.email : '--' }}</span></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- ENSEIGNANT-->
+<!--===================================================-->
+<!-- PERSONNEL ADMINISTRATIF-->
+
+<div class="row" *ngIf="onlyPersonnel">
+    <div class="col-6 p-3" *ngFor="let perso_list of ListResponse">
+
+        <div class="shadow-sm p-2 bg-white">
+            <div class="row">
+                <div class="col-4">
+                    <div *ngIf="perso_list?.photo?.toLowerCase().includes('public')">
+                        <img src="{{_https}}{{perso_list.photo}}"
+                             (error)="onImageErrorPrint($event)"
+                             height="150px" alt="">
+                    </div>
+                    <div *ngIf="!perso_list?.photo?.toLowerCase().includes('public')">
+                        <img src="{{_http}}{{perso_list.photo}}"
+                             (error)="onImageErrorPrint($event)"
+                             width="100%" alt="">
+                    </div>
+                </div>
+                <div class="col-8">
+                    <p><strong>Nom: </strong> <span> {{ perso_list.nom }}</span></p>
+                    <p><strong>Prénom:</strong> <span> {{ perso_list.prenom }}</span></p>
+                    <p><strong>Fonction:</strong> <span> {{ perso_list?.personnel?.specialiteFonction?.nom }}</span></p>
+                    <p><strong><span class="material-icons">call</span></strong> <span> {{ perso_list.telephone !== null ? perso_list.telephone : '--' }}</span></p>
+                    <p><strong><span class="material-icons">email</span></strong> <span> {{ perso_list.email !== null ? perso_list.email : '--' }}</span></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- PERSONNEL ADMINISTRATIF-->

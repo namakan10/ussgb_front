@@ -1,0 +1,109 @@
+<!-- LISTE DES DIVISION PAR SERVICE -->
+
+<h1 class="mb-2"> Divisions </h1>
+
+
+
+<!-- LISTER BY DEPARTEMENT <form action="">
+</form> -->
+<div class="container col-4 mb-2 text-center">
+   <form [formGroup]="Dep_SelectForm">
+    <label for="departementSel">Départements</label>
+    <select class="form-control custom_Input" formControlName="listServiceDep" id="departementSel" (change)="GetServiceOfSelectDepartement($event)">
+        <option value="null">Tous</option>
+        <option value="{{depart.id}}" *ngFor="let depart of Departements">{{depart.nom}}</option>
+    </select>
+   </form>
+
+   <span *ngIf="change_spinner" class="mt-4" style="text-align: center;">
+    <img src="../../../../assets/gif/spinner.gif" width="40" alt="">
+    <span>Veuillez patienter s'il vous plaît ...</span>
+   </span>
+
+</div>
+
+<hr>
+<h3 class="text-center" *ngIf="serviceOfDep">Services du département: <br> {{departementSelect}}</h3>
+<h3 class="text-center" *ngIf="!serviceOfDep">Services de: <br> {{structureDivSelect}}</h3>
+<button mat-raised-button color="primary" (click)="divisionPlus()">Ajouter une division</button>
+
+<div class="row mt-3 center">
+
+    <!-- *ngFor="let service of structureDivisions" -->
+    <div class="col-md-3 mt-3" *ngFor="let division of structureDivisions">
+        <div class="container col-12 p-3 bg-white">
+            <span class="badge badge-ligth">Service:</span><p class="">{{division.service.nom}}</p>
+            <hr>
+            {{division.nom}}
+            <hr>
+            <button mat-raised-button color="primary" [matMenuTriggerFor]="menu">Action</button>
+            <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="DivisionModif(division)">Modifier</button>
+            <button mat-menu-item (click)="DeleteDivision(division)">Supprimer</button>
+            </mat-menu>
+
+        </div>
+    </div>
+
+</div>
+
+
+<!---================= MODAL ====================-->
+
+
+<!-- Modal DIVISION CREAT -->
+
+<div class="modal fade" id="CreatFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title" id="exampleModalLabel">
+            Division
+          </h5>
+          <button type="button" mat-button data-dismiss="modal" aria-label="Close" (click)="add_spinner = false"><span class="material-icons">close</span></button>
+        </div>
+        <div class="modal-body">
+
+
+            <form [formGroup]="DivisionForm" (ngSubmit)="creatAction?SaveDivision():UpdateDivision()">
+
+              <div class="form-group">
+                <label for="nom">Nom  <span class="text-danger">*</span></label>
+               <input type="text" class="form-control custom_Input" id="nom" formControlName="nom">
+              </div>
+              <!-- *ngIf="creatAction" -->
+
+              <div class="form-group">
+                <label for="service">Service <span class="text-danger">*</span></label>
+                <select id="service" class="form-control custom_Input" formControlName="service">
+                  <option value=""></option>
+                  <option value="{{servi.id}}" *ngFor="let servi of Services">{{servi.nom}}</option>
+                </select>
+              </div>
+
+
+              <div class="text-center p-1">
+
+                <span *ngIf="add_spinner" style="text-align: center;">
+                    <img src="../../../../assets/gif/spinner.gif" width="25" alt="">
+                    <span>Veuillez patienter s'il vous plaît ...</span>
+                </span>
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="DivisionForm.invalid" *ngIf="!add_spinner">
+                  <i class="fa fa-save"></i> valider
+                </button>
+              </div>
+            </form>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="add_spinner = false">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+<!-- LISTE DES DIVISION PAR SERVICE & DEPARTEMENT -->

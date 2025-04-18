@@ -1,0 +1,1049 @@
+
+<!--+++++++++++++++++++++++++-->
+<!--MON CV-->
+<!--+++++++++++++++++++++++++-->
+
+<div class="container align-self-center" *ngIf="spinner1">
+     <span style="text-align: center;">
+       <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+     </span>
+</div>
+
+<div class="container mb-3" *ngIf="cvIsCreated && !ELementPart">
+  <h2 class="text-center">Curriculum Vitae (CV)</h2>
+  <div class="ml-2">
+    <button mat-raised-button color="primary" (click)="elementPlus(CV_DATA)">
+      <span class="material-icons">
+        bookmark_add
+      </span>
+      Ajouter des éléments
+    </button> |
+
+    <button mat-raised-button [color]="DoEdit?'primary':'accent'" (click)="DoEdit = !DoEdit">
+      <span class="material-icons" *ngIf="DoEdit">
+        toll
+      </span>
+      <span class="material-icons" *ngIf="!DoEdit">
+        edit
+      </span>
+      {{DoEdit?'Mode vue':'Mode édition'}}
+    </button> |
+    <button mat-raised-button color="warn" (click)="DoEdit = false; exportpdf()">
+      <span class="material-icons">
+        file_upload
+      </span>
+      Exporter PDF
+    </button>
+  </div>
+
+
+  <div id="export-doc">
+    <div class="row" >
+      <div class="col-3 p-2">
+        <div>
+          <img src="{{_http}}{{user.users.photo}}" width="100%" height="255" crossorigin="anonymous" alt="">
+        </div>
+
+        <div class="container mt-3 p-1 font-weight-bold" style="border: 4px solid cornflowerblue; font-size: 18px">
+          <strong>Détails personnels</strong>
+        </div>
+
+        <div class="mt-3">
+          <h4><span><i class="fa fa-location-arrow"></i></span> ADRESSE</h4>
+          <span>{{user.users.quartier}} / Rue: {{user.users.rue === null || user.users.rue === 0 ? '-': user.users.rue }}
+            Porte: {{user.users.porte === null || user.users.porte === 0 ? '-': user.users.porte }}
+        </span>
+        </div>
+
+        <div class="mt-3">
+          <h4><span><i class="fa fa-phone"></i></span> TELEPHONE</h4>
+          <span>{{user.users.telephone}}</span>
+        </div>
+
+
+        <div class="mt-3">
+          <h4><span><i class="fa fa-calendar"></i></span> DATE DE NAISSANCE</h4>
+          <span>{{user.users.dateDeNaissance | date: "dd-MM-yyyy"}}</span>
+        </div>
+
+
+        <!--      <div class="container mt-3 p-1 font-weight-bold" style="border: 4px solid darkorange; font-size: 18px">-->
+        <!--        <strong>COMPETENCES</strong>-->
+        <!--      </div>-->
+
+        <!--      <div class="mt-3">-->
+        <!--        <h4>Competence 1</h4>-->
+        <!--        <h4>Competence 1</h4>-->
+        <!--        <h4>Competence 1</h4>-->
+        <!--        <h4>Competence 1</h4>-->
+        <!--      </div>-->
+
+
+        <div class="container mt-3 p-1 font-weight-bold" style="border: 4px solid cornflowerblue; font-size: 18px">
+          <strong>LANGUES</strong>
+        </div>
+
+        <div class="mt-2" *ngFor="let langue of CV_DATA.langues">
+          <div>
+            <span>- {{langue.libelle}} </span>
+            <span class="text-right badge badge-info"> {{langue.niveau}}/5</span>
+
+            <span class="ediBtnPart" *ngIf="DoEdit">
+              <button mat-icon-button aria-label="" (click)="changeElement(langue,'LANGUE')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="" color="warn" (click)="DeleteElement(langue,'LANGUE')">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+
+          </div>
+        </div>
+
+
+        <div class="container mt-3 p-1 font-weight-bold" style="border: 4px solid darkorange; font-size: 18px">
+          <strong>LOISIRS</strong>
+        </div>
+
+        <div class="mt-2" *ngFor="let interet of CV_DATA.interets">
+          <span><i class="fa fa-dot-circle-o"></i> {{interet.libelle}}</span>
+
+          <span class="ediBtnPart" *ngIf="DoEdit">
+              <button mat-icon-button aria-label="" (click)="changeElement(interet,'INTERET')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="" color="warn" (click)="DeleteElement(interet,'INTERET')">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+
+        </div>
+
+      </div>
+      <!---CORPS DU CV-->
+      <div class="col-9 bg-light">
+        <div class="container-fluid p-4">
+          <div class="container col-8 text-center p-3 font-weight-bold" style="border: 4px solid #353b41">
+            <h4>{{user.users.prenom}} {{user.users.nom}}</h4>
+          </div>
+        </div>
+
+        <!--PROFIL-->
+        <div class="mt-3" *ngIf="CV_DATA.profil !== null">
+          <h3 class="text-center"><strong>PROFIL</strong></h3>
+        </div>
+
+        <div *ngIf="CV_DATA.profil !== null">
+          <div class="row mt-2">
+            <div class="col-2 p-1">
+
+            </div>
+            <div class="col-10">
+            <span class="ediBtnPart" *ngIf="DoEdit">
+              <button mat-icon-button aria-label="" (click)="changeElement(CV_DATA,'PROFIL')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="" color="warn" (click)="DeleteElement(CV_DATA,'PROFIL')">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+              <span>{{CV_DATA.profil.contenu}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!--FORMATION-->
+        <div class="mt-3" *ngIf="CV_DATA.formations.length > 0">
+          <h3 class="text-center"><strong>FORMATIONS</strong></h3>
+        </div>
+
+        <div *ngFor="let experience of CV_DATA.formations">
+          <div class="row mt-2">
+            <div class="col-2 p-1">
+              <div>
+                <p>{{experience.dateDebut | date: "dd-MM-yyyy"}}</p>
+                <p>{{experience.dateFin | date: "dd-MM-yyyy"}}</p>
+              </div>
+            </div>
+            <div class="col-10">
+
+            <span class="ediBtnPart" *ngIf="DoEdit">
+              <button mat-icon-button aria-label="" (click)="changeElement(experience,'FORMATION')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="" color="warn" (click)="DeleteElement(experience,'FORMATION')">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+
+              <h4><strong>{{experience.libelle}}</strong></h4>
+              <span>{{experience.contenu}}</span>
+            </div>
+          </div>
+        </div>
+
+
+        <!--EXPERIENCES-->
+        <div class="mt-3" *ngIf="CV_DATA.experiences_pro.length > 0">
+          <h3 class="text-center"><strong>EXPERIENCES PROFESSIONNELLES</strong></h3>
+        </div>
+
+        <div *ngFor="let experience of CV_DATA.experiences_pro">
+          <div class="row mt-2">
+            <div class="col-2 p-1">
+              <div>
+                <p>{{experience.dateDebut | date: "dd-MM-yyyy"}}</p>
+                <p>{{experience.dateFin | date: "dd-MM-yyyy"}}</p>
+              </div>
+            </div>
+            <div class="col-10">
+
+            <span class="ediBtnPart" *ngIf="DoEdit">
+              <button mat-icon-button aria-label="" (click)="changeElement(experience,'EXPERIENCE_PRO')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="" color="warn" (click)="DeleteElement(experience,'EXPERIENCE_PRO')">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+
+              <h4><strong>{{experience.libelle}}</strong></h4>
+              <span>{{experience.contenu}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!--COMPETENCES-->
+        <div class="mt-3" *ngIf="CV_DATA.competences.length > 0">
+          <h3 class="text-center"><strong>COMPETENCES</strong></h3>
+        </div>
+
+        <div *ngFor="let experience of CV_DATA.competences">
+          <div class="row mt-2">
+            <div class="col-2 d-flex p-1">
+              NIVEAU : <h4><span class="badge badge-info">{{experience.niveau}}</span> / <span class="badge badge-info">5</span></h4>
+            </div>
+            <div class="col-10">
+
+            <span class="ediBtnPart" *ngIf="DoEdit">
+              <button mat-icon-button aria-label="" (click)="changeElement(experience,'COMPETENCE')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="" color="warn" (click)="DeleteElement(experience,'COMPETENCE')">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+
+              <h4>{{experience.libelle}}</h4>
+              <span>{{experience.contenu}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!--QUALITER-->
+        <div class="mt-3" *ngIf="CV_DATA.qualites.length > 0">
+          <h3 class="text-center"><strong>QUALITES</strong></h3>
+        </div>
+
+        <div *ngFor="let experience of CV_DATA.qualites">
+          <div class="row mt-2">
+            <div class="col-2 p-1 d-flex justify-content-end">
+              <i class="fa fa-dot-circle-o"></i>
+            </div>
+            <div class="col-10">
+
+            <span class="ediBtnPart" *ngIf="DoEdit">
+              <button mat-icon-button aria-label="" (click)="changeElement(experience,'QUALITE')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="" color="warn" (click)="DeleteElement(experience,'QUALITE')">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+
+              <h4><strong>{{experience.libelle}}</strong></h4>
+            </div>
+          </div>
+        </div>
+
+        <!--REALISATION-->
+        <div class="mt-3" *ngIf="CV_DATA.realisations.length > 0">
+          <h3 class="text-center"><strong> REALISATION </strong></h3>
+        </div>
+
+        <div *ngFor="let experience of CV_DATA.realisations">
+          <div class="row mt-2">
+            <div class="col-2 p-1">
+              <div>
+                <p>{{experience.dateDebut | date: "dd-MM-yyyy"}}</p>
+                <p>{{experience.dateFin | date: "dd-MM-yyyy"}}</p>
+              </div>
+            </div>
+            <div class="col-10">
+
+            <span class="ediBtnPart" *ngIf="DoEdit">
+              <button mat-icon-button aria-label="" (click)="changeElement(experience,'REALISATION')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="" color="warn" (click)="DeleteElement(experience,'REALISATION')">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+
+              <!--            <h4><strong>{{experience.libelle}}</strong></h4>-->
+              <span>{{experience.contenu}}</span>
+            </div>
+          </div>
+        </div>
+
+
+        <!--CERTIFICATS-->
+        <div class="mt-3" *ngIf="CV_DATA.certificats.length > 0">
+          <h3 class="text-center"><strong> CERTIFICATS </strong></h3>
+        </div>
+
+        <div *ngFor="let experience of CV_DATA.certificats">
+          <div class="row mt-2">
+            <div class="col-2 p-1">
+              <div>
+                <p>{{experience.dateDebut | date: "dd-MM-yyyy"}}</p>
+                <p>{{experience.dateFin | date: "dd-MM-yyyy"}}</p>
+              </div>
+            </div>
+            <div class="col-10">
+
+            <span class="ediBtnPart" *ngIf="DoEdit">
+              <button mat-icon-button aria-label="" (click)="changeElement(experience,'CERTIFICAT')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="" color="warn" (click)="DeleteElement(experience,'CERTIFICAT')">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+
+              <h4><strong>{{experience.libelle}}</strong></h4>
+              <span>{{experience.contenu}}</span>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!--PUBLICATIONS-->
+        <div class="mt-3" *ngIf="CV_DATA.publications.length > 0">
+          <h3 class="text-center"><strong> PUBLICATIONS </strong></h3>
+        </div>
+
+        <div *ngFor="let publication of CV_DATA.publications">
+          <div class="row mt-2">
+            <div class="col-2 p-1">
+              <div>
+                <p>{{publication.dateDebut | date: "dd-MM-yyyy"}}</p>
+                <p>{{publication.dateFin | date: "dd-MM-yyyy"}}</p>
+              </div>
+            </div>
+            <div class="col-10">
+
+            <span class="ediBtnPart" *ngIf="DoEdit">
+              <button mat-icon-button aria-label="" (click)="changeElement(publication,'PUBLICATION')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="" color="warn" (click)="DeleteElement(publication,'PUBLICATION')">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+
+              <h4><strong>{{publication.libelle}}</strong></h4>
+              <span>{{publication.contenu}}</span>
+            </div>
+          </div>
+        </div>
+
+
+        <!--AUTRES-->
+        <div class="mt-3" *ngIf="CV_DATA.autres.length > 0">
+          <h3 class="text-center"><strong> AUTRES </strong></h3>
+        </div>
+
+        <div *ngFor="let experience of CV_DATA.autres">
+          <div class="row mt-2">
+            <div class="col-2 p-1">
+              <div>
+                <p *ngIf="experience.dateDebut !== null && experience.dateDebut !== ''">{{experience.dateDebut | date: "dd-MM-yyyy"}}</p>
+                <p *ngIf="experience.dateFin !== null && experience.dateFin !== ''">{{experience.dateFin | date: "dd-MM-yyyy"}}</p>
+              </div>
+
+              <span class="mt-2" *ngIf="experience.niveau !== null && experience.niveau !== ''">NIVEAU : <h4><span class="badge badge-info">{{experience.niveau}}</span> / <span class="badge badge-info">5</span></h4></span>
+
+            </div>
+            <div class="col-10">
+
+            <span class="ediBtnPart" *ngIf="DoEdit">
+              <button mat-icon-button aria-label="" (click)="changeElement(experience,'AUTRE')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="" color="warn" (click)="DeleteElement(experience,'AUTRE')">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+
+              <h4 *ngIf="experience.libelle !== null && experience.libelle !== ''"><strong>{{experience.libelle}}</strong></h4>
+              <span *ngIf="experience.contenu !== null && experience.contenu !== ''">{{experience.contenu}}</span>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!--+++++++++++++++++++++++++-->
+<!-- END MON CV-->
+<!--+++++++++++++++++++++++++-->
+
+<div *ngIf="ELementPart">
+  <button mat-raised-button color="warn" (click)="ELementPart = !ELementPart">
+    <span class="material-icons">
+      reply
+    </span>
+    Annuler
+  </button>
+
+  <h2 class="text-center">Ajout des éléments dans le CV</h2>
+  <mat-accordion class="example-headers-align">
+
+    <!--PROFIL-->
+    <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" >
+      <mat-expansion-panel-header>
+        <mat-panel-title (click)="typeSelect = 'PROFIL'">
+          PROFIL
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+
+      <div class="accordion" id="accordionExampl">
+        <div *ngFor="let profil of Array">
+          <div class="shadow-sm" *ngIf="profil.type === 'PROFIL'">
+
+            <div class="mt-2 p-2">
+              <button mat-icon-button aria-label="" (click)="Edit(profil, 'edit')">
+                <mat-icon>edit</mat-icon>
+              </button> |
+              <button mat-icon-button aria-label="" (click)="DeleteItem(profil, profil.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <div class="">
+                <span class="text-dark">{{profil.contenu}}</span>
+              </div>
+
+            </div>
+
+
+          </div>
+        </div>
+
+        <div class="text-center p-2" *ngIf="!ProfilIsFull">
+          <button mat-raised-button (click)="Add('PROFIL')">
+            <span class="material-icons">add</span>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+
+
+
+      <mat-action-row>
+        <button mat-button color="primary" (click)="nextStep()"><i class="fa fa-arrow-right"></i></button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+    <!--FORMATION-->
+    <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" >
+      <mat-expansion-panel-header>
+        <mat-panel-title (click)="typeSelect = 'FORMATION'">
+          FORMATION
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+
+      <div class="accordion" id="accordionExample">
+        <div *ngFor="let formation of Array">
+          <div class="shadow-sm" *ngIf="formation.type === 'FORMATION'">
+
+            <div class="mt-2 p-2">
+              <button mat-icon-button aria-label="" (click)="Edit(formation, 'edit')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              |
+              <button mat-icon-button aria-label="" (click)="DeleteItem(formation, formation.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <button class="btn btn-link text-info" type="button" data-toggle="collapse" [attr.data-target]="'#collapse'+ formation.id" aria-expanded="true" aria-controls="collapseOne">
+                <span class="text-dark font-weight-bold">{{formation.libelle}}</span>
+              </button>
+
+              <div class="ml-4 pl-3">
+                <p><span class="badge badge-info">{{formation.dateDebut}}</span> - <span class="badge badge-info">{{formation.dateFin}}</span></p>
+              </div>
+
+            </div>
+            <div id="collapse{{formation.id}}" class="collapse p-2" aria-labelledby="headingOne" data-parent="#accordionExample">
+              {{formation.contenu}}
+            </div>
+
+          </div>
+        </div>
+
+        <div class="text-center p-2">
+          <button mat-raised-button (click)="Add('FORMATION')">
+            <span class="material-icons">add</span>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+
+
+
+      <mat-action-row>
+        <button mat-button color="primary" (click)="nextStep()"><i class="fa fa-arrow-right"></i></button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+    <!--EXPERIENCE -->
+    <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          EXPERIENCE PROFESSIONNELLE
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="accordion" id="accordionExample2">
+        <div *ngFor="let experience of Array">
+          <div class="shadow-sm" *ngIf="experience.type === 'EXPERIENCE_PRO'">
+
+            <div class="mt-2 p-2">
+              <button mat-icon-button aria-label="" (click)="Edit(experience, 'edit')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              |
+              <button mat-icon-button aria-label="" (click)="DeleteItem(experience, experience.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <button class="btn btn-link text-info" type="button" data-toggle="collapse" [attr.data-target]="'#collapse'+ experience.id" aria-expanded="true">
+                <span class="text-dark font-weight-bold">{{experience.libelle}}</span>
+              </button>
+
+              <div class="ml-5 pl-3">
+                <p><span class="badge badge-info">{{experience.dateDebut}}</span> - <span class="badge badge-info">{{experience.dateFin}}</span></p>
+              </div>
+
+            </div>
+            <div id="collapse{{experience.id}}" class="collapse p-2" aria-labelledby="headingOne" data-parent="#accordionExample2">
+              {{experience.contenu}}
+            </div>
+
+          </div>
+        </div>
+
+        <div class="text-center p-2">
+          <button mat-raised-button (click)="Add('EXPERIENCE_PRO')">
+            <span class="material-icons">add</span>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+      <mat-action-row>
+        <button mat-button color="warn" (click)="prevStep()"><i class="fa fa-arrow-left"></i></button>
+        <button mat-button color="primary" (click)="nextStep()"><i class="fa fa-arrow-right"></i></button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+    <!--COMPETENCE-->
+    <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          COMPETENCE
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+
+      <div class="accordion" id="accordionExample3">
+        <div *ngFor="let competence of Array">
+          <div class="shadow-sm" *ngIf="competence.type === 'COMPETENCE'">
+
+            <div class="mt-2 p-2">
+              <button mat-icon-button aria-label="" (click)="Edit(competence, 'edit')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              |
+              <button mat-icon-button aria-label="" (click)="DeleteItem(competence, competence.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <button class="btn btn-link text-info" type="button" data-toggle="collapse" [attr.data-target]="'#collapse'+ competence.id" aria-expanded="true">
+                <span class="text-dark font-weight-bold">{{competence.libelle}}</span>
+              </button>
+
+              <div class="ml-4 pl-3">
+                NIVEAU : <h4><span class="badge badge-info">{{competence.niveau}}</span> / <span class="badge badge-info">5</span></h4>
+              </div>
+
+            </div>
+            <div id="collapse{{competence.id}}" class="collapse p-2" aria-labelledby="headingOne" data-parent="#accordionExample3">
+              {{competence.contenu}}
+            </div>
+
+          </div>
+        </div>
+
+        <div class="text-center p-2">
+          <button mat-raised-button (click)="Add('COMPETENCE')">
+            <span class="material-icons">add</span>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+
+      <mat-action-row>
+        <button mat-button color="warn" (click)="prevStep()"><i class="fa fa-arrow-left"></i></button>
+        <button mat-button color="primary" (click)="nextStep()">End</button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+    <!--LANGUES-->
+    <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          LANGUES
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+
+      <div class="accordion" id="accordionExample4">
+        <div *ngFor="let langue of Array">
+          <div class="shadow-sm" *ngIf="langue.type === 'LANGUE'">
+
+            <div class="mt-2 p-2">
+              <button mat-icon-button aria-label="" (click)="Edit(langue, 'edit')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              |
+              <button mat-icon-button aria-label="" (click)="DeleteItem(langue, langue.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <button class="btn btn-link text-info" type="button" aria-expanded="true">
+                <span class="text-dark font-weight-bold">{{langue.libelle}}</span>
+              </button>
+
+              <div class="ml-4 pl-3">
+                NIVEAU : <h4><span class="badge badge-info">{{langue.niveau}}</span> / <span class="badge badge-info">5</span></h4>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <div class="text-center p-2">
+          <button mat-raised-button (click)="Add('LANGUE')">
+            <span class="material-icons">add</span>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+
+      <mat-action-row>
+        <button mat-button color="warn" (click)="prevStep()"><i class="fa fa-arrow-left"></i></button>
+        <button mat-button color="primary" (click)="nextStep()"><i class="fa fa-arrow-right"></i></button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+
+    <!--CENTRE INTERET-->
+    <mat-expansion-panel [expanded]="step === 5" (opened)="setStep(5)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          CENTRE INTERET / LOISIRS
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+
+      <div class="accordion" id="accordionExample5">
+        <div *ngFor="let centreInteret of Array">
+          <div class="shadow-sm" *ngIf="centreInteret.type === 'INTERET'">
+
+            <div class="mt-2 p-2">
+              <button mat-icon-button aria-label="" (click)="Edit(centreInteret, 'edit')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              |
+              <button mat-icon-button aria-label="" (click)="DeleteItem(centreInteret, centreInteret.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <button class="btn btn-link text-info" type="button" aria-expanded="true">
+                <span class="text-dark font-weight-bold">{{centreInteret.libelle}}</span>
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+
+        <div class="text-center p-2">
+          <button mat-raised-button (click)="Add('INTERET')">
+            <span class="material-icons">add</span>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+
+      <mat-action-row>
+        <button mat-button color="warn" (click)="prevStep()"><i class="fa fa-arrow-left"></i></button>
+        <button mat-button color="primary" (click)="nextStep()"><i class="fa fa-arrow-right"></i></button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+    <!-- CertificatS -->
+    <mat-expansion-panel [expanded]="step === 6" (opened)="setStep(6)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          CERTIFICATS
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="accordion" id="accordionExample6">
+        <div *ngFor="let certificat of Array">
+          <div class="shadow-sm" *ngIf="certificat.type === 'CERTIFICAT'">
+
+            <div class="mt-2 p-2">
+              <button mat-icon-button aria-label="" (click)="Edit(certificat, 'edit')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              |
+              <button mat-icon-button aria-label="" (click)="DeleteItem(certificat, certificat.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+
+              <button class="btn btn-link text-info" type="button" data-toggle="collapse" [attr.data-target]="'#collapse'+ certificat.id" aria-expanded="true">
+                <span class="text-dark font-weight-bold">{{certificat.libelle}}</span>
+              </button>
+
+              <div class="ml-4 pl-3">
+                <p><span class="badge badge-info">{{certificat.dateDebut}}</span> - <span class="badge badge-info">{{certificat.dateFin}}</span></p>
+              </div>
+
+            </div>
+            <div id="collapse{{certificat.id}}" class="collapse p-2" aria-labelledby="headingOne" data-parent="#accordionExample6">
+              {{certificat.contenu}}
+            </div>
+
+          </div>
+        </div>
+
+        <div class="text-center p-2">
+          <button mat-raised-button (click)="Add('CERTIFICAT')">
+            <span class="material-icons">add</span>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+      <mat-action-row>
+        <button mat-button color="warn" (click)="prevStep()"><i class="fa fa-arrow-left"></i></button>
+        <button mat-button color="primary" (click)="nextStep()"><i class="fa fa-arrow-right"></i></button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+    <!--REALISATIONS-->
+    <mat-expansion-panel [expanded]="step === 7" (opened)="setStep(7)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          REALISATIONS
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+
+      <div class="accordion" id="accordionExample7">
+        <div *ngFor="let realisation of Array">
+          <div class="shadow-sm" *ngIf="realisation.type === 'REALISATION'">
+
+            <div class="mt-2 p-2">
+              <button mat-icon-button aria-label="" (click)="Edit(realisation, 'edit')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              |
+              <button mat-icon-button aria-label="" (click)="DeleteItem(realisation, realisation.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <div class="ml-4 pl-3">
+                <p><span class="badge badge-info">{{realisation.dateDebut}}</span> - <span class="badge badge-info">{{realisation.dateFin}}</span></p>
+              </div>
+
+              <button class="btn btn-link text-info" type="button" aria-expanded="true">
+                <span class="text-dark">{{realisation.contenu}}</span>
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+
+        <div class="text-center p-2">
+          <button mat-raised-button (click)="Add('REALISATION')">
+            <span class="material-icons">add</span>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+
+      <mat-action-row>
+        <button mat-button color="warn" (click)="prevStep()"><i class="fa fa-arrow-left"></i></button>
+        <button mat-button color="primary" (click)="nextStep()"><i class="fa fa-arrow-right"></i></button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+    <!--QUALITES-->
+    <mat-expansion-panel [expanded]="step === 8" (opened)="setStep(8)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          QUALITES
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+
+      <div class="accordion" id="accordionExample8">
+        <div *ngFor="let qualite of Array">
+          <div class="shadow-sm" *ngIf="qualite.type === 'QUALITE'">
+
+            <div class="mt-2 p-2">
+              <button mat-icon-button aria-label="" (click)="Edit(qualite, 'edit')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              |
+              <button mat-icon-button aria-label="" (click)="DeleteItem(qualite, qualite.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <button class="btn btn-link text-info" type="button" aria-expanded="true">
+                <span class="text-dark font-weight-bold">{{qualite.libelle}}</span>
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+
+        <div class="text-center p-2">
+          <button mat-raised-button (click)="Add('QUALITE')">
+            <span class="material-icons">add</span>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+
+      <mat-action-row>
+        <button mat-button color="warn" (click)="prevStep()"><i class="fa fa-arrow-left"></i></button>
+        <button mat-button color="primary" (click)="nextStep()"><i class="fa fa-arrow-right"></i></button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+    <!--PULICATION-->
+    <mat-expansion-panel [expanded]="step === 10" (opened)="setStep(10)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          PUBLICATION
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+
+      <div class="accordion" id="accordionExample10">
+        <div *ngFor="let publications of Array">
+          <div class="shadow-sm" *ngIf="publications.type === 'PUBLICATION'">
+
+            <div class="mt-2 p-2">
+              <button mat-icon-button aria-label="" (click)="Edit(publications, 'edit')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              |
+              <button mat-icon-button aria-label="" (click)="DeleteItem(publications, publications.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <button class="btn btn-link text-info" type="button" aria-expanded="true">
+                <span class="text-dark font-weight-bold">{{publications.libelle}}</span>
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+
+        <div class="text-center p-2">
+          <button mat-raised-button (click)="Add('PUBLICATION')">
+            <span class="material-icons">add</span>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+
+      <mat-action-row>
+        <button mat-button color="warn" (click)="prevStep()"><i class="fa fa-arrow-left"></i></button>
+        <button mat-button color="primary" (click)="nextStep()"><i class="fa fa-arrow-right"></i></button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+    <!--Autre-->
+    <mat-expansion-panel [expanded]="step === 9" (opened)="setStep(9)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          AUTRE
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+
+      <div class="accordion" id="accordionExample9">
+        <div *ngFor="let autre of Array">
+          <div class="shadow-sm" *ngIf="autre.type === 'AUTRE'">
+
+            <div class="mt-2 p-2">
+              <button mat-icon-button aria-label="" (click)="Edit(autre, 'edit')">
+                <mat-icon>edit</mat-icon>
+              </button>
+              |
+              <button mat-icon-button aria-label="" (click)="DeleteItem(autre, autre.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <button class="btn btn-link text-info" type="button" data-toggle="collapse" [attr.data-target]="'#collapse'+ autre.id" aria-expanded="true">
+                <span class="text-dark font-weight-bold">{{autre.libelle}}</span>
+              </button>
+
+              <div class="ml-5 pl-3">
+                <p><span class="badge badge-info">{{autre.dateDebut}}</span> - <span class="badge badge-info">{{autre.dateFin}}</span></p>
+              </div>
+
+              <div class="ml-4 pl-3">
+                NIVEAU : <h4><span class="badge badge-info">{{autre.niveau}}</span> / <span class="badge badge-info">5</span></h4>
+              </div>
+
+            </div>
+            <div id="collapse{{autre.id}}" class="collapse p-2" aria-labelledby="headingOne" data-parent="#accordionExample2">
+              {{autre.contenu}}
+            </div>
+
+          </div>
+        </div>
+
+        <div class="text-center p-2">
+          <button mat-raised-button (click)="Add('AUTRE')">
+            <span class="material-icons">add</span>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+      <mat-action-row>
+        <button mat-button color="warn" (click)="prevStep()"><i class="fa fa-arrow-left"></i></button>
+        <button mat-button color="primary" (click)="nextStep()"><i class="fa fa-arrow-right"></i></button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+
+  </mat-accordion>
+
+  <div class="text-center p-2">
+    <button mat-raised-button color="primary" (click)="SENDING_IN_DB()">
+      <i class="fa fa-save"></i> Enregistrer CV
+    </button>
+  </div>
+</div>
+
+<!-- Modal  -->
+<div class="modal fade" id="FormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-center" id="exampleModalLabel"><strong>{{typeSelect}}</strong></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="CvForm" (ngSubmit)="action==='new'?submitForm(): action === 'edit'? submitEditForm(): submitCVElementChange()">
+
+          <div class="form-group" *ngIf="showLebelle">
+            <label for="libelle">Libelle: </label>
+            <input type="text" id="libelle" class="form-control custom_Input" formControlName="libelle">
+          </div>
+
+          <div class="row" *ngIf="showDateDebut || showDateFin">
+            <div class="col" *ngIf="showDateDebut">
+              <div class="form-group">
+                <label for="dateDebut">Date début: </label>
+                <input type="date" id="dateDebut" class="form-control custom_Input" formControlName="dateDebut">
+              </div>
+            </div>
+            <div class="col" *ngIf="showDateFin">
+              <div class="form-group">
+                <label for="dateFin">Date fin: </label>
+                <input type="date" id="dateFin" class="form-control custom_Input" formControlName="dateFin">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" *ngIf="showContenu">
+            <label for="contenu">Description: </label>
+            <textarea cols="30" rows="10" id="contenu" class="form-control custom_Input" formControlName="contenu"></textarea>
+          </div>
+
+          <div class="form-group" *ngIf="showNiveau">
+            <label for="niveau">niveau: </label>
+            <select id="niveau" class="form-control custom_Input" formControlName="niveau">
+              <option value=""></option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+
+          <div class="text-center p-1">
+            <button mat-raised-button color="primary" type="submit" [disabled]="CvForm.invalid">
+              <i class="fa fa-save"></i> Appliquer
+            </button>
+          </div>
+        </form>
+
+
+      </div>
+      <div class="modal-footer text-center">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>

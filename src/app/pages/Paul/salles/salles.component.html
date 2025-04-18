@@ -1,0 +1,213 @@
+
+<div class="container col-5 shadow-sm p-1 text-center text-white mb-2" style="border-radius: 10px; background-color: #1e88e5">
+  <h5>Gestion des salles</h5>
+</div>
+
+<mat-card>
+  <mat-card-header>
+    <!--<button mat-raised-button (click)="openDialog()">Pick one</button>-->
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="search-div" *ngIf="!this.byBatiment">
+      <button class="mb-2" (click)="newSalles()" mat-raised-button color="primary">
+        <i class="fa fa-plus"></i>&nbsp;&nbsp; Ajouter
+      </button>
+
+    </div>
+
+    <div class="row">
+
+<!--      <div class="col-sm-12 col-md-6 col-lg-6" *ngIf="!byBatiment && _RECTORAT">-->
+<!--        <div class="form-group">-->
+<!--          <label for="structure">Structure <span class="text-danger">*</span></label>-->
+<!--          <select (change)="StructureChange($event)" class="form-control custom_Input" name="structure" id="structure">-->
+<!--            <option value=""></option>-->
+<!--            <option *ngFor="let structure of Structures" [value]="structure.id">{{structure.sigle}}</option>-->
+<!--          </select>-->
+<!--        </div>-->
+<!--      </div>-->
+
+      <div class="col-sm-12 col-md-6 col-lg-6" *ngIf="!this.byBatiment">
+        <div class="form-group">
+          <label for="batiment">Bâtiment <span class="text-danger">*</span></label>
+          <select class="form-control custom_Input" id="batimentL" (change)="BatimentSelected($event)">
+            <option value="">Tout</option>
+            <option value="{{bat.id}}" *ngFor="let bat of Batiments">{{bat.libelle}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-12">
+
+        <h4 *ngIf="this.byBatiment" class="text-center font-weight-bold" >Les salles du bâtiment {{this.inputBatiment.libelle}}</h4>
+        <div *ngIf="!this.byBatiment">
+          <h4 class="text-center font-weight-bold">{{checkUndefined(this.id_batiment) ? 'Les salles du bâtiment '+this.BatimentS.libelle : ''}}</h4>
+          <h4 class="text-center font-weight-bold">{{!checkUndefined(this.id_batiment) ? 'Toutes les salles de la structure ' : ''}}</h4>
+        </div>
+        <h4 class="text-center "><span class="badge badge-info">Nombre: {{this.totalElements}}</span></h4>
+
+        <div class="col-4">
+          <mat-form-field>
+            <mat-label>FILTRE</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+          </mat-form-field>
+        </div>
+        <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+
+          <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+
+          <ng-container matColumnDef="numSalle">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>num Salle</th>
+            <td mat-cell *matCellDef="let element"> {{element.numSalle}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="nbrePlace">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>nbre Place</th>
+            <td mat-cell *matCellDef="let element"> {{element.nbrePlace}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="typeSalle">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>type Salle</th>
+            <td mat-cell *matCellDef="let element"> {{element.typeSalle}} </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>
+              <mat-menu #action="matMenu">
+
+
+                <button mat-menu-item (click)="SalleEquipements(element)">
+                  <i class="fa fa-edit"></i>
+                  <span>&nbsp;&nbsp;Equipements</span>
+                </button>
+
+                <button mat-menu-item (click)="fullEditForm(element)">
+                  <i class="fa fa-edit"></i>
+                  <span>&nbsp;&nbsp;Modifier</span>
+                </button>
+
+
+                <button mat-menu-item (click)="Delete_Salles(element)">
+                  <i class="fa fa-trash"></i>
+                  <span>&nbsp;&nbsp;Supprimer</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="loading">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Chargement des données...
+            </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="noData">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Pas de données...
+            </td>
+          </ng-container>
+
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator
+          [length]="length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions">
+
+        </mat-paginator>
+      </div>
+    </div>
+
+  </mat-card-content>
+</mat-card>
+
+
+<!-- Modal -->
+<div class="modal fade" id="SallesFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">history_toggle_off</span> {{action === 'creat' ?  'Ajout d\'une salle' : 'Modification d\'une salle'}}</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="SallesForm"
+              (ngSubmit)="action === 'creat'?creatSalles():update_Salles()" *ngIf="showForm">
+
+
+          <div class="form-group">
+            <label for="batiment">Bâtiment <span class="text-danger">*</span></label>
+            <select class="form-control custom_Input" id="batiment" formControlName="batiment" >
+              <option value=""></option>
+              <option value="{{bat.id}}" *ngFor="let bat of Batiments">{{bat.libelle}}</option>
+            </select>
+            <div class="badge badge-danger"  *ngIf="SallesForm.get('batiment').touched &&
+                    SallesForm.get('batiment').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="numSalle">num de la Salle <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom_Input" id="numSalle" formControlName="numSalle">
+            <div class="badge badge-danger"  *ngIf="SallesForm.get('numSalle').touched &&
+                    SallesForm.get('numSalle').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="nbrePlace">nombre de place <span class="text-danger">*</span></label>
+            <input type="tel" class="form-control custom_Input" id="nbrePlace" formControlName="nbrePlace">
+            <div class="badge badge-danger"  *ngIf="SallesForm.get('nbrePlace').touched &&
+                    SallesForm.get('nbrePlace').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="typeSalle">type salle <span class="text-danger">*</span></label>
+            <input type="tel" class="form-control custom_Input" id="typeSalle" formControlName="typeSalle">
+            <div class="badge badge-danger"  *ngIf="SallesForm.get('typeSalle').touched &&
+                    SallesForm.get('typeSalle').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+
+          <div class="text-center mt-2 mb-2">
+            <!--            <button mat-button (click)="showFormSat('false')" class="mb-2 text-danger">Annuler</button>-->
+            <button mat-raised-button color="primary" type="submit" [disabled]="SallesForm.invalid">
+              <i class="fa fa-save"></i>
+              {{action === "creat" ? 'ajouter':'Modifier'}}</button>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Equipment-->
+<div class="modal fade" id="EquipementModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <div *ngIf="ShowEquipements">
+          <app-equipements [inputSalle]="SalleSId" [salleStructID]="structureId"></app-equipements>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+

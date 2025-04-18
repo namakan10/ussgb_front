@@ -1,0 +1,194 @@
+<h2 class="text-center">Traitement des demandes Etudiants</h2>
+
+<div class="container col-10">
+  <div class="row">
+
+    <div class="col">
+      <mat-form-field class="example-full-width">
+        <mat-label>Code option</mat-label>
+        <input matInput [(ngModel)]="code_option" type="text"
+               name="code_option">
+      </mat-form-field>
+    </div>
+
+    <div class="col">
+      <mat-form-field class="example-full-width">
+        <mat-label>Numéro etudiant</mat-label>
+        <input matInput [(ngModel)]="num_etudiant" type="text"
+               name="num_etudiant">
+      </mat-form-field>
+    </div>
+
+
+    <div class="col">
+      <mat-form-field appearance="fill">
+        <mat-label>Niveau <span class="text-danger">*</span></mat-label>
+        <mat-select  [(ngModel)]="niveau" name="niveau" aria-label="Default select example">
+          <mat-option value="all">Tout</mat-option>
+          <mat-option value="L1">L1</mat-option>
+          <mat-option value="L2">L2</mat-option>
+          <mat-option value="L3">L3</mat-option>
+          <mat-option value="M1">M1</mat-option>
+          <mat-option value="M2">M2</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col">
+      <mat-form-field appearance="fill">
+        <mat-label>Type <span class="text-danger">*</span></mat-label>
+        <mat-select  [(ngModel)]="type" name="niveau" aria-label="Default select example">
+          <mat-option value=""></mat-option>
+          <mat-option value="TRANSFERT_EXTER">TRANSFERT EXTERNE</mat-option>
+          <mat-option value="TRANSFERT">TRANSFERT INTERNE</mat-option>
+          <mat-option value="REPORT_ANNEE">REPORT D'ANNEE</mat-option>
+          <mat-option value="RELEVE_NOTE">RELEVE DE NOTE</mat-option>
+          <mat-option value="CARTE_ETUDIANT">CARTE D'ETUDIANT</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col">
+      <mat-form-field appearance="fill">
+
+        <mat-label>Statut <span class="text-danger">*</span></mat-label>
+        <mat-select  [(ngModel)]="statut" name="statut">
+          <mat-option value=""></mat-option>
+          <mat-option value="EN_ATTENTE">EN ATTENTE</mat-option>
+          <mat-option value="ACCEPTEE">ACCEPTEE</mat-option>
+          <mat-option value="REFUSEE">REFUSEE</mat-option>
+
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col">
+      <mat-form-field appearance="fill">
+        <mat-label>Année scolaire <span class="text-danger">*</span></mat-label>
+        <mat-select  [(ngModel)]="annee_scolaire" name="annee_scolaire" aria-label="Default select example">
+          <mat-option *ngFor="let annee of anneeStructure" [value]="annee.anneeScolaire">{{annee.anneeScolaire}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="text-right">
+    <span *ngIf="_spinner1" style="text-align: right;">
+      <img style="position: absolute; margin-left: -100px;" src="assets/gif/spinner.gif" width="70" alt="">
+    </span>
+
+    <button type="button" mat-raised-button color="accent"
+
+            [disabled]="!checkIfIsNotNull(type) || !checkIfIsNotNull(niveau) || !checkIfIsNotNull(statut) || !checkIfIsNotNull(annee_scolaire)"
+            (click)='afficher()' *ngIf="!_spinner1">
+      <mat-icon> search </mat-icon> Afficher</button>
+
+<!--    <button type="button"  mat-raised-button color="warn"-->
+<!--            [disabled]="!checkIfIsNotNull(dataSource)"-->
+<!--            (click)='exportPDF()' *ngIf="!_spinner1">-->
+<!--      <mat-icon> search </mat-icon> Exporter en PDF</button>-->
+  </div>
+</div>
+
+
+<hr>
+
+<mat-form-field>
+  <mat-label>Filter</mat-label>
+  <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+</mat-form-field>
+
+  <div class="row" >
+    <div class="col-sm-12 col-md-6 col-lg-6 p-2">
+      <div class="" *ngIf="sendArray.length >= 2">
+        <button mat-raised-button class="bg-success" (click)="multipleValidation('ACCEPTEE')">TOUT ACCEPTER</button> |
+        <button mat-raised-button class="bg-danger" (click)="multipleValidation('REFUSEE')">TOUT REFUSER</button>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-6 text-right p-2">
+      <button class="btn btn-sm btn-danger" (click)="PrintPDF()"><i class="fa fa-file-pdf-o"></i> PDF</button>
+      <button class="btn btn-sm btn-success" (click)="exportexcel()"><i class="fa fa-file-excel-o"></i> Excel</button>
+    </div>
+
+  </div>
+
+<div class="" id="print">
+    <h3 class="text-center">{{ListeName}}</h3>
+    <table class="table-hover" mat-table [dataSource]="dataSource" matSort>
+
+      <!-- ID Column -->
+      <ng-container matColumnDef="multiple">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> </th>
+        <td mat-cell *matCellDef="let row">
+          <input type="checkbox" class="form-check-input" (change)="MultipleSelect($event, row)">
+        </td>
+      </ng-container>
+
+      <!-- ID Column -->
+      <ng-container matColumnDef="numEtudiant">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> num Etudiant </th>
+        <td mat-cell *matCellDef="let row"> {{row.etudiant.numEtudiant}} </td>
+      </ng-container>
+
+      <!-- Progress Column -->
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom & prénom </th>
+        <td mat-cell *matCellDef="let row"> {{row.etudiant.user.prenom}} {{row.etudiant.user.nom}} </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Type demande </th>
+        <td mat-cell *matCellDef="let row"> {{row.type}} </td>
+      </ng-container>
+
+      <!-- Fruit Column -->
+      <ng-container matColumnDef="optionOrg">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Option org </th>
+        <td mat-cell *matCellDef="let row"> {{checkIfIsNotNull(row.option) ? row.etudiant.option.codeOption : ""}} </td>
+      </ng-container>
+
+      <!-- Fruit Column -->
+      <ng-container matColumnDef="optionDest">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Option dest </th>
+        <td mat-cell *matCellDef="let row"> {{checkIfIsNotNull(row.option) ? row.option.codeOption : ""}} </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="statut">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Statut </th>
+        <td mat-cell *matCellDef="let row"> {{row.statut}} </td>
+      </ng-container>
+
+
+      <!-- Fruit Column -->
+      <ng-container matColumnDef="annee">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Annee Scolaire </th>
+        <td mat-cell *matCellDef="let row"> {{row.anneeScolaire}} </td>
+      </ng-container>
+
+      <!-- Fruit Column -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-raised-button color="accent" *ngIf="statut ==='EN_ATTENTE'"
+                  [matMenuTriggerFor]="menu">Action</button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="Validation('ACCEPTEE', row)"><span class="material-icons text-success">check</span> Accepter</button>
+            <button mat-menu-item (click)="Validation('REFUSEE', row)"><span class="material-icons text-danger">cancel</span> Rejeter</button>
+            <button mat-menu-item (click)="Delete_Demande(row)"><span class="material-icons text-danger"></span> Supprimer</button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+      </tr>
+    </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+</div>

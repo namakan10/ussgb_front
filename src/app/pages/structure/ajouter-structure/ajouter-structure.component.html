@@ -1,0 +1,128 @@
+<div class="container-fluid" id="container-wrapper">
+  <div class="card mb-4">
+    <div class="card-body">
+      <form [formGroup]="addStructureForm" (ngSubmit)="enregistrerStructure(addStructureForm)">
+        <div class="col-12">
+          <div class="login-bg">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="login-title">
+                  <h1>Ajouter une structure</h1><br>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="login-input-head">
+                  <p>Nom <span style="color: red">*</span></p>
+                </div>
+              </div>
+              <div class="col-lg-8">
+                <div class="login-input-area">
+                  <input type="text" formControlName="nom">
+                  <input type="text" formControlName="id" hidden>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="login-input-head">
+                  <p>Sigle <span style="color: red">*</span></p>
+                </div>
+              </div>
+              <div class="col-lg-8">
+                <div class="login-input-area">
+                  <input type="text" formControlName="sigle">
+                </div>
+              </div>
+            </div>
+
+
+
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="login-input-head">
+                  <p>Type<span style="color: red">*</span></p>
+                </div>
+              </div>
+              <div class="col-lg-8">
+                <div class="login-input-area">
+                  <select class="form-control" formControlName="type">
+                    <option value="Faculté">Faculté</option>
+                    <option value="Institut">Institut</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="login-input-head">
+                  <p>Adresse <span style="color: red">*</span></p>
+                </div>
+              </div>
+              <div class="col-lg-8">
+                <div class="login-input-area">
+                  <input type="text" formControlName="adresse">
+                </div>
+              </div>
+            </div>
+
+            <div class="row" hidden>
+              <div class="col-lg-4">
+                <div class="login-input-head">
+                  <p>Premier respondable <span style="color: red">(eventuel)</span></p>
+                </div>
+              </div>
+              <div class="col-lg-8">
+                <div class="login-input-area">
+                  <input type="text" formControlName="premierRespondable">
+                </div>
+              </div>
+            </div>
+
+            <div class="row" hidden>
+              <div class="col-lg-4">
+                <div class="login-input-head">
+                  <p>Deuxième responsable <span style="color: red">(eventuel)</span></p>
+                </div>
+              </div>
+              <div class="col-lg-8">
+                <div class="login-input-area">
+                  <input type="text" formControlName="secondRespondable">
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="login-input-head">
+                  <p>logo<span style="color: red">&nbsp;(Facultatif )</span></p>
+                </div>
+              </div>
+              <div class="col-lg-8">
+                <div class="login-input-area">
+                  <!--<button type="file" class="login-input-area-btn">Ajouter logo</button>-->
+                  <input type="file" class="btn btn-default" formControlName="logo" (change)="onselectFile($event)" accept=".jpg, .png, .jpeg, .gif">
+                </div>
+                <div class="prewiew-img" [style]="prewiewImg">
+                  <img [src]="url">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-4">
+              </div>
+              <div class="col-lg-8">
+                <div class="login-button-pro">
+                  <button type="Submit" [disabled]="addStructureForm.invalid" class="login-button login-button-lg btn btn-primary">Enregistrer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

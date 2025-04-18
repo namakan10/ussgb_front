@@ -1,0 +1,112 @@
+<div class="widget-text-box">
+
+  <div class="row">
+    <div class="col-8">
+      <h2
+        style="float: left;">Affectations par département</h2>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="error && error">
+  <br>
+  <br>
+  <div class="alert alert-danger" role="alert">
+    {{error}}
+  </div>
+</div>
+<div *ngIf="message != null">
+  <br>
+  <br>
+  <div class="alert alert-success" role="alert">
+    {{message}}
+  </div>
+</div>
+
+
+
+<div class="formPanel">
+
+  <div class="multiple-fields" style="width: 100%;float: right;margin-top: 40px;">
+
+    <mat-form-field appearance="fill">
+      <mat-label>Département</mat-label>
+      <mat-select (selectionChange)="onDepartement($event.value)"
+                  name="service" placeholder="Services" required>
+        <mat-option *ngFor="let d of departements; index as i;" [value]="d">
+          {{d.nom}}
+        </mat-option>
+      </mat-select>
+
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Chercher une affectation</mat-label>
+      <input #input (keyup)="applyFilter($event)" matInput placeholder="Chercher ...">
+    </mat-form-field>
+  </div>
+
+  <div class="mat-elevation-z8">
+    <table [dataSource]="dataSource" mat-table matSort>
+
+      <ng-container matColumnDef="id">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> #</th>
+        <td *matCellDef="let row" mat-cell> {{row.id}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="date">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Date affection</th>
+        <td *matCellDef="let row" mat-cell> {{row.dateAffection | date: "dd-MM-yyyy"}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="personnel">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Personnel</th>
+        <td *matCellDef="let row" mat-cell> {{row.user.prenom }} {{row.user.nom }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fonction">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Fonction</th>
+        <td *matCellDef="let row" mat-cell> {{row.fonction?.nom}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="departement">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Département</th>
+        <td *matCellDef="let row" mat-cell> {{row.departement?.nom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="service">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Service</th>
+        <td *matCellDef="let row" mat-cell> {{row.service?.nom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="division">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Division</th>
+        <td *matCellDef="let row" mat-cell> {{row.division?.nom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Action</th>
+        <td *matCellDef="let row" mat-cell>
+          <div class="btn-group" dropdown>
+            <div style="margin-left: 50px;">
+              <i [matMenuTriggerFor]="menu" class="fa fa-ellipsis-v" style="font-size: 20px; cursor: pointer;"></i>
+            </div>
+            <mat-menu #menu="matMenu">
+              <a mat-menu-item href="http://{{row.document}}" target="_blank">Document</a>
+              <button  mat-menu-item>Historique</button>
+            </mat-menu>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+
+      <tr *matNoDataRow class="mat-row">
+        <td class="mat-cell" colspan="4">Pas d'affectation pour le moment"</td>
+      </tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  </div>
+</div>

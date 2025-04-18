@@ -1,0 +1,291 @@
+<div class="container col-5 shadow-sm p-1 text-center text-white mb-2" style="border-radius: 10px; background-color: #1e88e5">
+  <h4>Gestion des frais</h4>
+</div>
+
+<div class="row">
+    <div class="col-12 bg-white">
+      <!--- LISTE STRUCTURE -->
+      <div class="container p-2">
+        <button mat-raised-button color="primary" class="mb-2" (click)="plusFrais()">
+          <i class="fa fa-plus text-success"></i> Ajouter
+        </button>
+
+<!--       FORMULAIRE DE FILTRE DE RECHERCHE-->
+        <form [formGroup]="FilterForm" (ngSubmit)="GetListFrais()">
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                <label for="filiereF">Filière</label>
+                <select class="form-control custom_Input" formControlName="filiere" id="filiereF">
+                  <option value=""></option>
+                  <option value="{{filiere.id}}" *ngFor="let filiere of Filieres">{{filiere.nom}} ({{filiere.codeFiliere}})</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+                <label for="type_candidatF">Type candidat</label>
+                <select class="form-control custom_Input" formControlName="type_candidat" id="type_candidatF">
+                  <option value=""></option>
+
+                  <option value="REGULIER">Régulier</option>
+                  <option value="CANDIDAT_LIBRE">Candidat libre</option>
+                  <option value="TITRE">Titre</option>
+                  <option value="MALIEN_DE_L_EXTERIEUR">Malien de l'extérieur</option>
+                  <option value="ETRANGER_UEMOA">Etranger UEMOA</option>
+                  <option value="ETRANGER_HORS_UEMOA">Etranger hors UEMOA</option>
+                  <option value="ADMIS_PAR_TRANSFERT_DE_CREDIT">Admis par transfert de crédit</option>
+                  <option value="MASTER">Master</option>
+                  <option value="MASTER_BOURSIER">Master Boursier</option>
+                  <option value="ANY">Autre</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+                <label for="type_fraisF">Type frais</label>
+                <select class="form-control custom_Input" formControlName="type_frais" id="type_fraisF">
+                  <option value=""></option>
+                  <option value="FRAIS_INSCRIPTION">Frais d’inscription</option>
+                  <option value="FRAIS_SCOLARITE">Frais scolarité</option>
+                  <option value="FRAIS_TRAITEMENT_DOSSIER">Frais de traitement de dossiers</option>
+                  <option value="FRAIS_RELEVE_NOTE">Frais de relevé de note</option>
+                  <option value="FRAIS_ADMINISTRATIF">Autres Frais </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col">
+              <button type="submit" mat-button color="primary"><span class="material-icons">search</span>Chercher</button>
+              <button type="reset" mat-button color="warn"><span class="material-icons"></span> rafraîchir</button>
+            </div>
+
+          </div>
+        </form>
+<!--      END FORMULAIRE DE FILTRE DE RECHERCHE-->
+
+    <div>
+      <h5 class="small badge badge-light text-center font-weight-bold">Liste des frais {{user.structure.sigle}}</h5>
+      <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+      </mat-form-field>
+
+      <table mat-table [dataSource]="dataSource" class="table-hover">
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="porfile">
+          <th mat-header-cell *matHeaderCellDef> Type de profile </th>
+          <td mat-cell *matCellDef="let element"> {{element.typeCandidat !== null ? element.typeCandidat : '- générale -' }} </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="Type_frais">
+          <th mat-header-cell *matHeaderCellDef> Type de frais </th>
+          <td mat-cell *matCellDef="let element"> {{element.typeFrais}} </td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="Montant">
+          <th mat-header-cell *matHeaderCellDef> Montant </th>
+          <td mat-cell *matCellDef="let element"> {{element.frais}} </td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="Filiere">
+          <th mat-header-cell *matHeaderCellDef> Filière </th>
+          <td mat-cell *matCellDef="let element"> {{element.filiere !== null ? element.filiere.nom+' ('+element.filiere.codeFiliere+')' : '--' }} </td>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef> Action </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-raised-button color="primary" [matMenuTriggerFor]="menu">Action</button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="modifFrais(element)">
+                <i class="fa fa-edit text-success"></i> modifier</button>
+
+              <button mat-menu-item (click)="confirmDelete(element.id,user.structure.sigle,element.typeFrais)">
+                <i class="fa fa-trash text-danger"></i> suppression</button>
+            </mat-menu>
+
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- Row shown when there is no matching data. -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+        </tr>
+      </table>
+      <mat-paginator
+        [length]="length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions">
+
+      </mat-paginator>
+
+    </div>
+
+      </div>
+    </div>
+  <!---END LISTE STRUCTURE-->
+  <!--=================================================-->
+</div>
+
+<div class="modal fade" id="FraisFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel">
+          <span class="material-icons">money</span>
+          FRAIS
+        </h5>
+        <button type="button" class="text-white" mat-button data-dismiss="modal" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div>
+            <span class="badge badge-light">
+                {{currentAction === 'creat'?'Nouveau frais':'Modification de frais'}}
+            </span>
+          <h5 class="text-center font-weight-bold">{{user.structure.sigle}}</h5>
+        </div>
+<!--        <div class="container d-flex justify-content-center">-->
+<!--          <img src="../../../../assets/images/money.jpg" style="height: 80px; width: 90px" alt="">-->
+<!--        </div>-->
+
+        <mat-tab-group (selectedTabChange)="onTabClick($event)">
+          <mat-tab label="">
+            <ng-template mat-tab-label>
+                <mat-icon class="example-tab-icon">thumb_up</mat-icon>
+                Frais universitaires
+
+            </ng-template>
+
+<!--            UNIVERSITAIRE FRAIS-->
+            <form [formGroup]="FraisForm" (ngSubmit)="action === 'creat' ? AddFrais() : EditFrais()" >
+
+              <div class="form-group">
+                <label for="frais">Montant <span class="text-danger">*</span></label>
+                <input type="text" id="frais" class="form-control custom_Input"
+                       placeholder="Exp: 5000" formControlName="frais">
+              </div>
+
+              <div class="form-group">
+                <label for="typ">Type de profile <span class="text-danger">*</span></label>
+
+                <select id="typ" class="form-control custom_Input"
+                        formControlName="type" (change)="profileSelect()">
+                  <option value=""></option>
+                  <option value="REGULIER">Régulier</option>
+                  <option value="CANDIDAT_LIBRE">Candidat libre</option>
+                  <option value="TITRE">Titre</option>
+                  <option value="MALIEN_DE_L_EXTERIEUR">Malien de l'extérieur</option>
+<!--                  <option value="ETRANGER">Etranger</option>-->
+                  <option value="ETRANGER_UEMOA">Etranger UEMOA</option>
+                  <option value="ETRANGER_HORS_UEMOA">Etranger hors UEMOA</option>
+                  <option value="ADMIS_PAR_TRANSFERT_DE_CREDIT">Admis par transfert de crédit</option>
+                  <option value="MASTER">Master</option>
+                  <option value="MASTER_BOURSIER">Master Boursier</option>
+                  <option value="ANY">Autre</option>
+                </select>
+
+              </div>
+
+              <div class="form-group alert alert-info" *ngIf="masterIsSelect">
+                <p><strong><i class="fa fa-info-circle text-primary"></i> NB:</strong> A renseigner si la filière include des frais.</p>
+                <label for="filiere">Filières <span class="text-danger"></span></label>
+                <select id="filiere" class="form-control custom_Input" formControlName="filiere">
+                  <option value=""></option>
+                  <option value="{{filiere.id}}" *ngFor="let filiere of Filieres">{{filiere.nom}} ({{filiere.codeFiliere}})</option>
+                </select>
+
+              </div>
+
+              <div class="form-group">
+                <label for="typeFrais">Type de Frais <span class="text-danger">*</span></label>
+                <select id="typeFrais" class="form-control custom_Input" formControlName="typeFrais">
+                  <option value=""></option>
+                  <option value="FRAIS_INSCRIPTION">Frais d’inscription</option>
+                  <option value="FRAIS_SCOLARITE">Frais scolarité</option>
+                  <option value="FRAIS_TRAITEMENT_DOSSIER">Frais de traitement de dossiers</option>
+                  <option value="FRAIS_CARTE_SCOLAIRE">Frais de carte étudiant </option>
+                  <option value="FRAIS_RELEVE_NOTE">Frais de relevé de note </option>
+                  <option value="ABONNEMENT_BIBLIOTHEQUE">Abonnement à la bibliothèque </option>
+<!--                  *ngIf="!masterIsSelect"-->
+<!--                  <option value="FRAIS_ADMINISTRATIF">Frais </option>-->
+                </select>
+              </div>
+
+              <div class="text-center p-1">
+                   <span *ngIf="_spinner1" style="text-align: center;">
+                     <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+                   </span>
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="FraisForm.invalid" *ngIf="!_spinner1">
+                  <i class="fa fa-save"></i> {{action === 'creat' ? 'Crée le frais' : 'Modifier le frais'}}
+                </button>
+              </div>
+
+            </form>
+<!--            UNIVERSITAIRE FRAIS-->
+
+          </mat-tab>
+
+          <mat-tab>
+<!--            AUTRES FRAIS -->
+            <ng-template mat-tab-label>
+                <mat-icon class="example-tab-icon" >thumb_up</mat-icon>
+                Autres Frais
+
+            </ng-template>
+
+            <form [formGroup]="AutreFraisForm" (ngSubmit)="action === 'creat' ? AddFrais() : EditFrais()" >
+
+              <div class="form-group">
+                <label for="autrefrais">Montant <span class="text-danger">*</span></label>
+                <input type="text" id="autrefrais" class="form-control custom_Input"
+                       placeholder="Exp: 5000" formControlName="autrefrais">
+              </div>
+
+              <div class="form-group">
+                <label for="autretypeFrais">Type de Frais <span class="text-danger">*</span></label>
+                <select id="autretypeFrais" class="form-control custom_Input" formControlName="autretypeFrais">
+                  <option value=""></option>
+                  <option value="FRAIS_ADMINISTRATIF">Frais </option>
+                </select>
+              </div>
+
+              <div class="text-center p-1">
+                   <span *ngIf="_spinner1" style="text-align: center;">
+                     <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+                   </span>
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="AutreFraisForm.invalid" *ngIf="!_spinner1">
+                  <i class="fa fa-save"></i> {{action === 'creat' ? 'Crée le frais' : 'Modifier le frais'}}
+                </button>
+              </div>
+
+            </form>
+
+          </mat-tab>
+
+        </mat-tab-group>
+
+      </div>
+      <div class="modal-footer">
+        <button mat-raised-button color="warn" data-dismiss="modal">
+          <i class="fa fa-remove"></i> Annuler
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

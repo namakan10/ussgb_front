@@ -1,0 +1,157 @@
+
+<h2 class="text-center mb-2 font-weight-bold">GESTION DES DROITS D'ACCES</h2>
+<div>
+    <div>
+      <h5><i class="fa fa-building"></i> <strong>{{StructureName}}</strong></h5>
+      <p>Type : <strong>{{StructureType}}</strong></p>
+    </div>
+
+      <button  mat-raised-button [color]="ListPerso ?'primary':'white'"
+              (click)="getStructurePersonnelAdmin()"><i [className]="!ListEnseignant ?'fa fa-dot-circle-o':''"></i> Liste des Personnels administratifs</button>
+
+      | <button mat-raised-button [color]="ListEnseignant ?'primary':'white'"
+              (click)="getEnseignantListe()"><i [className]="ListEnseignant ?'fa fa-dot-circle-o':''"></i> Liste des Enseignants</button>
+
+  | <button mat-raised-button [color]="ListEnseignantVacataire ?'primary':'white'"
+          (click)="getEnseignantVacataireListe()"><i [className]="ListEnseignantVacataire ?'fa fa-dot-circle-o':''"></i> Liste des Vacataires</button>
+
+              | <button mat-raised-button [color]="ListAdmin ?'primary':'white'"
+              (click)="getAdminList()"><i [className]="ListAdmin ?'fa fa-dot-circle-o':''"></i> Liste des administrateurs</button>
+    </div>
+    <h4  class="text-center text-info mt-2">{{ListEnseignant ?'Liste des enseignants':ListAdmin?'Liste des administrateurs':ListEnseignantVacataire ? 'Liste des vacataires': 'Liste du personnel administratif'}}</h4>
+    <div *ngIf="droit_spinner" style="text-align: center;">
+      <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+    </div>
+    <div class="row">
+      <div class="col-12 mb-3 mt-3 shadow-sm">
+        <div class="col-4">
+          <mat-form-field>
+            <mat-label>FILTRE DE RECHERCHE</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+          </mat-form-field>
+        </div>
+        <table mat-table [dataSource]="dataSource" matSort class="mt-2">
+
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom d'utilisateur</th>
+            <td mat-cell *matCellDef="let element"> <strong>{{element.user.username}}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+            <td mat-cell *matCellDef="let element"> <strong>{{element.user.nom}}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="prenom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Prénom</th>
+            <td mat-cell *matCellDef="let element"> {{element.user.prenom}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fonction" *ngIf="!ListEnseignant">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+            <td mat-cell *matCellDef="let element">
+<!--              {{element.fonction.nom}}-->
+              <br>
+
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fonction" *ngIf="ListEnseignant">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+            <td mat-cell *matCellDef="let element"> {{element.specialiteFonction.nom}}<br>
+
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-raised-button color="primary" [matMenuTriggerFor]="menu"><i class="fa fa-check-square"></i> Action</button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item
+                        (click)="personnelAccess(element.id,element.user.username,element.user.nom,element.user.prenom, element)">
+                        <i class="fa fa-check-square"></i> Droits</button>
+              </mat-menu>
+
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="loading">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Chargement des données...
+            </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="noData">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Pas de données...
+            </td>
+          </ng-container>
+
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{'hide':dataSource!=null}"></tr>
+          <!--<tr mat-footer-row *matFooterRowDef="['noData']" [ngClass]="'hide':!(dataSource!=null && dataSource.data.length==0)}"></tr>-->
+        </table>
+        <mat-paginator
+          [length]="length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions">
+
+        </mat-paginator>
+      </div>
+
+
+
+
+      <!-- Modal RECLAMATION -->
+      <div class="modal fade" id="AccesFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+              <h5 class="modal-title" id="exampleModalLabel">Droits</h5>
+              <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+            </div>
+            <div class="modal-body">
+
+              <div class="container shadow-sm p-2" *ngIf="AccessContaine">
+                <h3><i class="fa fa-user"></i>  Accès de {{CurrentPersoAccessSelect}}</h3>
+                <div class="row">
+                  <div class="mt-2 col-6 p-1 text-center" *ngFor="let rl of roles">
+                    <div class="container shadow-sm col-12" style="border-radius: 10px">
+                      <span *ngIf="rl.statut === 'ok'"><input type="checkbox" [disabled]="rl.nom===GetBody.role" checked (change)="handelRoleChecking(rl.id,$event)" class="small form-control"></span>
+                      <span *ngIf="rl.statut !== 'ok'"><input type="checkbox" [disabled]="rl.nom===GetBody.role" (change)="handelRoleChecking(rl.id,$event)" class="small form-control"></span>
+                      <span>{{rl.description}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+            <div class="modal-footer">
+               <span *ngIf="droit_spinner" style="text-align: right;">
+                <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+              </span>
+              <div *ngIf="!droit_spinner">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                | <button class="btn btn-info" (click)="UpdatAccess()">Valider</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!--<mat-paginator [length]="100" -->
+    <!--[pageSize]="25"-->
+    <!--[pageSizeOptions]="[25, 50, 100]">-->
+    <!--</mat-paginator>-->
+
+
+

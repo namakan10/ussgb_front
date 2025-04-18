@@ -1,0 +1,247 @@
+
+<div class="container col-5 shadow-sm p-1 text-center text-white mb-2" style="border-radius: 10px; background-color: #1e88e5">
+  <h5>Gestion des évènements</h5>
+</div>
+
+<mat-card>
+  <mat-card-header>
+    <!--<button mat-raised-button (click)="openDialog()">Pick one</button>-->
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="search-div">
+      <button class="mb-2" (click)="newEvenement()" mat-raised-button color="primary">
+        <i class="fa fa-plus"></i>&nbsp;&nbsp; Ajouter
+      </button>
+
+      <div>
+        <form [formGroup]="FilterForm">
+          <div class="row">
+            <div class="col-3">
+              <label for="cursusF">cursus</label>
+              <select class="form-control custom_Input" id="cursusF" formControlName="cursus">
+                <option value=""></option>
+                <option value="LICENCE">LICENCE</option>
+                <option value="DUT">DUT</option>
+                <option value="MASTER">MASTER</option>
+                <option value="DOCTORAT">DOCTORAT</option>
+              </select>
+            </div>
+
+            <div class="col-3">
+              <label for="anneeF">Année</label>
+              <select class="form-control custom_Input" id="anneeF" formControlName="annee">
+                <option value=""></option>
+                <option value="{{annees.id}}" *ngFor="let annees of StructureAnnees">{{annees.anneeScolaire}}</option>
+              </select>
+            </div>
+
+            <div class="col-3">
+              <label for="typeF">Type</label>
+              <select class="form-control custom_Input" id="typeF" formControlName="type">
+                <option value=""></option>
+                <option value="EXAMEN">Examen</option>
+                <option value="CANDIDATURE">Candidature</option>
+                <option value="INSCRIPTION">Inscription</option>
+                <option value="RE_INSCRIPTION">Re-inscription</option>
+                <option value="LISTE_DE_PASSAGE">Liste de passage</option>
+                <option value="NOTATION">Notation</option>
+                <option value="RECLAMATION">Reclamation</option>
+                <option value="TRAITEMENT_DES_RECLAMATIONS">Traitement des reclamations</option>
+                <option value="TRAITEMENT_DES_CANDIDATURES">Traitement des candidatures</option>
+                <option value="LISTE_D_ADMISSION">Liste d’admission</option>
+                <option value="LISTE_CANDIDATURES_APPROUVEES">Liste candidatures approuvées</option>
+                <option value="EVALUATION_DE_L_ENSEIGNEMENT">Evaluation de l’enseignement</option>
+                <option value="DEMANDE_TRANSFERT">Demande de transfert</option>
+
+              </select>
+            </div>
+            <div class="col d-flex justify-content-start">
+              <button mat-button color="primary" (click)="GetListEvenement()">
+                <span class="material-icons">search</span> Chercher
+              </button>
+              <button type="reset" mat-button color="warn">rafraîchir</button>
+            </div>
+
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="col-4">
+          <mat-form-field>
+            <mat-label>FILTRE</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+          </mat-form-field>
+        </div>
+        <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+
+          <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+
+          <ng-container matColumnDef="AnneeScolaire">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Année Scolaire</th>
+            <td mat-cell *matCellDef="let element"> {{element.annee.anneeScolaire}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Cursus">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Cursus</th>
+            <td mat-cell *matCellDef="let element"> {{element.cursus === null? 'tous les cursus': element.cursus}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Date">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+            <td mat-cell *matCellDef="let element"> {{element.dateDebut | date: 'yyyy-MM-dd'}} à {{element.dateFin | date: 'yyyy-MM-dd'}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+            <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>
+              <mat-menu #action="matMenu">
+
+
+                <button mat-menu-item (click)="showForm = true; fullEditForm(element)">
+                  <i class="fa fa-edit"></i>
+                  <span>&nbsp;&nbsp;Modifier</span>
+                </button>
+
+
+                <button mat-menu-item (click)="Delete_Evenement(element)">
+                  <i class="fa fa-trash"></i>
+                  <span>&nbsp;&nbsp;Supprimer</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="loading">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Chargement des données...
+            </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="noData">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Pas de données...
+            </td>
+          </ng-container>
+
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator
+          [length]="length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions">
+
+        </mat-paginator>
+      </div>
+    </div>
+
+  </mat-card-content>
+</mat-card>
+
+
+<!-- Modal -->
+<div class="modal fade" id="EvenementFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">history_toggle_off</span> Evènement</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="EvenementForm"
+              (ngSubmit)="action === 'creat'?creatEvenement():update_Evenement()" *ngIf="showForm">
+
+
+          <div class="form-group">
+            <label for="annee">Année <span class="text-danger">*</span></label>
+            <select class="form-control custom_Input" id="annee" formControlName="annee">
+              <option value=""></option>
+              <option value="{{annees.id}}" *ngFor="let annees of StructureAnnees">{{annees.anneeScolaire}}</option>
+            </select>
+            <div class="badge badge-danger"  *ngIf="EvenementForm.get('annee').touched &&
+                    EvenementForm.get('annee').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="cursus">Cursus <span class="text-danger">*</span></label>
+            <select class="form-control custom_Input" id="cursus" formControlName="cursus" (change)="CursusSelection()">
+              <option value=""></option>
+              <option value="DUT">DUT</option>
+              <option value="LICENCE">LICENCE</option>
+              <option value="MASTER">MASTER</option>
+              <option value="DOCTORAT">DOCTORAT</option>
+            </select>
+          </div>
+
+          <div class="row form-group">
+            <div class="col">
+              <label for="dateDebut">Date de début <span class="text-danger">*</span></label>
+              <input type="date" class="form-control custom_Input" id="dateDebut" formControlName="dateDebut">
+              <div class="badge badge-danger"  *ngIf="EvenementForm.get('dateDebut').touched &&
+                    EvenementForm.get('dateDebut').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+            </div>
+
+            <div class="col">
+              <label for="dateFin">Date de Fin <span class="text-danger">*</span></label>
+              <input type="date" class="form-control custom_Input" id="dateFin" formControlName="dateFin">
+              <div class="badge badge-danger"  *ngIf="EvenementForm.get('dateFin').touched &&
+                    EvenementForm.get('dateFin').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <label for="type">Type <span class="text-danger">*</span></label>
+            <select class="form-control custom_Input" id="type" formControlName="type">
+              <option value=""></option>
+              <option value="EXAMEN">Examen</option>
+              <option value="CANDIDATURE">Candidature</option>
+              <option value="INSCRIPTION">Inscription</option>
+              <option value="RE_INSCRIPTION">Re-inscription</option>
+              <option value="LISTE_DE_PASSAGE">Liste de passage</option>
+              <option value="NOTATION">Notation</option>
+              <option value="RECLAMATION">Reclamation</option>
+              <option value="TRAITEMENT_DES_RECLAMATIONS">Traitement des reclamations</option>
+              <option value="TRAITEMENT_DES_CANDIDATURES">Traitement des candidatures</option>
+              <option value="LISTE_D_ADMISSION">Liste d’admission</option>
+              <option value="LISTE_CANDIDATURES_APPROUVEES">Liste candidatures approuvées</option>
+              <option value="EVALUATION_DE_L_ENSEIGNEMENT">Evaluation de l’enseignement</option>
+              <option value="DEMANDE_TRANSFERT">Demande de transfert</option>
+            </select>
+
+            <div class="badge badge-danger"  *ngIf="EvenementForm.get('type').touched &&
+                    EvenementForm.get('type').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+
+          <div class="text-center mt-2 mb-2">
+<!--            <button mat-button (click)="showFormSat('false')" class="mb-2 text-danger">Annuler</button>-->
+            <button mat-raised-button color="primary" type="submit" [disabled]="EvenementForm.invalid">
+              <i class="fa fa-save"></i>
+              {{action === "creat" ? 'ajouter':'Modifier'}}</button>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+

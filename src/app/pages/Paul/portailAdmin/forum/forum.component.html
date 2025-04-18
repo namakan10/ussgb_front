@@ -1,0 +1,285 @@
+
+<div class="container col-5 shadow-sm p-1 text-center text-white mb-2" style="border-radius: 10px; background-color: #1e88e5">
+  <h5>Gestion du Forum</h5>
+</div>
+
+<mat-card>
+  <mat-card-header>
+    <!--<button mat-raised-button (click)="openDialog()">Pick one</button>-->
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="search-div">
+      <button class="mb-2" (click)="newPost()" mat-raised-button color="primary">
+        <i class="fa fa-plus"></i>&nbsp;&nbsp; Ajouter
+      </button>
+
+<!--      <div>-->
+<!--        <form [formGroup]="FilterForm">-->
+<!--          <div class="row">-->
+<!--            <div class="col-3">-->
+<!--              <label for="cursusF">cursus</label>-->
+<!--              <select class="form-control custom_Input" id="cursusF" formControlName="cursus">-->
+<!--                <option value=""></option>-->
+<!--                <option value="LICENCE">LICENCE</option>-->
+<!--                <option value="DUT">DUT</option>-->
+<!--                <option value="MASTER">MASTER</option>-->
+<!--                <option value="DOCTORAT">DOCTORAT</option>-->
+<!--              </select>-->
+<!--            </div>-->
+
+<!--            <div class="col-3">-->
+<!--              <label for="anneeF">Année</label>-->
+<!--              <select class="form-control custom_Input" id="anneeF" formControlName="annee">-->
+<!--                <option value=""></option>-->
+<!--                <option value="{{annees.id}}" *ngFor="let annees of StructureAnnees">{{annees.anneeScolaire}}</option>-->
+<!--              </select>-->
+<!--            </div>-->
+
+<!--            <div class="col-3">-->
+<!--              <label for="typeF">Type</label>-->
+<!--              <select class="form-control custom_Input" id="typeF" formControlName="type">-->
+<!--                <option value=""></option>-->
+<!--                <option value="EXAMEN">Examen</option>-->
+<!--                <option value="CANDIDATURE">Candidature</option>-->
+<!--                <option value="INSCRIPTION">Inscription</option>-->
+<!--                <option value="RE_INSCRIPTION">Re-inscription</option>-->
+<!--                <option value="LISTE_DE_PASSAGE">Liste de passage</option>-->
+<!--                <option value="NOTATION">Notation</option>-->
+<!--                <option value="RECLAMATION">Reclamation</option>-->
+<!--                <option value="TRAITEMENT_DES_RECLAMATIONS">Traitement des reclamations</option>-->
+<!--                <option value="TRAITEMENT_DES_CANDIDATURES">Traitement des candidatures</option>-->
+<!--                <option value="LISTE_D_ADMISSION">Liste d’admission</option>-->
+<!--                <option value="LISTE_CANDIDATURES_APPROUVEES">Liste candidatures approuvées</option>-->
+<!--                <option value="EVALUATION_DE_L_ENSEIGNEMENT">Evaluation de l’enseignement</option>-->
+<!--                <option value="DEMANDE_TRANSFERT">Demande de transfert</option>-->
+
+<!--              </select>-->
+<!--            </div>-->
+<!--            <div class="col d-flex justify-content-start">-->
+<!--              <button mat-button color="primary" (click)="GetListPost()">-->
+<!--                <span class="material-icons">search</span> Chercher-->
+<!--              </button>-->
+<!--              <button type="reset" mat-button color="warn">rafraîchir</button>-->
+<!--            </div>-->
+
+
+<!--          </div>-->
+<!--        </form>-->
+<!--      </div>-->
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="col-4">
+          <mat-form-field>
+            <mat-label>FILTRE</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+          </mat-form-field>
+        </div>
+        <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+
+          <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+
+          <ng-container matColumnDef="content">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>post</th>
+            <td mat-cell *matCellDef="let element">
+              <span [className]="element.status === 'OPEN' ? 'badge badge-info' : 'badge badge-danger'">{{element.status}}</span>
+              <span class="badge badge-secondary">{{element.date}}</span>
+              <span class="badge badge-secondary">{{element.annee}}</span>
+              <div>
+                {{element.titre}}
+              </div>
+            </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>
+              <mat-menu #action="matMenu">
+
+                <button mat-menu-item (click)="showPost(element)">
+                  <i class="fa fa-eye text-info"></i>
+                  Sujet de forum
+                </button>
+
+                <button mat-menu-item (click)="showPostComments(element)">
+                  <i class="fa fa-comment text-primary"></i>
+                  Commentaires
+                </button>
+
+                <button mat-menu-item (click)="showForm = true; modifPost(element)">
+                  <i class="fa fa-edit"></i>
+                  <span>&nbsp;&nbsp;Modifier</span>
+                </button>
+
+                <button mat-menu-item (click)="delete_Post(element)">
+                  <i class="fa fa-trash"></i>
+                  <span>&nbsp;&nbsp;Supprimer</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="loading">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Chargement des données...
+            </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="noData">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Pas de données...
+            </td>
+          </ng-container>
+
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator
+          [length]="length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions">
+
+        </mat-paginator>
+      </div>
+    </div>
+
+  </mat-card-content>
+</mat-card>
+
+
+<!-- Modal -->
+<div class="modal fade" id="PostFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">history_toggle_off</span> Sujet de forum</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <form [formGroup]="PostForm" (ngSubmit)="action === 'creat'?savePost():update_Post()" *ngIf="showForm">
+        >
+
+      <div class="modal-body">
+
+
+          <div class="form-group">
+            <label for="status">Status <span class="text-danger">*</span></label>
+            <select class="form-control custom_Input" id="status" formControlName="status">
+              <option value="OPEN">Ouvert</option>
+              <option value="CLOSED">Fermer</option>
+            </select>
+            <div class="badge badge-danger"  *ngIf="PostForm.get('status').touched &&
+                    PostForm.get('status').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="content">Contenu du post <span class="text-danger">*</span></label>
+            <textarea class="form-control custom_Input" formControlName="content" id="content" cols="10" rows="12"></textarea>
+          </div>
+
+
+
+          <div class="text-center mt-2 mb-2">
+            <!--            <button mat-button (click)="showFormSat('false')" class="mb-2 text-danger">Annuler</button>-->
+            <button mat-raised-button color="primary" type="submit" [disabled]="PostForm.invalid">
+              <i class="fa fa-save"></i>
+              {{action === "creat" ? 'ajouter':'Modifier'}}</button>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+      </form>
+
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal ShowPostContentModal -->
+<div class="modal fade" id="ShowPostContentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel2"><span class="material-icons"></span> Sujet de forum</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="container shadow-sm" *ngIf="showPostContent">
+          <h6>Date de post : {{showPostContent.date}}</h6>
+          <hr>
+          {{showPostContent.content}}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal PostCommentairesModal -->
+<div class="modal fade" id="ShowPostCommentairesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel3"><span class="material-icons"></span> Sujet de forum</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+         <span *ngIf="spinner" style="text-align: center;">
+             <img src="../../../../assets/gif/spinner.gif" width="45" alt="">
+           Veuillez patienter ...
+         </span>
+
+        <div class="text-right mr-2" *ngIf="this.deleteBody.length > 0">
+          <button class="btn btn-danger" (click)="deleteCommentaire()"><i class="fa fa-trash"></i> Supprimer les commentaires sélectionnés</button>
+        </div>
+
+        <div class="pl-3 col-1">
+          <input type="checkbox" class="form-check-input" name="allSelector" (change)="isCheckedOrNot($event)"> Tous sélectionner
+        </div>
+        <div class="row p-2 mt-2 shadow-sm" *ngFor="let comentaires of PostCommentaires">
+         <div class="col-md-2 d-flex justify-content-center align-items-center">
+           <div>
+             <img src="{{parseImage(comentaires.user.photo)}}" style="height: auto; width: 65px" alt="">
+           </div>
+         </div>
+         <div class="col-md-10">
+           <div>
+             <div>
+               <div>
+                 <input type="checkbox" class="ck"  name="check{{comentaires.id}}"
+                        (change)="isCheckedOrNot($event)" value="{{comentaires.id}}">
+               </div>
+               <h6>{{comentaires.user.fullName}}</h6>
+               <span class="small" style="font-size: 14px"><strong>Genre :</strong> {{comentaires.user.genre}} <span></span></span>
+               <span class="small" style="font-size: 14px"><strong>Matricule :</strong> {{comentaires.user.numMatricule}} <span></span></span>
+<!--               <span class="small" style="font-size: 14px"><strong>Type utilisateur :</strong> {{comentaires.user.type}} <span></span></span>-->
+             </div>
+           </div>
+           <hr>
+           <div>
+             <div>
+               <span class="badge badge-info"> <i class="fa fa-times"></i> : {{comentaires.time}}</span>
+               <p>
+                 {{comentaires.content}}
+               </p>
+             </div>
+           </div>
+         </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+

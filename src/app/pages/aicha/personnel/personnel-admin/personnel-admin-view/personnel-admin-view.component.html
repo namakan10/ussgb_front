@@ -1,0 +1,530 @@
+<div class="container col-10 mb-4 mt-3 p-3 bg-white shadow-sm">
+
+
+  <h2 class="text-center font-weight-bold">DETAIL DES INFORMATIONS DU PERSONNEL</h2>
+
+  <hr>
+  <div class="ml-2 mb-10" style="display:flex;justify-content: space-between;">
+    <button mat-raised-button color="warn" (click)="cancel()" matTooltip="Retour sur la liste des personnels">
+      <span class="material-icons">
+        reply
+      </span>
+    </button>
+
+   <div style="display: flex;width: 300px;justify-content: end;">
+     <button mat-raised-button color="success" (click)="downloadfiles()" matTooltip="Télécharger les documents" style="margin-right: 10px;" *ngIf="model && model.fichiers">
+       <mat-icon>cloud_download</mat-icon> Télécharger
+     </button>
+
+     <button mat-raised-button color="primary" (click)="getPersonnelByID(id_personnel)" matTooltip="Actualiser">
+       <mat-icon>refresh</mat-icon> Actualiser
+     </button>
+   </div>
+
+
+  </div>
+
+  <hr>
+
+
+
+  <mat-tab-group dynamicHeight animationDuration="1000ms" mat-align-tabs="center">
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="example-tab-icon">account_box</mat-icon>
+        ETAT CIVIL
+      </ng-template>
+
+      <div style="min-height: 100%;min-width: 100%; padding: 5px;" *ngIf="model && model.user">
+
+        <input type="file" class="file-input" accept="image/*"
+               (change)="onFileSelected($event)" #fileUpload>
+
+        <div style="display: flex; justify-content: center;align-items:center;flex-wrap: nowrap;">
+
+          <mat-card class="example-card" (click)="fileUpload.click()">
+            <mat-card-content
+              style="display: flex;flex-direction:column;justify-content: center;align-items: center; padding-top: 10px;">
+              <img mat-card-image
+                   [src]="model.user && model.user.photo ? parseImage(model.user.photo) : 'https://www.creativefabrica.com/wp-content/uploads/2021/10/05/Photo-Upload-Icon-Graphics-18349170-1-1-580x386.jpg'"
+                   alt="fichierUrl" class="tagImg">
+
+
+              <div style="margin-top: 5px;">Choisir une photo</div>
+
+            </mat-card-content>
+          </mat-card>
+
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Nom</mat-label>
+              <input matInput readonly placeholder="Nom" [value]="model.user.nom">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Prenom</mat-label>
+              <input matInput readonly placeholder="Prenom" [value]="model.user.prenom">
+            </mat-form-field>
+
+          </div>
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Genre</mat-label>
+              <mat-select disabled [value]="model.user.genre">
+                <mat-option value="Homme">Homme</mat-option>
+                <mat-option value="Femme">Femme</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Type d'utilisateur</mat-label>
+              <mat-select disabled [value]="model.user.typeUtilisateur">
+                <mat-option value="PERSONNEL_ADMINISTRATIF">PERSONNEL ADMINISTRATIF</mat-option>
+                <mat-option value="VACATAIRE">VACATAIRE</mat-option>
+                <mat-option value="PERSONNEL_TECHNIQUE">PERSONNEL TECHNIQUE</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </div>
+
+          <div class="multiple-fields">
+
+
+            <mat-form-field appearance="fill">
+              <mat-label>Date de naissance</mat-label>
+              <input matInput readonly [max]="maxDate" (focus)="picker?.open()"
+                     [matDatepicker]="picker" [value]="model.user.dateDeNaissance">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+
+            <mat-form-field appearance="fill">
+              <mat-label>Lieu de naissance</mat-label>
+              <input matInput readonly placeholder="Lieu de naissance" [value]="model.user.lieuDeNaissance">
+            </mat-form-field>
+
+          </div>
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Téléphone</mat-label>
+              <input type="tel" matInput placeholder="Téléphone" [value]="model.user.telephone">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Email</mat-label>
+              <input type="email" matInput placeholder="Email" [value]="model.user.email">
+            </mat-form-field>
+
+          </div>
+
+          <div class="multiple-fields">
+
+            <mat-form-field appearance="fill">
+              <mat-label>Ville</mat-label>
+              <input matInput readonly [value]="model.user.ville" matInput placeholder="Ville">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Quartier</mat-label>
+              <input matInput readonly placeholder="Quartier" [value]="model.user.quartier">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Rue</mat-label>
+              <input matInput readonly placeholder="Rue" [value]="model.user.rue">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Porte</mat-label>
+              <input matInput readonly placeholder="Porte" [value]="model.user.porte">
+            </mat-form-field>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="example-tab-icon">business_center</mat-icon>
+        CARRIÈRE
+      </ng-template>
+
+      <div style="min-height: 100%;min-width: 100%; padding: 5px;" *ngIf="model">
+
+        <div style="margin-top: 10px;margin-bottom: 10px;">
+          <mat-radio-group>
+            <mat-radio-button value="oui" (click)="fonctionnaoireControl('oui')">Je suis fonctionnaire
+            </mat-radio-button>
+            <mat-radio-button value="non" (click)="fonctionnaoireControl('non')" style="margin-left: 30px;">Je ne suis
+              pas fonctionnaire
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+        <div class="multiple-fields">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Statut</mat-label>
+            <mat-select disabled [value]="model.statut">
+              <mat-option [value]="etatFonc"
+                          *ngFor="let etatFonc of PersonnelDonnees.statusFonction">{{etatFonc}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Nationalité</mat-label>
+            <mat-select disabled [value]="model.nationalite">
+              <mat-option *ngFor="let pays of Pays" [value]="pays">
+                {{pays}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        </div>
+
+        <div class="multiple-fields">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Situation matrimoniale</mat-label>
+            <mat-select disabled [value]="model.situation_matrimoniale">
+              <mat-option
+                *ngFor="let statutMatrimo of PersonnelDonnees.situationMatrimoniale" [value]="statutMatrimo">
+                {{statutMatrimo}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Régime du mariage</mat-label>
+            <mat-select disabled [value]="model.regime_mariage">
+              <mat-option
+                *ngFor="let regimeMaria of PersonnelDonnees.regimeMariage"
+                [value]="regimeMaria">{{regimeMaria}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+
+        </div>
+
+        <div class="multiple-fields">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Classe</mat-label>
+            <mat-select disabled [value]="model.classe">
+              <mat-option *ngFor="let cl of PersonnelDonnees.classes" [value]="cl">{{cl}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" *ngIf="numMatriculeFiel">
+            <mat-label>Numero de matricule</mat-label>
+            <input matInput readonly placeholder="Numero de matricule" [value]="model.numMatricule">
+          </mat-form-field>
+
+        </div>
+
+        <div class="multiple-fields">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Niveau d'étude</mat-label>
+            <mat-select disabled [value]="model.niveau_etude">
+              <mat-option *ngFor="let niveauEtud of PersonnelDonnees.niveauxEtude"
+                          [value]="niveauEtud">{{niveauEtud}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" *ngIf="categorieFiel">
+            <mat-label>Catégorie</mat-label>
+            <mat-select disabled [value]="model.categorie">
+              <mat-option *ngFor="let catego of PersonnelDonnees.categorie" [value]="catego">
+                {{catego}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        </div>
+
+        <div class="multiple-fields">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Numéro NINA</mat-label>
+            <input matInput readonly [value]="model.numNina" placeholder="Numéro NINA">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Numéro AMO</mat-label>
+            <input matInput readonly [value]="model.numAmo" placeholder="Numéro AMO">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Numéro INPS</mat-label>
+            <input matInput readonly [value]="model.numInps" placeholder="Numéro INPS">
+          </mat-form-field>
+
+        </div>
+
+        <div class="multiple-fields">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Nombre d'enfants</mat-label>
+            <input matInput readonly type="number" [value]="model.nbreEnfant" placeholder="Nombre d'enfants">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Nombre jours de congé</mat-label>
+            <input matInput readonly type="number" [value]="model.nbreJourConge" placeholder="Nombre jours de congé">
+          </mat-form-field>
+
+
+        </div>
+
+        <div class="multiple-fields">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Date d'embauche</mat-label>
+            <input matInput readonly [max]="maxDate" (focus)="pickerEmbauche?.open()"
+                   [matDatepicker]="pickerEmbauche" [value]="model.dateEmbauche" placeholder="Date d'embauche">
+            <mat-datepicker-toggle matSuffix [for]="pickerEmbauche"></mat-datepicker-toggle>
+            <mat-datepicker #pickerEmbauche></mat-datepicker>
+          </mat-form-field>
+
+
+          <mat-form-field appearance="fill">
+            <mat-label>Date dernier avancement</mat-label>
+            <input matInput [max]="maxDate"
+                   [matDatepicker]="pickerDernierAvancement" [value]="model.dateDernierAvancement"
+                   placeholder="Date dernier avancement" disabled>
+            <mat-datepicker-toggle matSuffix [for]="pickerDernierAvancement"></mat-datepicker-toggle>
+            <mat-datepicker #pickerDernierAvancement></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Année départ retraite</mat-label>
+            <input matInput
+                   [min]="maxDate"
+                   [matDatepicker]="dp"
+                   [value]="model.anneeDeRetraite" placeholder="Année départ retraite" disabled>
+            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+            <mat-datepicker #dp startView="multi-year"
+                            panelClass="Année départ retraite">
+            </mat-datepicker>
+          </mat-form-field>
+
+        </div>
+
+        <div class="multiple-fields">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Corps</mat-label>
+            <mat-select disabled [value]="model.corps">
+              <mat-option>--</mat-option>
+              <mat-option *ngFor="let model of corpPersonnels" [value]="model.nom">
+                {{model.nom}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label> Echelon</mat-label>
+            <mat-select disabled [value]="model.echelon">
+              <mat-option [value]="model"
+                          *ngFor="let model of PersonnelDonnees.echelons">{{model}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" *ngIf="indiceFiel">
+            <mat-label>Indice</mat-label>
+            <input matInput readonly placeholder="Indice" [value]="model.indice">
+          </mat-form-field>
+
+        </div>
+
+        <div class="multiple-fields">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Etat de service</mat-label>
+            <mat-select placeholder="Etat de service" [value]="model.etatService">
+              <mat-option>--</mat-option>
+              <mat-option *ngFor="let model of etatServicePersonnels" [value]="model.nom">
+                {{model.nom}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Département</mat-label>
+            <mat-select disabled [value]="model.departement_id" [compareWith]="compareWithId">
+              <mat-option>--</mat-option>
+              <mat-option *ngFor="let model of StructDepartements" [value]="model.id"
+                          (onSelectionChange)="DepSelect(model.id)">{{model.nom}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        </div>
+
+        <div class="multiple-fields">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Service</mat-label>
+            <mat-select disabled [value]="model.service" [compareWith]="compareWithId">
+              <mat-option>--</mat-option>
+              <mat-option *ngFor="let model of Struc_Services" [value]="model.id"
+                          (onSelectionChange)="ServiceChange(model.id)">
+                {{model.nom}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Division</mat-label>
+            <mat-select disabled [value]="model.division">
+              <mat-option>--</mat-option>
+              <mat-option *ngFor="let model of Divisions" [value]="model">
+                {{model.id}} /  {{model}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        </div>
+
+        <div class="multiple-fields">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Fonction</mat-label>
+            <mat-select disabled [value]="model.fonction" [compareWith]="compareWithId">
+              <mat-option>--</mat-option>
+              <mat-option *ngFor="let model of Fonctions" [value]="model.id">
+                {{model.nom | uppercase}} /  {{model.type}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+
+        </div>
+
+      </div>
+
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="example-tab-icon">file_copy</mat-icon>
+        DOCUMENTS
+      </ng-template>
+
+      <div style="min-height: 100%;min-width: 100%; padding: 5px;">
+
+        <mat-form-field appearance="fill" style="margin-top: 15px;">
+          <mat-label>Type de fichier</mat-label>
+          <mat-select [(ngModel)]="typeFichier">
+            <mat-option *ngFor="let cl of typeFichiers" [value]="cl.value">{{cl.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div style="display: flex;flex-grow: 2; justify-content: center;flex-wrap: nowrap;margin-bottom: 15px;"
+             *ngIf="typeFichier">
+
+          <input type="file" class="file-input"
+                 (change)="onDocSelected($event)" #docUpload>
+
+          <mat-card class="example-card" (click)="docUpload.click()">
+            <mat-card-content>
+              <div
+                style="display: flex;flex-direction:column;justify-content: center;align-items: center; padding-top: 25%;"
+                matTooltip="Ajouter un nouveau fichier">
+
+                <img mat-card-image
+                     src="https://www.creativefabrica.com/wp-content/uploads/2021/10/05/Photo-Upload-Icon-Graphics-18349170-1-1-580x386.jpg"
+                     alt="fichierUrl" class="tagImg">
+
+                <div style="margin-top: 2px;">Nouveau document</div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="example-card" *ngIf="docData">
+            <mat-card-content>
+              <div
+                style="display: flex;flex-direction:column;justify-content: center;align-items: center; padding-top: 25%;">
+
+                <img mat-card-image
+                     [src]="parseImage(docData.docUrl)"
+                     alt="fichierUrl" class="tagImg" style="position: relative">
+
+                <mat-icon color="warn" matTooltip="Supprimer le document" (click)="docData=null"
+                          style="position: absolute;top: 10px;right: 10px">delete
+                </mat-icon>
+
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+        </div>
+
+        <div class="multiple-fields" *ngIf="typeFichier || docData">
+
+          <button mat-raised-button color="warn" class="mat-btn" (click)="clearFile()" style="width: 100%" matTooltip="Annuler le document" >
+            Annuler
+          </button>
+
+          <button mat-raised-button color="primary" class="mat-btn" style="width: 100%" matTooltip="Ajouter le document" (click)="addFile()">
+            Enregistrer
+          </button>
+
+        </div>
+
+
+        <div style="min-height: 90%;
+        min-width: 100%; display: flex;flex-grow: 4;
+         justify-content: flex-start;flex-wrap: wrap;" *ngIf="model.fichiers">
+
+          <mat-card class="example-card" *ngFor="let doc of model.fichiers; let i=index;">
+
+            <mat-card-content style="padding: 5px;display: flex;justify-content: space-between;flex-direction:column;">
+              <div
+                style="display: flex;justify-content: center;align-items: center;">
+
+                <img mat-card-image [src]="parseImage(doc.fileUrl)" alt="fileUrl" style="position: relative;object-fit: fill;" height="180" width="180">
+
+                <mat-icon color="warn" matTooltip="Supprimer le document" (click)="removePersonnelFile(doc)"
+                          style="position: absolute;top: 10px;right: 10px">delete
+                </mat-icon>
+
+                <mat-icon color="primary" matTooltip="Télécharger le document" (click)="downloadfile(doc.fileUrl)"
+                          style="position: absolute;top: 10px;left: 10px">cloud_upload
+                </mat-icon>
+              </div>
+
+              <div style="display: flex;justify-content:center;align-items:center;font-size: 13px;font-weight: bold;">
+                <div>{{typeWording(doc.typeFichier) | uppercase}}</div>
+              </div>
+            </mat-card-content>
+
+          </mat-card>
+
+        </div>
+
+      </div>
+
+    </mat-tab>
+
+  </mat-tab-group>
+
+
+</div>
+

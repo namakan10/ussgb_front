@@ -1,0 +1,136 @@
+<h2 class="text-center mb-4">chargement des notes</h2>
+<div
+  class="container col-8 p-3"
+  *ngIf="listNoteCalcule === null || listNoteCalcule.length <= 0"
+>
+  <div>
+    <div class="alert alert-warning">
+      <h6><strong>Recommander:</strong></h6>
+      Veuillez télécharger un exemplaire de fichier à charger en cliquant
+      <a href="../assets/{{exempleFIle}}">
+        ici <i class="fa fa-download"></i> fichier d'exemple pour charger les
+        notes</a
+      >
+      . La prémière ligne dans le fichier excel est un exemple, veuillez la
+      supprimer.
+    </div>
+  </div>
+
+  <!--NUM MATRICULE-->
+  <div
+    class="mb-3"
+    style="border-left: 1px solid #999595; border-top-left-radius: 7px"
+  >
+    <h4>
+      <i class="fa fa-dot-circle-o"></i>
+      <strong
+        >Assurer vous que le format du numéro d'étudiant (numEtudiant) soit respecter
+      </strong>
+    </h4>
+  </div>
+
+    <!--ANNEE SCOLAIRE-->
+    <div
+    class="mb-3"
+    style="border-left: 1px solid #999595; border-top-left-radius: 7px"
+  >
+    <h4>
+      <i class="fa fa-dot-circle-o"></i>
+      <strong>Format de l'année scolaire à respecter </strong>
+    </h4>
+    <div class="pl-3">
+      <div>annee1 - annee2</div>
+      <div><strong>exemple :</strong> 2020 - 2021</div>
+
+      <div class="text-danger">
+        <strong>NB: </strong>*Ne pas oublier l'espace entre le tiret(-) et les
+        années*
+      </div>
+    </div>
+  </div>
+
+  <!--NUM CodeUE-->
+  <div
+    class="mb-3"
+    style="border-left: 1px solid #999595; border-top-left-radius: 7px"
+  >
+    <h4>
+      <i class="fa fa-dot-circle-o"></i>
+      <strong
+        >Assurer vous que le format du code de l'UE soit respecter
+      </strong>
+    </h4>
+  </div>
+</div>
+
+  <!--NOTE-->
+  <div
+    class="mb-3 container col-8 p-3"
+    style="border-left: 1px solid #999595; border-top-left-radius: 7px"
+  >
+    <h4>
+      <i class="fa fa-dot-circle-o"></i>
+      <strong> Format de la note </strong>
+      <div>
+        Assurer vous que le format de la note insérée soit comme dans l'exemple.
+      </div>
+      <div><strong>exemple :</strong> 18 ou 18,5 ou 9 ou 9,5</div>
+      <div>NB: utiliser la virgule (,) et non le point (.)</div>
+    </h4>
+  </div>
+
+
+  <!-- NEW COLUM -->
+  <div
+  class="mb-3 container col-8 p-3"
+  style="border-left: 1px solid #999595; border-top-left-radius: 7px"
+>
+<div class="alert alert-warning p-2">
+    <span class="text-danger"><i class="fa fa-dot-circle-o"></i>Important</span>
+    Si le nombre d'element constitutive (EC) de Unité d'Enseignement (UE) dépasse deux (2) ! <br>
+    Vous devez ajouter les colonnes nécessaires.<br>
+    <div><strong>exemple :</strong> L'UE contient 4 EC. Après avoir télécharger le fichier exemple. <br>
+    J'ajoute les colonnes suivantes à la suite des colonnes: <br>
+    </div>
+    - (<strong>code_ec_3</strong> et <strong>note_ec_3</strong> )
+    - (<strong>code_ec_4</strong> et <strong>note_ec_4</strong> )
+</div>
+</div>
+
+<!-- chargement part -->
+<div class="container col-8 p-3">
+ 
+   <div class="alert alert-info">
+    <div>
+        <label for="nbrEc">Nombre d'element constitutif (EC)</label>
+        <input type="text" id="nbrEc" class="form-control custom_Input"
+        [(ngModel)]="nbrEc">
+    </div>
+    <p class="text-danger"><strong><i class="fa fa-dot-circle-o"></i> NB : </strong> Le nombre d'EC entrer doit correspondre exactement au nombre d'EC dans le Ficher à Téléverser ! </p>
+
+   </div>
+  <div>
+    <input
+      type="file"
+      class="form-control custom_Input"
+      [(ngModel)]="fichierInp"
+      (change)="FileSelect($event)"
+    />
+  </div>
+
+  <div class="text-center mt-3">
+    <button
+      mat-raised-button
+      color="accent"
+      [disabled]="!fileOk || _spinner"
+      (click)="Charger()"
+    >
+    <span *ngIf="_spinner" style="text-align: center;">
+      <img src="../../../../assets/gif/spinner.gif" width="30" alt="">
+  </span>
+      {{_spinner ? 'chargement ...': 'Charger'}}
+    </button>
+  </div>
+</div>
+
+

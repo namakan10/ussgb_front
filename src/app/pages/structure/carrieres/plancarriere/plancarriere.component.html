@@ -1,0 +1,426 @@
+<div class="widget-text-box">
+
+  <div class="row">
+    <div class="col-8">
+      <h2
+        style="float: left;">Plan de carrière</h2>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="error && error">
+  <br>
+  <br>
+  <div class="alert alert-danger" role="alert">
+    {{error}}
+  </div>
+</div>
+<div *ngIf="message != null">
+  <br>
+  <br>
+  <div class="alert alert-success" role="alert">
+    {{message}}
+  </div>
+</div>
+
+
+<div class="formPanel">
+
+  <mat-tab-group mat-align-tabs="center">
+    <mat-tab label="Personnels Administratifs">
+
+
+      <div class="multiple-fields" style="margin-top: 3%;">
+
+        <div style="width: 49%;">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Chercher un personnel</mat-label>
+            <input #input (keyup)="applyFilterEnseignant($event)" matInput placeholder="Chercher ...">
+          </mat-form-field>
+        </div>
+
+        <div style="width: 49%;">
+          <mat-form-field appearance="fill" style="float: left;">
+            <mat-label>Etat de service</mat-label>
+            <mat-select [compareWith]=compareById formControlName="etatService" (selectionChange)="onEtatService($event.value)"
+                        name="etatService" placeholder="etatService" required>
+              <mat-option *ngFor="let d of donneePersonnel.etatsService; index as i;" [value]="d">
+                {{d}}
+              </mat-option>
+            </mat-select>
+            <mat-error
+              *ngIf="form.controls['etatService'].invalid && form.controls['etatService'].dirty && form.controls['etatService'].errors['required']">
+              Ce champ est obligatoire
+            </mat-error>
+          </mat-form-field>
+
+        </div>
+      </div>
+
+
+
+      <div class="mat-elevation-z8">
+        <div *ngIf="formPanelPersonnel" style="width: 100%;padding: 20px;background-color: white!important;">
+
+          <form [formGroup]="form" novalidate="" role="form">
+
+            <div class="multiple-fields">
+              <mat-form-field appearance="fill">
+                <mat-label>Date du dernier avancement</mat-label>
+                <input [matDatepicker]="picker1" formControlName="dateDernierAvancement" matInput
+                       name="dateDernierAvancement" required>
+                <mat-datepicker-toggle [for]="picker1" matSuffix></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+                <mat-error
+                  *ngIf="form.controls['dateDernierAvancement'].invalid && form.controls['dateDernierAvancement'].dirty && form.controls['dateDernierAvancement'].errors['required']">
+                  Ce champs est obligatoire!
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Echelon</mat-label>
+                <mat-select [compareWith]=compareById formControlName="echelon"
+                            name="echelon" placeholder="echelon" required>
+                  <mat-option *ngFor="let d of donneePersonnel.echelons; index as i;" [value]="d">
+                    {{d}}
+                  </mat-option>
+                </mat-select>
+
+                <mat-error
+                  *ngIf="form.controls['echelon'].invalid && form.controls['echelon'].dirty && form.controls['echelon'].errors['required']">
+                  Ce champ est obligatoire
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Niveau d'etude</mat-label>
+                <mat-select [compareWith]=compareById formControlName="niveau_etude"
+                            name="niveau_etude" placeholder="niveauxEtude" required>
+                  <mat-option *ngFor="let d of donneePersonnel.corpsPersonnelAdministratif; index as i;" [value]="d">
+                    {{d}}
+                  </mat-option>
+                </mat-select>
+
+                <mat-error
+                  *ngIf="form.controls['niveau_etude'].invalid && form.controls['niveau_etude'].dirty && form.controls['niveau_etude'].errors['required']">
+                  Ce champ est obligatoire
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+
+            <div class="multiple-fields">
+              <mat-form-field appearance="fill">
+                <mat-label>Corps</mat-label>
+                <mat-select [compareWith]=compareById formControlName="corps"
+                            name="corps" placeholder="corps" required>
+                  <mat-option *ngFor="let d of donneePersonnel.corpsPersonnelAdministratif; index as i;" [value]="d">
+                    {{d}}
+                  </mat-option>
+                </mat-select>
+
+                <mat-error
+                  *ngIf="form.controls['corps'].invalid && form.controls['corps'].dirty && form.controls['corps'].errors['required']">
+                  Ce champ est obligatoire
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Fonctions</mat-label>
+                <mat-select (selectionChange)="onFonction($event.value)" [compareWith]=compareById
+                            formControlName="fonction"
+                            name="fonction" placeholder="Fonctions" required>
+                  <mat-option *ngFor="let d of fonctions; index as i;" [value]="d">
+                    {{d.nom}}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="form.controls['fonction'].invalid && form.controls['fonction'].dirty && form.controls['fonction'].errors['required']">
+                  Ce champ est obligatoire
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+
+            <div class="multiple-fields">
+
+              <mat-form-field appearance="fill">
+                <mat-label>Etat de service</mat-label>
+                <mat-select [compareWith]=compareById formControlName="etatService"
+                            name="etatService" placeholder="etatService" required>
+                  <mat-option *ngFor="let d of donneePersonnel.etatsService; index as i;" [value]="d">
+                    {{d}}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="form.controls['etatService'].invalid && form.controls['etatService'].dirty && form.controls['etatService'].errors['required']">
+                  Ce champ est obligatoire
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Statut</mat-label>
+                <mat-select [compareWith]=compareById formControlName="statut"
+                            name="statut" placeholder="statut" required>
+                  <mat-option *ngFor="let d of donneePersonnel.statusFonction; index as i;" [value]="d">
+                    {{d}}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="form.controls['statut'].invalid && form.controls['statut'].dirty && form.controls['statut'].errors['required']">
+                  Ce champ est obligatoire
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Indice</mat-label>
+                <input formControlName="indice" matInput matTooltip="indice" name="indice"
+                       placeholder="indice"
+                       required type="number">
+                <mat-error
+                  *ngIf="form.controls['indice'].invalid && form.controls['indice'].dirty && form.controls['indice'].errors['required']">
+                  Ce champ est obligatoire
+                </mat-error>
+                <mat-error
+                  *ngIf="form.controls['indice'].invalid && form.controls['indice'].dirty && form.controls['indice'].errors['min']">
+                  Ce champ est doit etre superieur à zéro
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="multiple-fields">
+
+              <mat-form-field appearance="fill">
+                <mat-label>Categorie</mat-label>
+                <mat-select [compareWith]=compareById formControlName="categorie"
+                            name="categorie" placeholder="Categorie" required>
+                  <mat-option *ngFor="let d of donneePersonnel.categorie; index as i;" [value]="d">
+                    {{d}}
+                  </mat-option>
+                </mat-select>
+
+                <mat-error
+                  *ngIf="form.controls['categorie'].invalid && form.controls['categorie'].dirty && form.controls['categorie'].errors['required']">
+                  Ce champ est obligatoire
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Classe</mat-label>
+                <mat-select [compareWith]=compareById formControlName="classe"
+                            name="classe" placeholder="Classe" required>
+                  <mat-option *ngFor="let d of donneePersonnel.classes; index as i;" [value]="d">
+                    {{d}}
+                  </mat-option>
+                </mat-select>
+
+                <mat-error
+                  *ngIf="form.controls['classe'].invalid && form.controls['classe'].dirty && form.controls['classe'].errors['required']">
+                  Ce champ est obligatoire
+                </mat-error>
+              </mat-form-field>
+
+
+            </div>
+
+
+            <button (click)="addOrdEdite(form.value)" [disabled]="!form.valid" class="btn btn-block btn-primary mt-3"
+                    type="submit">Enregistrer</button>
+
+            <button (click)="changePanelPersonnel()" color="warn" mat-raised-button style="float: right;"
+                    style="float: left;"><i class="fa fa-user-times"></i> <i class="fa fa-plus"></i> Annuler
+            </button>
+
+          </form>
+
+        </div>
+
+
+        <div *ngIf="!formPanelPersonnel" style="width: 100%;padding: 20px;">
+          <table [dataSource]="dataSourcePersonnel" mat-table matSort>
+
+            <ng-container matColumnDef="id">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> #</th>
+              <td *matCellDef="let row" mat-cell> {{row.id}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="dateDernierAvancement">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> Date dernier avancement</th>
+              <td *matCellDef="let row" mat-cell> {{row.dateDernierAvancement | date: "dd-MM-yyyy"}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="enseignant">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> Enseignant</th>
+              <td *matCellDef="let row" mat-cell> {{row.user.prenom }} {{row.user.nom }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="fonction">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> Fonction</th>
+              <td *matCellDef="let row" mat-cell> {{row.fonction?.nom}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="etatService">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> Etat service</th>
+              <td *matCellDef="let row" mat-cell> {{row.etatService}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="echelon">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> Fonction</th>
+              <td *matCellDef="let row" mat-cell> {{row.echelon}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="corps">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> Corps</th>
+              <td *matCellDef="let row" mat-cell> {{row.corps}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="classe">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> Classe</th>
+              <td *matCellDef="let row" mat-cell> {{row.classe}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="categorie">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> Categorie</th>
+              <td *matCellDef="let row" mat-cell> {{row.categorie}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="statut">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> Statut</th>
+              <td *matCellDef="let row" mat-cell> {{row.statut}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="indice">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> Indice</th>
+              <td *matCellDef="let row" mat-cell> {{row.indice}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="niveau_etude">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> Niveau d'etude</th>
+              <td *matCellDef="let row" mat-cell> {{row.niveau_etude}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header> Action</th>
+              <td *matCellDef="let row" mat-cell>
+                <div class="btn-group" dropdown>
+                  <div style="margin-left: 50px;">
+                    <i [matMenuTriggerFor]="menu" class="fa fa-ellipsis-v"
+                       style="font-size: 20px; cursor: pointer;"></i>
+                  </div>
+                  <mat-menu #menu="matMenu">
+                    <button (click)="showEdite('personnel',row)" mat-menu-item>Mise à jour</button>
+                  </mat-menu>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr *matHeaderRowDef="displayedColumnsPersonnel" mat-header-row></tr>
+            <tr *matRowDef="let row; columns: displayedColumnsPersonnel;" mat-row></tr>
+
+            <tr *matNoDataRow class="mat-row">
+              <td class="mat-cell" colspan="4">Pas de données"</td>
+            </tr>
+          </table>
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Personnels enseignants">
+      <div class="multiple-fields" style="width: 50%;float: right;margin-top: 40px;">
+        <mat-form-field appearance="fill">
+          <mat-label>Chercher un enseignant</mat-label>
+          <input #input (keyup)="applyFilterEnseignant($event)" matInput placeholder="Chercher ...">
+        </mat-form-field>
+      </div>
+
+      <div class="mat-elevation-z8">
+        <table [dataSource]="dataSourceEnseignant" mat-table matSort>
+
+          <ng-container matColumnDef="id">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header> #</th>
+            <td *matCellDef="let row" mat-cell> {{row.id}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="dateDernierAvancement">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header> Date dernier avancement</th>
+            <td *matCellDef="let row" mat-cell> {{row.dateDernierAvancement | date: "dd-MM-yyyy"}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="enseignant">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header> Enseignant</th>
+            <td *matCellDef="let row" mat-cell> {{row.user.prenom }} {{row.user.nom }} </td>
+          </ng-container>
+
+          <!--          <ng-container matColumnDef="fonction">-->
+          <!--            <th *matHeaderCellDef mat-header-cell mat-sort-header> Fonction</th>-->
+          <!--            <td *matCellDef="let row" mat-cell> {{row.fonction?.nom}} </td>-->
+          <!--          </ng-container>-->
+
+          <ng-container matColumnDef="etatService">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header> Etat service</th>
+            <td *matCellDef="let row" mat-cell> {{row.etatService}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="echelon">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header> Fonction</th>
+            <td *matCellDef="let row" mat-cell> {{row.echelon}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="corps">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header> Corps</th>
+            <td *matCellDef="let row" mat-cell> {{row.corps}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="classe">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header> Classe</th>
+            <td *matCellDef="let row" mat-cell> {{row.classe}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="categorie">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header> Categorie</th>
+            <td *matCellDef="let row" mat-cell> {{row.categorie}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="statut">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header> Statut</th>
+            <td *matCellDef="let row" mat-cell> {{row.statut}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="indice">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header> Indice</th>
+            <td *matCellDef="let row" mat-cell> {{row.indice}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="niveau_etude">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header> Niveau d'etude</th>
+            <td *matCellDef="let row" mat-cell> {{row.niveau_etude}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header> Action</th>
+            <td *matCellDef="let row" mat-cell>
+              <div class="btn-group" dropdown>
+                <div style="margin-left: 50px;">
+                  <i [matMenuTriggerFor]="menu" class="fa fa-ellipsis-v" style="font-size: 20px; cursor: pointer;"></i>
+                </div>
+                <mat-menu #menu="matMenu">
+                  <button (click)="showEdite('enseignant',row)" mat-menu-item>Mise à jour</button>
+                </mat-menu>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr *matHeaderRowDef="displayedColumnsEnseignant" mat-header-row></tr>
+          <tr *matRowDef="let row; columns: displayedColumnsEnseignant;" mat-row></tr>
+
+          <tr *matNoDataRow class="mat-row">
+            <td class="mat-cell" colspan="4">Pas de données"</td>
+          </tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+</div>

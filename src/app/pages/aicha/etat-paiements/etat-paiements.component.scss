@@ -1,0 +1,37 @@
+table {
+    width: 100%;
+  }
+
+  .mat-form-field {
+    font-size: 14px;
+    width: 100%;
+  }
+
+  //td, th {
+  //  width: 25%;
+  //}
+
+.custom_Input{
+  padding-bottom: .5px;
+  border-bottom: 0.7px solid #cccccc;
+  border-left: 0.7px solid #cccccc;
+  border-right: 0.7px solid #cccccc;
+}
+
+
+
+
+.multiple-fields {
+  display: flex !important;
+  flex-wrap: nowrap;
+  justify-content: space-between !important;
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100% !important;
+}
+
+.multiple-fields mat-form-field:not(:last-child) {
+  margin-right: 2%;
+}

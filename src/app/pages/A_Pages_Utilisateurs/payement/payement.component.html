@@ -1,0 +1,138 @@
+
+<div class="container col-6 shadow-sm p-3 mt-4 bg-white">
+    <button class="btn btn-danger btn-block" (click)="cancelPay()">Annuler</button>
+
+    <div class="alert alert-info mt-2">
+      <ul>
+        <li><strong>Les frais de traitement de dossiers</strong> concernent les candidats postulant à <strong>l'IUG</strong> ou à <strong>IUDT</strong> ! </li>
+        <li><strong>Les frais d'inscription</strong> concernent les candidats postulant à la <strong>FHG</strong>!</li>
+      </ul>
+      <h5><strong>NB: </strong><span class="text-danger"> Les frais sont non remboursables </span></h5>
+    </div>
+
+    <h3 class="text-center">Payement {{payementTitle}}</h3>
+
+    <form [formGroup]="PayementFormGroup" (ngSubmit)="DoMyPayement(PayementFormGroup)">
+        <div class="container" *ngIf="!ShowPayementSelect">
+            <div class="form-group">
+                <label for="NumPayement">Num de payement<span class="text-danger">*</span></label>
+                <input type="text" class="form-control custom_Input" id="NumPayement" formControlName="NumPayement" (change)="numPayementAlert()">
+
+                <div class="badge badge-danger"  *ngIf="PayementFormGroup.get('NumPayement').touched && PayementFormGroup.get('NumPayement').invalid">
+                    <i class="fa fa-info-circle"></i> Champs obligatoire
+                </div>
+            </div>
+            <div class="form-group" *ngIf="showMotifSelect">
+                <label for="MotifPayement">motif du payement <span class="text-danger">*</span></label>
+                <select class="form-control custom_Input" id="MotifPayement" formControlName="MotifPayement">
+                    <option value="Frais de traitement de dossiers">Frais de traitement de dossiers</option>
+                    <option value="Frais d'inscription">Frais d'inscription</option>
+                </select>
+                <div class="badge badge-danger"  *ngIf="PayementFormGroup.get('MotifPayement').touched && PayementFormGroup.get('MotifPayement').invalid">
+                    <i class="fa fa-info-circle"></i> Champs obligatoire
+                </div>
+            </div>
+            <div class="text-right">
+                <span *ngIf="checkNum_spinner" style="text-align: center;">
+                    <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+                </span>
+                <button type="submit" [disabled]="PayementFormGroup.invalid" [className]="PayementFormGroup.invalid ?'btn btn-secondary': 'btn btn-primary'" *ngIf="!checkNum_spinner"> Valider </button>
+            </div>
+        </div>
+
+    </form>
+
+    <hr>
+    <span *ngIf="payLaunch_spinner" style="text-align: center;">
+        <img src="../../../../assets/gif/spinner.gif" width="53" alt="">
+        <span>Veuillez patienter s'il vous plaît ...</span>
+        <button *ngIf="refeschPay" class="btn btn-info" (click)="ShowPayementSelect = false; payLaunch_spinner = false">Réessayer <i class="fa fa-refresh"></i></button>
+    </span>
+    <div class="container" *ngIf="ShowPayementSelect && !payLaunch_spinner">
+        <h3 class="text-center">Mode de payement</h3>
+        <h6 class="text-center">NeKaWari</h6>
+         <div class="container">
+           <div class="row">
+             <div class="col-3">
+               <img src="../../../../assets/images/logo-text.png" width="100%" alt="">
+             </div>
+             <div class="text-center col-6 align-self-center">
+               <button type="submit" (click)="launchPayement('nekawari')"
+               style="border-radius: 7em 7em; border: 1px solid black; padding: 10px 10px; background-color: gold; color: black;"><i class="fa fa-money"></i> Payer </button>
+               <span></span>
+             </div>
+           </div>
+         </div>
+
+        <hr>
+
+        <h6 class="text-center">Sama money</h6>
+        <div class="container">
+          <div class="row">
+            <div class="col-3">
+              <img src="../../../../assets/images/SAMA-MONEY.jpg" width="100%" alt="">
+            </div>
+            <div class="text-center col-6 align-self-center">
+              <button type="submit" (click)="launchPayement('sama')" class="btn btn-primary"><i class="fa fa-money"></i> Payer </button>
+              <span></span>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+<!-- Modal Phone -->
+<div class="modal fade" id="PhoneNumberFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Numéro Sama</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+          <form [formGroup]="PhoneNumberForm" (ngSubmit)="PayerSAMA()">
+
+            <div class="alert alert-info">
+              <h4>Notez Bien</h4>
+              <ul>
+                <li><i class="fa fa-info-circle"></i> Vérifier que votre compte Sama est débitible à la somme de <strong> {{candidat_montant}}</strong></li>
+                <li><i class="fa fa-info-circle"></i><strong class="text-danger"> Les frais sont non remboursable !</strong></li>
+              </ul>
+            </div>
+
+            <div class="form-group">
+              <label for="evaluations">N° Téléphone SAMA  <span class="text-danger">*</span></label>
+              <input type="tel" class="form-control custom_Input" formControlName="phone">
+
+              <div class="badge badge-danger"  *ngIf="PhoneNumberForm.get('phone').touched &&
+                    PhoneNumberForm.get('phone').invalid">Champ obligatoire</div>
+
+            <p class="text-danger"  *ngIf="PhoneNumberForm.get('phone').touched &&
+                    PhoneNumberForm.get('phone').invalid">Veuillez à ce qu'il n'y ai pas d'espace ou de caractère !</p>
+          </div>
+            <!-- END CAS DE NOTE CONTESTEE LISTE DE MES EVALUTION -->
+
+            <div class="text-center p-1">
+              <span *ngIf="sama_spinner" style="text-align: center;">
+                <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+            </span>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" *ngIf="!sama_spinner">Annuler</button> |
+              <button mat-raised-button color="primary" type="submit" [disabled]="PhoneNumberForm.invalid" *ngIf="!sama_spinner">
+                <i class="fa fa-send"></i> Soumettre
+              </button>
+            </div>
+          </form>
+
+          <div class="container shadow-sm col-7 center">
+            <img src="../../../../assets/images/SAMA-MONEY.jpg" width="100%" alt="">
+          </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>

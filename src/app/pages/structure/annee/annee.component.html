@@ -1,0 +1,117 @@
+<mat-card>
+  <mat-card-header>
+<h1 class="text-center">Année</h1>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="text-right">
+      <button class="btn btn-light" (click)="plusAnnee()">
+        Ajouter
+      </button>
+    </div>
+
+
+    <table class="table table-bordered mt-4">
+      <thead>
+
+        <tr>
+          <th>Année Scolaire</th>
+          <th>Semestre</th>
+          <th>Statut</th>
+          <th>Action</th>
+        </tr>
+
+      </thead>
+      <tbody>
+      <tr *ngFor="let annee of structureAnnees">
+        <td>
+          {{annee.anneeScolaire}}
+        </td>
+        <td>
+          {{annee.semestre}}
+        </td>
+        <td>
+          <span class="badge badge-success" *ngIf="annee.statut === 'EN_COURS'">En cours</span>
+          <span class="badge badge-warning" *ngIf="annee.statut === 'PRECEDENTE'">Précédente</span>
+          <span class="badge badge-light" *ngIf="annee.statut === 'PASSEE'">Passée</span>
+        </td>
+        <td>
+          <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>
+          <mat-menu #action="matMenu">
+            <button  mat-menu-item (click)="modifAnnee(annee)">
+              <i class="fa fa-edit"></i>
+              <span>&nbsp;&nbsp;Modifier</span>
+            </button>
+            <button mat-menu-item (click)="deleteStructureAnnee(annee.id)">
+              <i class="fa fa-trash"></i>
+              <span>&nbsp;&nbsp;Supprimer</span>
+            </button>
+          </mat-menu>
+        </td>
+      </tr>
+
+      </tbody>
+    </table>
+  </mat-card-content>
+</mat-card>
+
+<div class="modal fade" id="AnneFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel">
+          <span class="material-icons">eco</span>
+          ANNEE
+        </h5>
+        <button type="button" class="text-white" mat-button data-dismiss="modal" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+          <form [formGroup]="AnneeForm" (ngSubmit)="action ==='creat'?saveAnnee():updateAnnee()" *ngIf="showForm">
+
+            <div class="row">
+
+              <div class="col-4">
+                <label for="anneeScolaire">Année Scolaire <span class="text-danger">*</span></label>
+                <input type="text" class="form-control custom_Input" id="anneeScolaire" formControlName="anneeScolaire">
+                <div class="badge badge-danger"  *ngIf="AnneeForm.get('anneeScolaire').touched &&
+                    AnneeForm.get('anneeScolaire').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+              </div>
+
+              <div class="col-4">
+                <label for="semestre">Semestre <span class="text-danger">*</span></label>
+                <select id="semestre" class="form-control custom_Input" formControlName="semestre">
+                  <option value="PAIR">Pair</option>
+                  <option value="IMPAIR">Impair</option>
+                </select>
+                <div class="badge badge-danger"  *ngIf="AnneeForm.get('semestre').touched &&
+                    AnneeForm.get('semestre').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>
+              </div>
+
+
+              <div class="col-4">
+                <label for="statut">Statut </label>
+                <select id="statut" class="form-control custom_Input" formControlName="statut">
+                  <option value="EN_COURS">En cours</option>
+                  <option value="PRECEDENTE">Précédente</option>
+                  <option value="PASSEE">Passée</option>
+                </select>
+                <!--            <div class="badge badge-danger"  *ngIf="AnneeForm.get('statut').touched &&-->
+                <!--                    AnneeForm.get('statut').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire</div>-->
+              </div>
+            </div>
+            <div class="text-center mt-2">
+              <button type="submit" mat-button color="primary" [disabled]="AnneeForm.invalid"><i class="fa fa-save"></i> Valider</button>
+            </div>
+          </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+

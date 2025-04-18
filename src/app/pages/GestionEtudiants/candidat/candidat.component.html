@@ -1,0 +1,673 @@
+<div class="container col-5 shadow-sm p-1 text-center text-white mb-2" style="border-radius: 10px; background-color: #1e88e5">
+  <h4><i class="fa fa-list"></i> Liste CENOU</h4>
+</div>
+
+<mat-card class="p-2">
+<!--  ChargementListModal  <label for="uploadFile">Veuillez charger le fichiers excel</label>-->
+<!--     <input class="form-control-file" id="uploadFile" type="file" (change)="onUpload($event)" accept=".xlsx, .xls, .xlsm">-->
+<!--</mat-card>-->
+<!--<mat-card>-->
+  <mat-card-header>
+<!--    <div class="row">-->
+<!--        <h3 class="font-weight-bold">{{CandidatsData.totalElements}} candidats</h3>-->
+<!--    </div>-->
+    <h3 class="font-weight-bold">{{CandidatsData !== undefined ? CandidatsData.totalElements : ""}} candidats</h3>
+  </mat-card-header>
+  <mat-card-content>
+
+    <div class="row">
+      <div class="col p-1 d-flex">
+        <button mat-mini-fab class="mt-4" (click)="searchCandidat()">
+        <span class="material-icons">
+          search
+        </span>
+        </button>
+        <form [formGroup]="PaginateForm" class="ml-1 text-center">
+<!--          <label for="page">Pages </label>-->
+<!--          <select class="form-control custom_Input" id="page" style="width: 87px" formControlName="paginateSelect"-->
+<!--                  (change)="paginateEvent('select')">-->
+<!--            <option value="{{page}}" *ngFor="let page of Pages">{{page === 0 ? 'debut': page }}</option>-->
+<!--          </select>-->
+
+          <div class="row p-3" style="border-radius: 10px; border: .7px solid #cccccc">
+            <div class="col">
+              <label for="annee">Année </label>
+              <select class="form-control custom_Input" id="annee" formControlName="annee">
+                <option value=""></option>
+                <option value="{{an}}" *ngFor="let an of Annees">{{an}}</option>
+              </select>
+            </div>
+
+            <div class="col">
+              <label for="nom">Nom </label>
+              <input type="text" id="nom" class="form-control custom_Input" formControlName="nom">
+            </div>
+
+            <div class="col">
+              <label for="prenom">Prénom </label>
+              <input type="text" id="prenom" class="form-control custom_Input" formControlName="prenom">
+            </div>
+
+            <div class="col">
+              <label for="numPlace">N°Place </label>
+              <input type="text" id="numPlace" class="form-control custom_Input" formControlName="numPlace">
+            </div>
+
+
+            <div class="col">
+              <label for="dateDeNaissance">Date de naissance </label>
+              <input type="date" id="dateDeNaissance" class="form-control custom_Input" formControlName="dateDeNaissance">
+            </div>
+          </div>
+<!--          <div class="text-center">-->
+<!--            <button mat-raised-button color="primary"> <span class="material-icons">search</span> Chercher</button>-->
+<!--          </div>-->
+          <div class="text-center p-2" *ngIf="chargeSpinner">
+            <span  style="text-align: center;">
+              <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+            </span>
+            <p>Veuillez patienter ...</p>
+          </div>
+        </form>
+
+<!--        <button mat-mini-fab class="ml-1 mt-4" (click)="paginateEvent('plus')">-->
+<!--        <span class="material-icons">-->
+<!--          chevron_right-->
+<!--        </span>-->
+<!--        </button>-->
+      </div>
+
+      <div class="col-2 p-2 d-flex justify-content-center" *ngIf="adminRole">
+        <button mat-raised-button color="primary" class="mt-3" (click)="chargeList()">
+          <span class="material-icons">upload</span> Charger une liste</button>
+      </div>
+    </div>
+
+
+    <div class="text-left p-2" *ngIf="adminRole">
+      <button mat-raised-button color="accent" (click)="plusCadidat()"><span class="material-icons">add</span> Ajouter un Candidat</button>
+    </div>
+
+<!--    FILTRE -->
+    <mat-form-field>
+      <mat-label>FILTRE</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+    </mat-form-field>
+
+<!--    TABLEAU -->
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef>Nom</th>
+        <td mat-cell *matCellDef="let element"> {{element.nom}} {{element.prenom}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="dateDeNaissance">
+        <th mat-header-cell *matHeaderCellDef>Date de naissance</th>
+        <td mat-cell *matCellDef="let element"> {{element.dateDeNaissance | date: "dd-MM-yyyy"}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="lieuDeNaissance">
+        <th mat-header-cell *matHeaderCellDef>Lieu de naissance</th>
+        <td mat-cell *matCellDef="let element"> {{element.lieuDeNaissance}} </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="modeAdmission">
+        <th mat-header-cell *matHeaderCellDef>Mode d'admission</th>
+        <td mat-cell *matCellDef="let element"> {{element.modeAdmission}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="serie">
+        <th mat-header-cell *matHeaderCellDef>Série</th>
+        <td mat-cell *matCellDef="let element"> {{element.specialite}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+
+          <button mat-raised-button color="primary" [matMenuTriggerFor]="menu">Menu</button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="showInfo(element)"><mat-icon>launch</mat-icon> Afficher</button>
+            <button mat-menu-item (click)="ModifInfo(element)"><span class="material-icons text-primary">edit</span> Modifier</button>
+          </mat-menu>
+          <!-- <button mat-icon-button color="warn"><mat-icon>delete_outline</mat-icon></button> -->
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="6">aucune ligne trouvée "{{input.value}}"</td>
+      </tr>
+    </table>
+
+    <div class="mt-1 p-1 d-flex justify-content-end mr-2">
+      <div class="text-center col-2">
+        <span  style="text-align: center;" *ngIf="chargeSpinner">
+              <img src="../../../../assets/gif/spinner.gif" width="32" alt="">
+          <p>Veuillez patienter ...</p>
+        </span>
+        <label for="page"><strong>Pages</strong></label>
+        <select name="page" #page id="page"
+                class="form-control custom_Input" (change)="paginateEvent(page)">
+          <option value=""></option>
+          <option value="{{pg}}" *ngFor="let pg of Pages">{{pg}}</option>
+        </select>
+      </div>
+    </div>
+    <mat-paginator
+      [length]="length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions">
+
+    </mat-paginator>
+
+  </mat-card-content>
+</mat-card>
+
+<!-- Modal-->
+<div class="modal fade" id="ShowDetailModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Les données de la sélection</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="container col-9 bg-white p-2">
+
+          <div class="container mt-2" *ngIf="showcand">
+            <div class="row">
+              <div class="col-4">
+
+                <div class="alert alert-light">
+                  <span class="small">Nom</span>
+                  <p>{{candidatINFO.nom}}</p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Prénom</span>
+                  <p>{{candidatINFO.prenom}}</p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Date & lieu de Naissance</span>
+                  <p>{{candidatINFO.dateDeNaissance}} à {{candidatINFO.lieuDeNaissance}}/{{candidatINFO.paysDeNaissance}}</p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Genre</span>
+                  <p>{{candidatINFO.genre}}</p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Nationalité</span>
+                  <p>{{candidatINFO.nationalite}}</p>
+                </div>
+
+                <span>------Localité------</span>
+                <div class="alert alert-light">
+                  <span class="small">Ville</span>
+                  <p>{{candidatINFO.ville}}</p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Quartier</span>
+                  <p>{{candidatINFO.quartier}}</p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Rue</span>
+                  <p>{{candidatINFO.rue}}</p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Porte</span>
+                  <p>{{candidatINFO.porte}}</p>
+                </div>
+
+
+              </div>
+              <!--2em-->
+              <div class="col-4">
+
+                <span class="small">--------Contacts--------</span>
+                <div class="alert alert-light">
+                  <span class="small">Téléphone</span>
+                  <p>{{candidatINFO.telephone}}</p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Email</span>
+                  <p><strong>{{candidatINFO.email}}</strong></p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Téléphone du Tuteur</span>
+                  <p>{{candidatINFO.telephoneTuteur}}</p>
+                </div>
+
+                <span class="small">--------Info Scolaire--------</span>
+
+                <div class="alert alert-light">
+                  <span class="small">Academie</span>
+                  <p>{{candidatINFO.academie}}</p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Spécialité (série)</span>
+                  <p>{{candidatINFO.specialite}}</p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Session du diplôme</span>
+                  <p>{{candidatINFO.sessionBac}}</p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">N° Matricule</span>
+                  <p><strong>{{candidatINFO.numMatricule}}</strong></p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">N° Place du diplôme</span>
+                  <p><strong>{{candidatINFO.numPlaceBac}}</strong></p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Type candidat</span>
+                  <p>{{candidatINFO.typeCandidat}}</p>
+                </div>
+
+              </div>
+              <!--3em-->
+              <div class="col-4">
+                <span class="small">------Statut Universitaire ------</span>
+                <!-- <div class="alert alert-light">
+                  <span class="small">Etat payement</span><br>
+                  <span [className]="candidatINFO.etatPaiement? 'badge badge-success':'badge badge-danger'">
+            {{candidatINFO.etatPaiement?'effectif':'non effectif'}}
+          </span>
+                </div> -->
+
+                <!-- <div class="alert alert-light">
+                  <span class="small">Etat de pré-Inscription</span><br>
+                  <span [className]="candidatINFO.preInscrit? 'badge badge-success':'badge badge-danger'">
+            {{candidatINFO.preInscrit?'effectif':'non effectif'}}
+          </span>
+                </div> -->
+
+                <!-- <div class="alert alert-light">
+                  <span class="small">Etat d'inscription</span><br>
+                  <span [className]="candidatINFO.inscrit ? 'badge badge-success':'badge badge-danger'">
+            {{candidatINFO.inscrit?'effectif':'non effectif'}}
+          </span>
+                </div> -->
+
+                <div class="alert alert-light">
+                  <span class="small">Mode d'admission</span>
+                  <p>{{candidatINFO.modeAdmission}}</p>
+                </div>
+
+                <div class="alert alert-light">
+                  <span class="small">Année</span>
+                  <p>{{candidatINFO.annee}}</p>
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="showcand=false">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--MODAL DE CHARGEMENT-->
+<div class="modal fade" id="ChargementListModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">history_toggle_off</span> Chargement de la liste CENOU</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="container p-2">
+
+          <div class="col-sm-12 col-md-9 col-lg-9">
+            <h3 class="font-weight-bold">LES NORMES </h3>
+            <h6 class="text-danger">Notes : </h6>
+            <h6 class="text-danger">Assurez vous que le fichier réponde aux critères énoncés ci-dessous sans quoi l'import échouera</h6>
+          </div>
+
+          <div class="alert alert-warning">
+            <h6><strong>Recommander:</strong></h6>
+            Veuillez télécharger un exemplaire de fichier à charger en cliquant
+            <a href="../assets/BacFiles/candidatexemple_Test.xlsx">  ici <i class="fa fa-download"></i> Liste exemple de liste</a>
+            . La prémière ligne dans le fichier excel est un exemple, veuillez la supprimer.
+
+          </div>
+
+
+          <!--Colonne-->
+          <div class="mb-3" style="border-left: 1px solid #999595; border-top-left-radius: 7px">
+            <h4><i class="fa fa-dot-circle-o"></i>  Les colonnes exactes que le fichier doit impérativement avoir. </h4>
+            <div class="pl-3">
+              <div>nom</div>
+              <div>prenom</div>
+              <div>dateDeNaissance</div>
+              <div>lieuDeNaissance</div>
+              <div>genre</div>
+              <div>modeAdmission</div>
+              <div>sessionBac</div>
+              <div>academie</div>
+              <div>specialite</div>
+              <div>numPlaceBac</div>
+              <div>numMatricule</div>
+              <div>annee</div>
+
+            </div>
+          </div>
+
+          <div class="pl-3 mb-3">
+            <h4><i class="fa fa-dot-circle-o"></i> Valeur possible pour la colonne <strong> mode d'admission </strong></h4>
+            <div class="text-danger">
+              <strong>NB: </strong>*Les tirets du bas sont obligatoires et ne peuvent pas être substitués par tout autre chose*
+            </div>
+            <div>NOUVEAU_BACHELIER</div>
+            <div>BT2</div>
+            <div>MALIEN_DE_L_EXTERIEUR</div>
+            <div>CANDIDAT_LIBRE</div>
+            <div>ADMIS_SUR_TITRE</div>
+            <div>ADMIS_PAR_TRANSFERT_DE_CREDIT</div>
+            <div>PROFESSIONNEL</div>
+            <div>ETRANGER_UEMOA</div>
+            <div>ETRANGER_HORS_UEMOA</div>
+            <div>ADMIS_SUR_TITRE_RECTORAT</div>
+            <div>MASTER_BOURSIER</div>
+            <div>TRANSFERT</div>
+            <div>MASTER</div>
+            <div>
+              <span><strong>Exemple:</strong> si il s'agit des candidats libres leur mode d'admission devient CANDIDAT_LIBRE</span>
+            </div>
+          </div>
+
+
+          <!--GENRE-->
+          <div class="mb-3" style="border-left: 1px solid #999595; border-top-left-radius: 7px">
+            <h4><i class="fa fa-dot-circle-o"></i>  Valeur de  <strong>genre </strong> possibles </h4>
+            <div class="pl-3">
+              <div> HOMME </div>
+              <div> FEMME </div>
+
+            </div>
+          </div>
+
+          <!--DATE-->
+          <div class="mb-3" style="border-left: 1px solid #999595; border-top-left-radius: 7px">
+            <h4><i class="fa fa-dot-circle-o"></i>  <strong> Format de date à respecter </strong> </h4>
+            <div class="pl-3">
+              <div> annee-mois-jours </div>
+              <div>  <strong>exemple :</strong>  2022-01-29 </div>
+            </div>
+          </div>
+
+          <!--ANNEE SCOLAIRE-->
+          <div class="mb-3" style="border-left: 1px solid #999595; border-top-left-radius: 7px">
+            <h4><i class="fa fa-dot-circle-o"></i> <strong>Format de l'année scolaire à respecter </strong> </h4>
+            <div class="pl-3">
+              <div> annee1 - annee2 </div>
+              <div> <strong>exemple :</strong> 2020 - 2021 </div>
+
+              <div class="text-danger">
+                <strong>NB: </strong>*Ne pas oublier l'espace entre le tiret(-) et les années*
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-info">
+            <h6 class="mb-2">Note: Le fichier sélectionné sera automatiquement téléversé </h6>
+            <label for="uploadFile">Veuillez charger le fichiers excel</label>
+            <input class="form-control-file" id="uploadFile" type="file" (change)="onUpload($event)" accept=".xlsx, .xls, .xlsm">
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div *ngIf="chargeSpinner" style="float: left;">
+            <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+        </div>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--MODAL DE CHANGEMENT DES DONNEES-->
+<div class="modal fade" id="ChargedataModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exaabel">Chargement de la liste CENOU</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="ModifForm" (ngSubmit)="SaveChanges()">
+          <div class="form-group">
+            <label for="nom">Nom <span class="text-danger">*</span></label>
+            <input type="text" id="nomm" class="form-control custom_Input" formControlName="nom">
+            <div class="badge badge-danger"  *ngIf="ModifForm.get('nom').touched &&
+                    ModifForm.get('nom').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="nom">Prénom <span class="text-danger">*</span></label>
+            <input type="text" id="prenomm" class="form-control custom_Input" formControlName="prenom">
+            <div class="badge badge-danger"  *ngIf="ModifForm.get('prenom').touched &&
+                    ModifForm.get('prenom').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="dateDeNaissancee">date de naissance <span class="text-danger">*</span></label>
+            <input type="date" id="dateDeNaissancee" class="form-control custom_Input" formControlName="dateDeNaissance">
+            <div class="badge badge-danger"  *ngIf="ModifForm.get('dateDeNaissance').touched &&
+                    ModifForm.get('dateDeNaissance').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire
+            </div>
+          </div>
+
+
+          <div class="form-group">
+            <label for="lieuDeNaissancee">lieu de naissance <span class="text-danger">*</span></label>
+            <input type="text" id="lieuDeNaissancee" class="form-control custom_Input" formControlName="lieuDeNaissance">
+            <div class="badge badge-danger"  *ngIf="ModifForm.get('lieuDeNaissance').touched &&
+                    ModifForm.get('lieuDeNaissance').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="payDeNaissance">pays de naissance <span class="text-danger">*</span></label>
+            <select id="payDeNaissance" class="form-control custom_Input" formControlName="payDeNaissance">
+              <option value=""></option>
+              <option value="<{{pay}}" *ngFor="let pay of Pays">{{pay}}</option>
+            </select>
+            <div class="badge badge-danger"  *ngIf="ModifForm.get('payDeNaissance').touched &&
+                    ModifForm.get('payDeNaissance').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="Nationnalite">Nationnalité <span class="text-danger">*</span></label>
+            <input type="text" id="Nationnalite" class="form-control custom_Input" formControlName="Nationnalite">
+            <div class="badge badge-danger"  *ngIf="ModifForm.get('Nationnalite').touched &&
+                    ModifForm.get('Nationnalite').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button type="submit" mat-raised-button color="primary" [disabled]="ModifForm.invalid">
+              <span class="material-icons">save</span> Modifier</button>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--MODAL D'AJOUT DE CANDIDAT-->
+
+<div class="modal fade" id="newCandidatFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exalLabel">
+          <span class="material-icons">plus</span>
+          Ajout d'un candidat
+        </h5>
+        <button type="button" class="text-white" mat-button data-dismiss="modal" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <h3 class="text-center">Ajout d'un candidat</h3>
+        <form [formGroup]="CandidatSaveForm" (ngSubmit)="SaveCandidat()">
+            <div class="container p-2">
+              <div class="form-group">
+                <label for="nomS">Nom <span class="text-danger">*</span> </label>
+                <input type="text" id="nomS" class="form-control custom_Input" formControlName="nom">
+                <div class="badge badge-info"  *ngIf="CandidatSaveForm.get('nom').touched &&
+                    CandidatSaveForm.get('nom').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+              </div>
+
+              <div class="form-group">
+                <label for="nomS">Prénom <span class="text-danger">*</span> </label>
+                <input type="text" id="prenomS" class="form-control custom_Input" formControlName="prenom">
+                <div class="badge badge-info"  *ngIf="CandidatSaveForm.get('prenom').touched &&
+                    CandidatSaveForm.get('prenom').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+              </div>
+
+              <div class="form-group">
+                <label for="dateDeNaissanceS">Date de naissance <span class="text-danger">*</span> </label>
+                <input type="date" id="dateDeNaissanceS" class="form-control custom_Input" formControlName="dateDeNaissance">
+                <div class="badge badge-info"  *ngIf="CandidatSaveForm.get('dateDeNaissance').touched &&
+                    CandidatSaveForm.get('dateDeNaissance').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+              </div>
+
+              <div class="form-group">
+                <label for="lieuDeNaissanceS">Lieu de naissance <span class="text-danger">*</span> </label>
+                <input type="text" id="lieuDeNaissanceS" class="form-control custom_Input" formControlName="lieuDeNaissance">
+                <div class="badge badge-info"  *ngIf="CandidatSaveForm.get('lieuDeNaissance').touched &&
+                    CandidatSaveForm.get('lieuDeNaissance').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+              </div>
+
+              <div class="form-group">
+                <label for="genreS">Genre <span class="text-danger">*</span> </label>
+                <select id="genreS" class="form-control custom_Input" formControlName="genre">
+                  <option value=""></option>
+                  <option value="HOMME">Homme</option>
+                  <option value="FEMME">Femme</option>
+                </select>
+                <div class="badge badge-info"  *ngIf="CandidatSaveForm.get('genre').touched &&
+                    CandidatSaveForm.get('genre').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+              </div>
+
+              <div class="form-group">
+                <label for="modeAdmissionS">modeAdmission <span class="text-danger">*</span></label>
+                <select id="modeAdmissionS" class="form-control custom_Input" formControlName="modeAdmission">
+                  <option value=""></option>
+                  <option value="NOUVEAU_BACHELIER">NOUVEAU BACHELIER</option>
+
+<!--                  , BT2, MALIEN_DE_L_EXTERIEUR, CANDIDAT_LIBRE, ADMIS_SUR_TITRE,-->
+<!--                  ADMIS_PAR_TRANSFERT_DE_CREDIT, PROFESSIONNEL, ETRANGER, MASTER_BOURSIER, MASTER-->
+                </select>
+                <div class="badge badge-info"  *ngIf="CandidatSaveForm.get('modeAdmission').touched &&
+                    CandidatSaveForm.get('modeAdmission').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+              </div>
+
+              <div class="form-group">
+                <label for="academieS">Academie <span class="text-danger">*</span></label>
+                <select id="academieS" class="form-control custom_Input" formControlName="academie">
+                  <option value=""></option>
+                  <option value="{{academ.nom}}" *ngFor="let academ of Academies"> {{academ.nom}}</option>
+                </select>
+                <div class="badge badge-info"  *ngIf="CandidatSaveForm.get('academie').touched &&
+                    CandidatSaveForm.get('academie').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+              </div>
+
+
+
+              <div class="form-group">
+                <label for="numPlaceBacS">num place Bac  <span class="text-danger">*</span> </label>
+                <input type="text" id="numPlaceBacS" class="form-control custom_Input" formControlName="numPlaceBac">
+                <div class="badge badge-info"  *ngIf="CandidatSaveForm.get('numPlaceBac').touched &&
+                    CandidatSaveForm.get('numPlaceBac').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+              </div>
+
+              <div class="form-group">
+                <label for="sessionBacS">session Bac <span class="text-danger">*</span></label>
+                <input type="date" id="sessionBacS" class="form-control custom_Input" formControlName="sessionBac">
+                <div class="badge badge-info"  *ngIf="CandidatSaveForm.get('sessionBac').touched &&
+                    CandidatSaveForm.get('sessionBac').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+              </div>
+
+              <div class="form-group">
+                <label for="anneeS">Annee <span class="text-danger">*</span></label>
+                <select id="anneeS" class="form-control custom_Input" formControlName="annee">
+                  <option value=""></option>
+                  <option value="{{an}}" *ngFor="let an of Annees">{{an}}</option>
+                </select>
+                <div class="badge badge-info"  *ngIf="CandidatSaveForm.get('annee').touched &&
+                    CandidatSaveForm.get('annee').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+              </div>
+
+              <div class="form-group">
+                <label for="numMatriculeS">num Matricule <span class="text-danger">*</span></label>
+                <input type="text" id="numMatriculeS" class="form-control custom_Input" formControlName="numMatricule">
+                <div class="badge badge-info"  *ngIf="CandidatSaveForm.get('numMatricule').touched &&
+                    CandidatSaveForm.get('numMatricule').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+              </div>
+
+
+              <div class="form-group">
+                <label for="specialiteS">Spécialite <span class="text-danger">*</span></label>
+                <select id="specialiteS" class="form-control custom_Input" formControlName="specialite">
+                  <option value=""></option>
+                  <option value="{{special.nom}}" *ngFor="let special of Specialites"> {{special.nom}}</option>
+                </select>
+                <div class="badge badge-info"  *ngIf="CandidatSaveForm.get('specialite').touched &&
+                    CandidatSaveForm.get('specialite').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+              </div>
+
+            </div>
+
+          <div class="text-center p-1">
+            <button type="submit" mat-raised-button color="accent" [disabled]="CandidatSaveForm.invalid">
+              <i class="fa fa-save"></i> Enregistrer</button>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>

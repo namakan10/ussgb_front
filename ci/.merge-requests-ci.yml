@@ -1,0 +1,126 @@
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH'
+
+stages:
+  - install
+  - build
+  - test
+  - deploy
+  - openingMr
+  - mergeOnSuccess
+
+.base_merge:
+  image: maven:3.6.3-jdk-11
+  stage: openingMr
+  before_script:
+    - apt-get update -qqq && apt-get install -qqqy curl
+    - 'curl -H "Authorization:token ${GITHUB_ACCESS_TOKEN}" -H "Accept: application/vnd.github.v4.raw" -O -L ${AUTO_MERGE_SCRIPT_PATH}'
+    - chmod +x ./autoMergeRequest.sh
+    - apt-get update -y && apt-get install python3 -y
+
+########################################################################################################################
+# DEVELOP
+########################################################################################################################
+#MR any branch -> develop:
+#  extends: .base_merge
+#  script:
+#    - HOST=${CI_PROJECT_URL} CI_PROJECT_ID=${CI_PROJECT_ID} CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME} GITLAB_USER_ID=${GITLAB_USER_ID} PRIVATE_TOKEN=${!PRIVATE_TOKEN} ./autoMergeRequest.sh create_merge --target-branch develop --remove-source-branch --merge-when-pipelines-succeeds
+#  rules:
+#    - if: '$CI_COMMIT_BRANCH =~ /^(develop|staging)[_|-].*$/'
+#      when: never
+#    - if: '$CI_COMMIT_BRANCH =~ /^(develop|staging|prod_usttb|prod|master)$/'
+#      when: never
+#    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+#      when: never
+#    - when: manual
+
+merge on success:
+  extends: .base_merge
+  stage: mergeOnSuccess
+  script:
+    - HOST=${CI_PROJECT_URL} CI_PROJECT_ID=${CI_PROJECT_ID} CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME} GITLAB_USER_ID=${GITLAB_USER_ID} PRIVATE_TOKEN=${!PRIVATE_TOKEN} ./autoMergeRequest.sh validate_merge --merge-when-pipelines-succeeds-only --remove-source-branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+MR develop_feature -> develop:
+  extends: .base_merge
+  script:
+    - HOST=${CI_PROJECT_URL} CI_PROJECT_ID=${CI_PROJECT_ID} CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME} GITLAB_USER_ID=${GITLAB_USER_ID} PRIVATE_TOKEN=${!PRIVATE_TOKEN} ./autoMergeRequest.sh create_merge --target-branch develop --merge-when-pipelines-succeeds
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /^(develop|staging|pre-prod|prod|master)$/'
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /^(develop|staging)[_|-].*$/'
+
+
+########################################################################################################################
+# STAGING
+########################################################################################################################
+MR develop -> staging:
+  extends: .base_merge
+  script:
+    - HOST=${CI_PROJECT_URL} CI_PROJECT_ID=${CI_PROJECT_ID} CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME} GITLAB_USER_ID=${GITLAB_USER_ID} PRIVATE_TOKEN=${!PRIVATE_TOKEN} ./autoMergeRequest.sh create_merge --target-branch staging --merge-when-pipelines-succeeds
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: manual
+
+MR staging_features -> staging:
+  extends: .base_merge
+  script:
+    - HOST=${CI_PROJECT_URL} CI_PROJECT_ID=${CI_PROJECT_ID} CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME} GITLAB_USER_ID=${GITLAB_USER_ID} PRIVATE_TOKEN=${!PRIVATE_TOKEN}  ./autoMergeRequest.sh  create_merge --target-branch staging --remove-source-branch --merge-when-pipelines-succeeds
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /^(staging)[_|-].*$/'
+
+########################################################################################################################
+# PROD
+########################################################################################################################
+MR staging -> prod:
+  extends: .base_merge
+  script:
+    - HOST=${CI_PROJECT_URL} CI_PROJECT_ID=${CI_PROJECT_ID} CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME} GITLAB_USER_ID=${GITLAB_USER_ID} PRIVATE_TOKEN=${!PRIVATE_TOKEN} ./autoMergeRequest.sh create_merge --target-branch prod --merge-when-pipelines-succeeds
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "staging"'
+      when: manual
+
+MR prod_features -> prod:
+  extends: .base_merge
+  script:
+    - HOST=${CI_PROJECT_URL} CI_PROJECT_ID=${CI_PROJECT_ID} CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME} GITLAB_USER_ID=${GITLAB_USER_ID} PRIVATE_TOKEN=${!PRIVATE_TOKEN}  ./autoMergeRequest.sh  create_merge --target-branch prod --remove-source-branch --merge-when-pipelines-succeeds
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /^(prod)[_|-].*$/'
+
+MR prod_features -> staging:
+  extends: .base_merge
+  script:
+    - HOST=${CI_PROJECT_URL} CI_PROJECT_ID=${CI_PROJECT_ID} CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME} GITLAB_USER_ID=${GITLAB_USER_ID} PRIVATE_TOKEN=${!PRIVATE_TOKEN}  ./autoMergeRequest.sh  create_merge --target-branch staging --merge-when-pipelines-succeeds
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /^(prod)[_|-].*$/'
+
+MR prod_features -> develop:
+  extends: .base_merge
+  script:
+    - HOST=${CI_PROJECT_URL} CI_PROJECT_ID=${CI_PROJECT_ID} CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME} GITLAB_USER_ID=${GITLAB_USER_ID} PRIVATE_TOKEN=${!PRIVATE_TOKEN}  ./autoMergeRequest.sh  create_merge --target-branch develop --merge-when-pipelines-succeeds
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /^(prod)[_|-].*$/'
+
+MR prod -> master:
+  extends: .base_merge
+  script:
+    - HOST=${CI_PROJECT_URL} CI_PROJECT_ID=${CI_PROJECT_ID} CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME} GITLAB_USER_ID=${GITLAB_USER_ID} PRIVATE_TOKEN=${!PRIVATE_TOKEN} ./autoMergeRequest.sh  create_merge --target-branch master --merge-when-pipelines-succeeds
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "prod"'
+      when: manual

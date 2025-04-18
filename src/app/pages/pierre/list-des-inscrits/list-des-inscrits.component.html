@@ -1,0 +1,942 @@
+<div *ngIf="spinner1" style="text-align: center;">
+  <img style="margin-top: 50px;" src="assets/gif/livre.gif" width="500" alt="">
+</div>
+<div class="container-fluid" *ngIf='!spinner1'>
+  <div class="row">
+    <div class="col-sm-12">
+      <mat-card>
+        <div class="row" style="padding: 20px;">
+          <div class="col-sm-12">
+            <h4 >La liste des inscrits</h4>
+
+<!--            <button id="btn" (click)="BindCrosImage('test', 'qsdf.png')">Get Image</button>-->
+<!--            <img src="" id="test" alt=""  width="500px" />-->
+<!--            <div id="progress"></div>-->
+
+          </div>
+          <div class="col-sm-2">
+            <mat-form-field class="example-full-width">
+              <mat-label>Prénom</mat-label>
+              <input matInput [(ngModel)]="prenom" type="text"
+              name="prenom">
+                </mat-form-field>
+          </div>
+          <div class="col-sm-2">
+            <mat-form-field class="example-full-width">
+              <mat-label>Nom</mat-label>
+              <input matInput [(ngModel)]="nom" type="text"
+              name="nom">
+                </mat-form-field>
+          </div>
+          <div class="col-sm-2">
+            <mat-form-field class="example-full-width">
+              <mat-label>Téléphone</mat-label>
+              <input matInput [(ngModel)]="telephone" type="number"
+              name="telephone">
+                </mat-form-field>
+          </div>
+          <div class="col-sm-2">
+            <mat-form-field class="example-full-width">
+              <mat-label>Date d'inscription</mat-label>
+              <input matInput [matDatepicker]="picker" [(ngModel)]="dateInscription" type="text"
+              name="dateInscription">
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+          </div>
+          <div class="col-sm-2" *ngIf='type == false'>
+            <mat-form-field appearance="fill">
+            <mat-label>Statut</mat-label>
+            <mat-select  [(ngModel)]="statut" name="statut" aria-label="Default select example">
+                <mat-option value="all">Tout</mat-option>
+                <mat-option value="L1">L1</mat-option>
+                <mat-option value="REDOUBLANT_L1">REDOUBLANT_L1</mat-option>
+                <mat-option value="REDOUBLANT_L2">REDOUBLANT_L2</mat-option>
+                <mat-option value="REDOUBLANT_L3">REDOUBLANT_L3</mat-option>
+                <mat-option value="ADMIS_CREDIT_L2">ADMIS_CREDIT_L2</mat-option>
+                <mat-option value="ADMIS_PURS_S3">ADMIS_PURS_S3</mat-option>
+                <mat-option value="ADMIS_PURS_L2">ADMIS_PURS_L2</mat-option>
+                <mat-option value="ADMIS_PURS_L3">ADMIS_PURS_L3</mat-option>
+                <mat-option value="ADMIS_CREDIT_L3">ADMIS_CREDIT_L3</mat-option>
+                <mat-option value="M1">M1</mat-option>
+                <mat-option value="REDOUBLANT_M1">REDOUBLANT_M1</mat-option>
+                <mat-option value="REDOUBLANT_M2">REDOUBLANT_M2</mat-option>
+                <mat-option value="ADMIS_CREDIT_M2">ADMIS_CREDIT_M2</mat-option>
+                <mat-option value="ADMIS_PURS_M2">ADMIS_PURS_M2</mat-option>
+                <mat-option value="ADMIS_EQUIVALENCE_L3">ADMIS_EQUIVALENCE_L3</mat-option>
+                <mat-option value="ADMIS_EQUIVALENCE_L2">ADMIS_EQUIVALENCE_L2</mat-option>
+                <mat-option value="EXCLUS">EXCLUS</mat-option>
+                <mat-option value="ABANDON">ABANDON</mat-option>
+                <mat-option value="DIPLOME_LICENCE">DIPLOME_LICENCE</mat-option>
+              </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-sm-2">
+          <mat-form-field appearance="fill">
+          <mat-label>Année scolaire</mat-label>
+          <mat-select  [(ngModel)]="annee_scolaire" name="annee_scolaire" aria-label="Default select example">
+              <mat-option *ngFor="let annee of anneeStructure" [value]="annee.anneeScolaire">{{annee.anneeScolaire}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+      </div>
+      <div class="col-sm-2" *ngIf='type == false'>
+        <mat-form-field appearance="fill">
+        <mat-label>Niveau</mat-label>
+        <mat-select  [(ngModel)]="niveau" name="niveau" aria-label="Default select example">
+            <mat-option value="all">Tout</mat-option>
+            <mat-option value="L1">L1</mat-option>
+            <mat-option value="L2">L2</mat-option>
+            <mat-option value="L3">L3</mat-option>
+            <mat-option value="M1">M1</mat-option>
+            <mat-option value="M2">M2</mat-option>
+          </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="col-sm-2">
+      <button [disabled]="niveau === undefined || niveau === '' || niveau === null || annee_scolaire === undefined || annee_scolaire === '' || annee_scolaire === null"
+              (click)='afficher()' type="button" style=" background-color: #1e88e5; color: white;" mat-button>
+        <mat-icon> search </mat-icon> Afficher</button>
+  </div>
+  <div class="col-sm-2">
+    <div *ngIf="spinner" style="text-align: right;">
+      <img style="position: absolute; margin-left: -100px;" src="assets/gif/spinner.gif" width="70" alt="">
+  </div>
+  </div>
+  <button type="button" [disabled]="!checkIfIsnull(this.dataSource)" (click)="exportexcel()" class="btn btn-success">Exporter en Excel</button>&nbsp;
+  <button type="button" [disabled]="!checkIfIsnull(this.dataSource) || Psize >24" (click)="exportpdf()" class="btn btn-success">Exporter en Pdf</button>
+  <br>
+  </div>
+
+      </mat-card>
+    </div>
+    <div class="col-sm-12">
+      <br>
+      <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+        {{error.error}}
+      </div>
+      <div *ngIf="message != null" class="alert alert-success" role="alert">
+        {{message}}
+      </div>
+      <br>
+        <div class="d-flex">
+          <mat-form-field>
+            <mat-label>Filtrage</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Pierre" #input>
+          </mat-form-field>
+          <button class="btn btn-sm btn-outline-info" (click)="entete = !entete ">
+            <i class="fa fa-eye-slash text-secondary" *ngIf="entete"></i>
+            <i class="fa fa-eye text-info" *ngIf="!entete"></i>
+          </button>
+        </div>
+          <div *ngIf="spinner" style="text-align: right;">
+            <img style="position: absolute; margin-left: -100px;" src="assets/gif/spinner.gif" width="70" alt="">
+        </div>
+<!-- ===========================================================-->
+<!-- ==================TABLEAU =================================-->
+<!-- ===========================================================-->
+      <div id="excel-table">
+        <div class="mat-elevation-z8" style="width: 295mm">
+
+          <table class="table-hover table-bordered" mat-table [dataSource]="dataSource" matSort>
+
+            <ng-container matColumnDef="entete">
+              <th mat-header-cell *matHeaderCellDef colspan="13" mat-sort-header class="small font-weight-bolder" style="font-size: 14px">
+                <!--            ====================-->
+                <!--            EN TÊTE-->
+                <!--            ====================-->
+                <div class="row" *ngIf="entete">
+                  <div class="col-sm-8" *ngIf="ExcelEntete">
+                    <div>{{univ_Minist}}</div>
+
+                    <div>
+                      -------------------------
+                    </div>
+                    <div>
+                      {{univName}}
+                    </div>
+                  </div>
+                  <div class="col-sm-4" *ngIf="ExcelEntete">
+                    <div style="text-align: end;">
+                      REPUBLIQUE DU MALI
+                      <div style="font-size: 15px;">
+                        Un Peuple - Un But - Une Foi
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-sm-3" style="text-align: center; ">
+                    <br>
+                    <img src="{{_asset_image}}" alt="" width="170" height="auto">
+                  </div>
+                  <div class="col-sm-6 pt-1">
+                    <div style="padding-left: 30px; padding-right: 30px;">
+                      <div style="font-size: 20px; text-align: center; text-transform: uppercase; border-bottom: black solid 5px; border-top: black solid 5px; "> {{user.structure.nom}}</div>
+                    </div>
+                  </div>
+                  <div class="col-sm-3 pt-2" style="text-align: center; " *ngIf="user.structure.logo != undefined">
+                    <img src="{{_http}}{{user.structure.logo}}" class="structLogo" style="background-size: cover;" alt="" width="170" height="auto">
+                    <!--          <img src="{{https_photo}}{{user.structure.logo}}" id="structLogo" style="background-size: cover;" alt="" width="170" height="auto">-->
+                  </div>
+
+<!--                  <div class="col-sm-12" style="text-align: center;">-->
+<!--                    <span style="font-size: 15px; font-weight: normal;">{{user.structure.adresse}}</span>-->
+<!--                  </div>-->
+                  <h3> {{this.titre}}</h3>
+                </div>
+                <!--            ====================-->
+                <!--          END  EN TÊTE-->
+                <!--            ====================-->
+
+              </th>
+<!--              <td mat-cell *matCellDef="let row" style="padding: 5px"> {{ row.numEtudiant}} </td>-->
+            </ng-container>
+
+            <ng-container matColumnDef="numDossier">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Numéro étudiant</th>
+              <td mat-cell *matCellDef="let row" class="small" style="font-size: 10px; padding: 2.5px"> {{ row.numEtudiant}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="niveau">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Niveau </th>
+              <td mat-cell *matCellDef="let row"> {{row.niveau}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="prenom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px">Prénom </th>
+              <td mat-cell *matCellDef="let row" class="small" style="font-size: 10px">{{row.prenom}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="nom">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Nom </th>
+              <td mat-cell *matCellDef="let row" class="small" style="font-size: 10px">{{row.nom}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Email </th>
+              <td mat-cell *matCellDef="let row" class="small" style="font-size: 10px">
+                {{checkIfIsnull(row.email) ? row.email.replace('@',' @') : '-'}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="date_de_naissance">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Date de naissance </th>
+              <td mat-cell *matCellDef="let row" class="small" style="font-size: 10px">
+                {{row.dateDeNaissance | date: "yyyy/MM/dd"}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="lieu">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Lieu de naissance </th>
+              <td mat-cell *matCellDef="let row" class="small" style="font-size: 10px">
+                {{row.lieuDeNaissance}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="genre">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Genre</th>
+              <td mat-cell *matCellDef="let row" class="small" style="font-size: 10px">{{row.genre | uppercase}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="numMatricule">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Numéro CENOU </th>
+              <td mat-cell *matCellDef="let row" class="small" style="font-size: 10px">{{row.numMatricule}}</td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="telephone">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Téléphone </th>
+              <td mat-cell *matCellDef="let row" class="small" style="font-size: 10px"> {{row.telephone}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="nationalite">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Nationalité </th>
+              <td mat-cell *matCellDef="let row" class="small" style="font-size: 10px"> {{row.nationalite | uppercase}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="codeOption">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Option </th>
+              <td mat-cell *matCellDef="let row" class="small" style="font-size: 10px"> {{row.codeOption}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="codeFiliere">
+               <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Filière </th>
+               <td mat-cell *matCellDef="let row"> {{row.codeFiliere}} </td>
+             </ng-container>
+
+            <ng-container matColumnDef="groupe">
+               <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Groupe </th>
+               <td mat-cell *matCellDef="let row"> {{row.groupe}} </td>
+             </ng-container>
+
+            <ng-container matColumnDef="typeCandidat">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Type candidat</th>
+<!--              <td mat-cell *matCellDef="let row"> {{row.statut}} </td>-->
+              <td mat-cell *matCellDef="let row" class="text-center" style="font-size: 10px"> {{row.typeCandidat.replace('_',' ')}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="modeAdmission">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Mode d'admission</th>
+              <td mat-cell *matCellDef="let row" class="text-center" style="font-size: 10px"> {{checkIfIsnull(row.modeAdmission) ? row.modeAdmission.replace('_',' '): '--'}} </td>
+<!--              <td mat-cell *matCellDef="let row"> {{row.typeCandidat}} </td>-->
+            </ng-container>
+            <ng-container matColumnDef="statut">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Statut</th>
+              <td mat-cell *matCellDef="let row" class="text-center" style="font-size: 10px"> {{row.statut.replace('_',' ')}} </td>
+<!--              <td mat-cell *matCellDef="let row"> {{row.typeCandidat}} </td>-->
+            </ng-container>
+
+
+            <ng-container matColumnDef="scolarite">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px">Scolt</th>
+              <td mat-cell *matCellDef="let row" style="padding: 2.5px"> {{row.scolarite}} </td>
+            </ng-container>
+
+
+
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="small font-weight-bolder" style="font-size: 14px"> Action </th>
+              <td mat-cell *matCellDef="let row" >
+
+                <button mat-button color="primary" [matMenuTriggerFor]="menu">Actions</button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="convetToPDF(row)" *ngIf="!_RECTORAT">
+                    <span class="material-icons">branding_watermark</span>
+                    Attestation/Carte
+                  </button>
+
+                  <button mat-menu-item (click)="LaungPhotoChange(row)">
+                    <span class="material-icons text-success">photo_camera</span>
+                    Changer la Photo</button>
+
+                  <button mat-menu-item (click)="LaungModif(row)" *ngIf="hasRoleAdmin()">
+                    <span class="material-icons text-primary">edit</span>
+                    Changer les infos</button>
+
+                  <button mat-menu-item (click)="Document(row)" *ngIf="hasRoleAdmin()">
+                    <span class="material-icons text-warning">visibility</span>
+                    Dossier de l'étudiant</button>
+
+                  <button mat-menu-item (click)="Abandon(row)" *ngIf="hasRoleAdmin() && !_RECTORAT">
+                    <span class="material-icons text-danger">delete</span>
+                    Annuler l'inscription de l'étudiant</button>
+                </mat-menu>
+
+
+                <!-- <button type="button" (click)="validation(false, row.id)" class="btn btn-danger" style="margin-top: 5px;">Non_valide</button> -->
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['entete']"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="4">
+                <h2 style="text-align: center;">
+                  Oooops, Pas de données pour cette recherche
+                </h2>
+              </td>
+            </tr>
+          </table>
+          <mat-paginator
+            [length]="length"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="pageSizeOptions"
+            (page)="afficher($event)"
+            >
+
+          </mat-paginator>
+        </div>
+      </div>
+<!-- ===========================================================-->
+<!-- ==================TABLEAU =================================-->
+<!-- ===========================================================-->
+
+          <div class="col-sm-2">
+            <div *ngIf="spinner" style="text-align: right;">
+              <img style="position: absolute; margin-left: -100px;" src="assets/gif/spinner.gif" width="70" alt="">
+          </div>
+          </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal-->
+<div class="modal fade" id="PhotoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header text-white bg-info">
+      <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><strong> <span class="material-icons">photo_camera</span> Changer la photo</strong></h5>
+      <button type="button" mat-button data-dismiss="modal">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <div class="container d-flex justify-content-center p-2">
+        <img src="{{parseImage(photoProfil)}}" alt="" height="190" width="190" *ngIf="!changPhotoEvent">
+        <img src="{{photoProfil}}" alt="" height="190" width="190" *ngIf="changPhotoEvent">
+      </div>
+      <form [formGroup]="PhotoChangeForm" (ngSubmit)="ChangeMyProfile()">
+        <div class="form-group">
+          <label for="photoChang">Photo <span class="text-danger">*</span></label>
+          <input type="file" id="photoChang" class="form-control custom_Input" accept="image/*" formControlName="profilPhoto"
+                 (change)="onselectFile($event)">
+        </div>
+
+        <div class="text-center" *ngIf="checkNum_spinner">
+          <span  style="text-align: center;">
+            <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+        </span>
+        </div>
+        <div class="text-center" *ngIf="!checkNum_spinner">
+          <button mat-raised-button color="primary" [disabled]="PhotoChangeForm.invalid">Changer</button>
+        </div>
+      </form>
+
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- Modal Infomation Change -->
+<div class="modal fade" id="etutiandInfoChangeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header bg-info text-white">
+      <h5 class="modal-title font-weight-bold" id="examodalLabel"><strong><span class="material-icons">edit</span> Changement des données</strong></h5>
+      <button type="button" mat-button data-dismiss="modal" aria-label="Close">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <form [formGroup]="ChangeDataForm" (ngSubmit)="SaveEtudiantData()">
+
+        <div class="form-group" *ngIf="infochangeAccess">
+          <label for="nom">Nom <span class="text-danger">*</span></label>
+          <input type="text" class="form-control custom_Input" id="nom" formControlName="nom">
+        </div>
+
+        <div class="form-group" *ngIf="infochangeAccess">
+          <label for="prenom">Prénom <span class="text-danger">*</span></label>
+          <input type="text" class="form-control custom_Input" id="prenom" formControlName="prenom">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email<span class="text-danger">*</span></label>
+          <input type="text" class="form-control custom_Input" id="email" formControlName="email">
+        </div>
+
+        <div class="form-group" *ngIf="infochangeAccess">
+          <label for="dateDeNaissance">Date de naissance<span class="text-danger">*</span></label>
+          <input type="date" class="form-control custom_Input" id="dateDeNaissance" formControlName="dateDeNaissance">
+        </div>
+
+       <!-- <div class="form-group">
+         <label for="filiere">Filière<span class="text-danger">*</span></label>
+         <select id="filiere" class="form-control custom_Input" (change)="selectOptions($event)" formControlName="filiere">
+           <option value=""></option>
+           <option value="{{filiere.id}}" *ngFor="let filiere of Structure_Filieres">{{filiere.nom}} - ({{filiere.codeFiliere}})</option>
+         </select>
+       </div>
+
+       <div class="form-group">
+         <label for="option">Option<span class="text-danger">*</span></label>
+         <select id="option" class="form-control custom_Input" formControlName="option">
+           <option value=""></option>
+           <option value="{{option.id}}" *ngFor="let option of FiliereSelectOptions">{{option.nom}} - ({{option.codeOption}})</option>
+         </select>
+         <span *ngIf="Opt_spinner" style="text-align: center;">
+         <img src="../../../../../assets/gif/spinner.gif" width="30" alt="">
+       </span>
+       </div> -->
+
+        <div class="form-group" *ngIf="infochangeAccess">
+          <label for="nationalite">Nationalité <span class="text-danger">*</span></label>
+          <input type="text" class="form-control custom_Input" id="nationalite" formControlName="nationalite">
+        </div>
+
+        <div class="form-group">
+          <label for="telephone">Téléphone <span class="text-danger">*</span></label>
+          <input type="tel" class="form-control custom_Input" id="telephone" formControlName="telephone">
+        </div>
+
+        <!-- <div class="form-group" *ngIf="infochangeAccess">
+          <label for="telephoneTuteur">téléphone tuteur <span class="text-danger">*</span></label>
+          <input type="tel" class="form-control custom_Input" id="telephoneTuteur" formControlName="telephoneTuteur">
+        </div> -->
+
+
+         <div class="form-group" *ngIf="infochangeAccess">
+          <label for="genre">Genre<span class="text-danger">*</span></label>
+           <select id="genre" class="form-control custom_Input" formControlName="genre">
+             <option value=""></option>
+             <option value="HOMME">homme</option>
+             <option value="FEMME">femme</option>
+           </select>
+        </div>
+
+        <div class="form-group" *ngIf="infochangeAccess">
+          <label for="lieuDeNaissance">Lieu de naissance<span class="text-danger">*</span></label>
+          <input type="text" class="form-control custom_Input" id="lieuDeNaissance" formControlName="lieuDeNaissance">
+        </div>
+
+
+        <div class="form-group" *ngIf="infochangeAccess">
+          <label for="ville">Ville<span class="text-danger">*</span></label>
+          <input type="text" class="form-control custom_Input" id="ville" formControlName="ville">
+        </div>
+
+        <div class="form-group" *ngIf="infochangeAccess">
+          <label for="quartier">Quartier<span class="text-danger">*</span></label>
+          <input type="text" class="form-control custom_Input" id="quartier" formControlName="quartier">
+        </div>
+
+        <div class="form-group" *ngIf="infochangeAccess">
+          <label for="rue">Rue</label>
+          <input type="text" class="form-control custom_Input" id="rue" formControlName="rue">
+        </div>
+
+        <div class="form-group" *ngIf="infochangeAccess">
+          <label for="porte">Porte</label>
+          <input type="text" class="form-control custom_Input" id="porte" formControlName="porte">
+        </div>
+
+        <div class="text-center p-2">
+          <span *ngIf="Opt_changeIfoSpinner" style="text-align: center;">
+          <img src="../../../../../assets/gif/spinner.gif" width="80" alt="">
+        </span>
+          <button type="submit" mat-raised-button color="primary" *ngIf="!Opt_changeIfoSpinner">
+            <i class="fa fa-save"></i> Enregistrer
+          </button>
+        </div>
+
+
+      </form>
+
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+    </div>
+  </div>
+</div>
+</div>
+
+
+
+<div class="modal fade" id="exampleModalP2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog  modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> -->
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        <div *ngIf="spinner" style="text-align: right;">
+          <img style="position: absolute; margin-left: -100px;" src="assets/gif/spinner.gif" width="70" alt="">
+      </div>
+      <button (click)="imprimer()" type="button" class="btn btn-primary">Imprimer l'attestation</button>
+      <button *ngIf='select != undefined' (click)="imprimerCarte(select.prenom, select.nom)" type="button" class="btn btn-primary">Imprimer la carte</button>
+  </div>
+  <div class="modal-body">
+
+    <div class="container">
+        <div class="row">
+          <div class="col col-sm-6">
+              <div id="face" style="border-radius: 1em 1em; height: 353px; width: 543px; background: white; border: 7px solid #1e88e5;">
+
+                  <div style="background-color: #1e88e5; text-align: center;">
+<!--                    <h1 style="color: white; font-weight: bold">{{user.structure.sigle}} {{dateEnCours.anneeScolaire}}</h1>-->
+                    <h1 style="color: white; font-weight: bold">{{user.structure.sigle}} {{select !== undefined && select.anneeScolaire}}</h1>
+                  </div>
+                  <br>
+                  <div style="float: right; margin-top: 10px; text-align: center;" *ngIf="checkIfIsnull(select)">
+                    <!-- <ngx-qrcode qrc-element-type="text" [qrc-value]="auth.rechercheTelephone">
+                    </ngx-qrcode> -->
+                    <div >
+<!--                      <img style="border-radius: 50%; height: 130px; width: 130px" src="assets/uploads/photo/{{photo(select.photo)}}" alt="">-->
+<!--                      <img style="border-radius: 50%; height: 130px; width: 130px" src="{{https_photo}}{{select.photo}}" id="image__Id" crossorigin="anonymous" alt="">-->
+                      <img style="border-radius: 50%; height: 130px; width: 130px" [src]="parseImage(select.photo)" id="image__Id" alt="">
+<!--                      <img style="border-radius: 50%; height: 130px; width: 130px" id="photo_etudiant" alt="">-->
+<!--                      <img src="https://mycorsproxy-usttb.herokuapp.com/https://ussgb.online/assets/uploads/photo/1646131829004image_cropper_1646131785338_out.jpg" style="border-radius: 50%; height: 130px; width: 130px" crossorigin="anonymous" alt="">-->
+                    </div>
+                    <ngx-qrcode qrc-element-type="text" [qrc-value]="select.numEtudiant"></ngx-qrcode>
+                  </div>
+                  <div style="margin-left: 10px; line-height:8px;" *ngIf='checkIfIsnull(select)'>
+                    <p style="word-wrap: break-word; font-weight: bold;"><span style="color: orange; font-weight: bold;">N° étudiant : &nbsp;</span> <span style="color: black;">{{select.numEtudiant}}</span></p>
+                    <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: orange; font-weight: bold;">Nom :&nbsp;</span> {{select.nom}}</p>
+                    <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: orange; font-weight: bold;">Prénom : &nbsp;</span> {{select.prenom}}</p>
+                    <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: orange; font-weight: bold;">Né(e) le : &nbsp;</span> {{select.dateDeNaissance | date: 'dd-MM-yyyy'}}</p>
+                    <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: orange; font-weight: bold;">A : &nbsp;</span> {{select.lieuDeNaissance}}</p>
+                    <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: orange; font-weight: bold;">Nationalité : &nbsp;</span> {{select.nationalite}}</p>
+                    <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: orange; font-weight: bold;">Adresse : &nbsp;</span> {{select.quartier}}</p>
+                    <p style=" color: black; font-weight: bold;"><span style="color: orange; font-weight: bold;">Téléphone :&nbsp;</span> {{select.telephone}}</p>
+                    <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: orange; font-weight: bold;">Parcours : &nbsp;</span> {{select.filiere.codeFiliere}} - {{select.niveau}}</p>
+                    <p style="word-wrap: break-word; color: black; font-weight: bold;"><span style="color: orange; font-weight: bold;">Fait le :&nbsp;</span> {{select.dateInscription | date: 'dd-MM-yyyy'}}</p>
+
+                  </div>
+              </div>
+            </div>
+            <div class="col col-sm-6">
+              <div id="dos" style="border-radius: 1em 1em; height: 353px; width: 543px; background: white; border: 7px solid #1e88e5;">
+                  <br>
+                  <h6 style="color: #1e88e5; text-align: center;">
+                      Cette carte ne peut être utilisée que par le signataire autorisé.
+                      <br>
+                      En cas de découverte, veuillez déposer &nbsp;cette carte à la structure {{user.structure.sigle}}.
+                      <br>
+                      <div style="font-weight: bold; color: black; padding-top: 10px;">
+                        En cas de perte, l'intéressé est tenu d'informer le Service des Ressources Humaines de la structure {{user.structure.sigle}} en fournissant un certificat de perte.
+                      </div>
+                    </h6>
+                    <hr style="border: 2px solid #1e88e5;">
+                    <div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <img style="border-top-left-radius: 1em; border-top-right-radius: 1em;" height="auto" width="135" src="{{_asset_image}}" alt="" crossOrigin="anonymous" >
+                            </div>
+                            <div class="col-sm-6" style="text-align: end;">
+                                  <img style="border-top-left-radius: 1em; border-top-right-radius: 1em;" height="auto" width="130" src="{{_http}}{{user.structure.logo}}" class="structLogo" alt="" crossOrigin="anonymous" >
+                            </div>
+                        </div>
+                    </div>
+                    <hr style="border: 2px solid #1e88e5;">
+                    <h6 style="color: black; text-align: center;">
+                        {{user.structure.adresse}}
+                      </h6>
+
+              </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <div class="container" id="contentToConvert" style="color: black;">
+      <div class="row" style="">
+        <div class="col-sm-8">
+          <div>{{univ_Minist}}</div>
+
+          <div>
+            ------------------
+          </div>
+          <div>
+            {{univName}}
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div style="text-align: end;">
+            REPUBLIQUE DU MALI
+            <div style="font-size: 15px;">
+              Un Peuple - Un But - Une Foi
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-3" style="text-align: center; ">
+            <br>
+          <img src="{{_asset_image}}" alt="" width="170" height="auto">
+        </div>
+        <div class="col-sm-6">
+            <br>
+         <div style="padding-left: 30px; padding-right: 30px;">
+           <div style="font-size: 20px; text-align: center; text-transform: uppercase; border-bottom: black solid 5px; border-top: black solid 5px; "> {{user.structure.nom}}</div>
+        </div>
+        </div>
+        <div class="col-sm-3" style="text-align: center; " *ngIf="user.structure.logo != undefined">
+            <br>
+          <img src="{{_http}}{{user.structure.logo}}" class="structLogo" style="background-size: cover;" alt="" width="170" height="auto">
+<!--          <img src="{{https_photo}}{{user.structure.logo}}" id="structLogo" style="background-size: cover;" alt="" width="170" height="auto">-->
+        </div>
+
+        <div class="col-sm-12" style="text-align: center;">
+            <span style="font-size: 15px; font-weight: normal;">{{user.structure.adresse}}</span>
+          </div>
+      <div class="col-sm-12" style="text-align: center;">
+        <div style="font-weight: bold; font-size: 30px;">
+              Attestation d'inscription
+        </div>
+        <br>
+        </div>
+<!--        <br>-->
+      <div class="col-sm-12" style="margin-top: 5px;" *ngIf='select != undefined'>
+
+        <!-- ============================ -->
+        <!-- AUTRE CAS -->
+        <!-- ============================ -->
+      <div *ngIf='env ==="usttb"'>
+        <div style="font-size: 15px; font-weight: normal;">
+          Je soussigné(e), Secrétaire Principal(e) de l'(la) {{user.structure.nom}} ({{user.structure.sigle}}), atteste que:
+          <br>
+          l'étudiant ayant les informations ci-dessous, est inscrit dans notre {{user.structure.type}}.
+          <h6 class="font-weight-bold">Détails de l'étudiant</h6>
+        </div>
+        <table class="table table-bordered table-hover">
+          <tr>
+            <th>Année universitaire</th> <td><strong>{{annee_scolaire2}}</strong>  </td>
+          </tr>
+          <tr>
+            <th>Matricule</th> <td>{{select.numMatricule}}</td>
+          </tr>
+
+          <tr>
+            <th>N°Etudiant</th> <td>{{select.numEtudiant}}</td>
+          </tr>
+
+          <tr>
+            <th>Nom</th> <td>{{select.nom}}</td>
+          </tr>
+
+          <tr>
+            <th>Prénom</th> <td>{{select.prenom}}</td>
+          </tr>
+
+          <!--          <tr>-->
+          <!--            <th>Nationalité</th> <td>{{select.nationalite}}</td>-->
+          <!--          </tr>-->
+
+          <tr>
+            <th>Date de Naissance</th> <td>{{select.dateDeNaissance | date: 'd-MM-yyyy'}}</td>
+          </tr>
+
+          <tr>
+            <th>Lieu de Naissance</th> <td>{{select.lieuDeNaissance}}</td>
+          </tr>
+
+          <tr>
+            <th>Genre</th> <td>{{select.genre}}</td>
+          </tr>
+
+          <tr>
+            <th>nom d'utilisateur</th> <td>{{select.username}}</td>
+          </tr>
+
+          <tr>
+            <th>mot de passe</th> <td>{{select.password}}</td>
+          </tr>
+
+          <!--              <tr>-->
+          <!--                <th>Groupe</th> <td>{{select.nom}}</td>-->
+          <!--              </tr>-->
+
+          <tr>
+            <th>Niveau</th> <td>{{select.niveau}}</td>
+          </tr>
+
+          <tr>
+            <th>{{univ_fil}}</th> <td>{{select.filiere.nom}}</td>
+          </tr>
+
+          <tr>
+            <th>{{univ_opt}}</th> <td>{{select.option.nom}}</td>
+          </tr>
+
+
+          <!--              <tr>-->
+          <!--                <th>Mode d'amission</th> <td>{{select.modeAdmission}}</td>-->
+          <!--              </tr>-->
+
+          <tr>
+            <th>Ville</th> <td>{{select.ville}}</td>
+          </tr>
+
+          <tr>
+            <th>Quartier</th> <td>{{select.quartier}}</td>
+          </tr>
+
+          <tr>
+            <th>Rue</th> <td>{{select.rue}}</td>
+          </tr>
+          <tr>
+            <th>Porte</th> <td>{{select.porte}}</td>
+          </tr>
+          <tr>
+            <th>Téléphone</th> <td>{{select.telephone}}</td>
+          </tr>
+
+          <tr>
+            <th>Email</th> <td>{{select.email}}</td>
+          </tr>
+
+
+        </table>
+        <div class="col-sm-12" style="margin-bottom: 10px;">En foi de quoi, le présent certificat lui est délivré pour servir et valoir ce que de droit.</div>
+      </div>
+        <!-- ============================ -->
+        <!-- END AUTRE CAS -->
+        <!-- ============================ -->
+
+        <!-- ============================ -->
+        <!-- CAS DE LA USSGB -->
+        <!-- ============================ -->
+        <div *ngIf='env !=="usttb"'>
+          <div style="font-size: 15px; font-weight: normal;">
+            Je soussigné(e), Secrétaire Principal(e) de l'(la) {{user.structure.nom}} ({{user.structure.sigle}}), atteste que:
+          <br>
+            <div class="col-sm-7" style="margin-bottom: 10px;"><strong style="padding-right: 30px;">Mlle/M:</strong> {{select.prenom}} {{select.nom}}</div>
+            <div class="col-sm-5" style="margin-bottom: 10px;"><strong style="padding-right: 30px;">Nationalité:</strong> {{select.nationalite}}</div>
+            <div class="col-sm-12" style="margin-bottom: 10px;"><strong style="padding-right: 30px;">Né le:</strong> {{select.dateDeNaissance | date:'d-MM-yyyy'}} <strong style="padding-right: 30px; padding-left: 30px;">à</strong> {{select.lieuDeNaissance}}</div>
+            <div class="col-sm-6" style="margin-bottom: 10px;"><strong style="padding-right: 30px;">Téléphone:</strong> {{select.telephone}}</div><br>
+            <div class="col-sm-12" style="margin-bottom: 10px;"><strong style="padding-right: 30px;">Email:</strong> {{select.email}}</div>
+            <div class="col-sm-12" style="margin-bottom: 10px;">Est inscrit(e) au titre de l'année universitaire {{annee_scolaire2}} en {{select.nomOption}}</div>
+            <div class="col-sm-12" style="margin-bottom: 10px;">En foi de quoi, le présent certificat lui est délivré pour servir et valoir ce que de droit.</div>
+            <br>
+          <br>
+
+          <div class="col-sm-12" style="margin-bottom: 10px;">Votre numéro étudiant est: <strong>{{select.numEtudiant}} </strong> </div>
+            <div class="col-sm-12" style="margin-bottom: 10px;">Votre nom d'utilisateur est <strong>{{select.username}} </strong> et votre mot de passe est <strong> {{select.password}}</strong>. Merci de les modifier une fois connecté.</div>
+              <br>
+              <br>
+              <br>
+              <br>
+              <br>
+
+        </div>
+        </div>
+        <!-- ============================ -->
+        <!-- END CAS DE LA USSGB -->
+        <!-- ============================ -->
+
+<!--        <div class="col-sm-12"><strong style="padding-right: 30px; padding-top: 50px;">Bamako, le:</strong>  {{select.dateInscription | date:'dd-MM-yyyy'}}</div>  à {{this.hours}} -->
+        <div class="col-sm-12"><strong style="padding-right: 30px; padding-top: 50px;">Bamako, le:</strong>  {{select.dateInscription | date: "dd-MM-yyyy"}}</div>
+
+        <div class="row">
+          <div class="col-sm-4">
+            <!-- Visa de l'agent comptable -->
+          </div>
+          <div class="col-sm-4"></div>
+          <div class="col-sm-4" style="text-align: end;">
+            <div style="text-align: center;">
+              P/O Doyen
+              <br>
+              SECRETAIRE PRINCIPAL
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <br>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<!-- Pour la verification des documents -->
+<div class="modal fade" id="staticBackdropP4" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #1e88e5; color: white;">
+        <h5 class="modal-title" id="staticBackdropLabel">Informations</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" style="color: white;">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="border border-light p-5">
+          <div style="overflow-y: auto; max-height: 450px;" class="modal-body">
+            <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+              {{error.error}}
+            </div>
+            <div *ngIf="message != null" class="alert alert-success" role="alert">
+              {{message}}
+            </div>
+            <form [formGroup]="troisFormGroup">
+              <div class="row" *ngIf="data">
+                <div class="col-sm-4">
+                    <span>
+                        <img style="max-height: 150px; width: 150px;" *ngIf="fichiersEtudiant !== null && fichiersEtudiant.idPhoto !== undefined" src="{{parseImage(fichiersEtudiant.idPhoto)}}" alt="">
+                        <div class="form-group">
+                          <p class="smallWord" style="font-size: 10px">format: ["jpeg", "jpg", "png"]</p>
+                          <input style="font-size: 10px" type="file" id="photo" formControlName="idPhoto" (change)="FileSelect($event,'idPhoto')" accept="image/*" required>
+                        </div>
+                      </span>
+                </div>
+                <div class="col-sm-8" *ngIf="fichiersEtudiant !== null && fichiersEtudiant.candidat !== undefined">
+                  <div class="row">
+                    <div class="col-sm-6"><strong>Prénom :</strong> {{fichiersEtudiant.candidat.prenom}}</div>
+                    <div class="col-sm-6"><strong>Nom :</strong> {{fichiersEtudiant.candidat.nom}}</div>
+                    <div class="col-sm-6"><strong>Genre :</strong> {{fichiersEtudiant.candidat.genre}}</div>
+                    <div class="col-sm-6"><strong>Date de naissance :</strong> {{fichiersEtudiant.candidat.dateDeNaissance | date: 'dd-MM-yyyy'}}</div>
+                    <div class="col-sm-6"><strong>Nationalité :</strong> {{fichiersEtudiant.candidat.nationalite}}</div>
+                  </div>
+                  <br>
+                  <hr>
+                  <br>
+                </div>
+                <div class="col-sm-3" *ngIf="fichiersEtudiant !== null && fichiersEtudiant.acteNaissance !== undefined" >
+                  <br>
+                  <a href="{{parseImage(fichiersEtudiant.acteNaissance)}}" target="_blank" >
+                    <i *ngIf="fichiersEtudiant !== null && fichiersEtudiant.acteNaissance !== null && fichiersEtudiant.acteNaissance.indexOf('.pdf') !== -1" style="font-size: 50px;" class="fa fa-file-pdf-o"></i>
+                    <i *ngIf="fichiersEtudiant !== null && fichiersEtudiant.acteNaissance !== null && fichiersEtudiant.acteNaissance.indexOf('.pdf') == -1" style="font-size: 50px;" class="fa fa-picture-o"></i>
+                    <br>
+                    Acte de naissance
+                  </a>
+                  <div class="form-group">
+                    <p style="font-size: 10px">format: ["jpeg", "jpg", "png", "pdf"]</p>
+                    <input style="font-size: 10px" type="file" id="acteDeNaissance" formControlName="acteDeNaissance" (change)="FileSelect($event,'acteDeNaissance')" required>
+                  </div>
+                </div>
+                <div class="col-sm-3" *ngIf="fichiersEtudiant !== null && fichiersEtudiant.certificatNationalite !== undefined" >
+                  <br>
+                  <a href="{{parseImage(fichiersEtudiant.certificatNationalite)}}" target="_blank" >
+                    <i *ngIf="fichiersEtudiant !== null && fichiersEtudiant.certificatNationalite !== null && fichiersEtudiant.certificatNationalite.indexOf('.pdf') !== -1" style="font-size: 50px;" class="fa fa-file-pdf-o"></i>
+                    <i *ngIf="fichiersEtudiant !== null && fichiersEtudiant.certificatNationalite !== null && fichiersEtudiant.certificatNationalite.indexOf('.pdf') == -1" style="font-size: 50px;" class="fa fa-picture-o"></i>
+                    <br>
+                    Certificat de nationnalité
+                  </a>
+                  <div class="form-group">
+                    <p style="font-size: 10px">format: ["jpeg", "jpg", "png", "pdf"]</p>
+                    <input style="font-size: 10px" type="file" id="autre" formControlName="autre" (change)="FileSelect($event,'autre')" required>
+                  </div>
+                </div>
+                <div class="col-sm-3" *ngIf="fichiersEtudiant !== null && fichiersEtudiant.diplome !== undefined" >
+                  <br>
+                  <a href="{{parseImage(fichiersEtudiant.diplome)}}" target="_blank" >
+                    <i *ngIf="fichiersEtudiant !== null && fichiersEtudiant.diplome !== null && fichiersEtudiant.diplome.indexOf('.pdf') !== -1" style="font-size: 50px;" class="fa fa-file-pdf-o"></i>
+                    <i *ngIf="fichiersEtudiant !== null && fichiersEtudiant.diplome !== null && fichiersEtudiant.diplome.indexOf('.pdf') == -1" style="font-size: 50px;" class="fa fa-picture-o"></i>
+                    <br>
+                    Diplôme
+                  </a>
+                  <div class="form-group">
+                    <p style="font-size: 10px">format: ["jpeg", "jpg", "png", "pdf"]</p>
+                    <input style="font-size: 10px" type="file" id="attestationBac" formControlName="attestationBac" (change)="FileSelect($event,'attestationBac')" required>
+                  </div>
+                </div>
+                <div class="col-sm-3" *ngIf="fichiersEtudiant !== null && fichiersEtudiant.releveNote !== undefined" >
+                  <br>
+                  <a href="{{parseImage(fichiersEtudiant.releveNote)}}" target="_blank" >
+                    <i *ngIf="fichiersEtudiant !== null && fichiersEtudiant.releveNote !== null && fichiersEtudiant.releveNote.indexOf('.pdf') !== -1" style="font-size: 50px;" class="fa fa-file-pdf-o"></i>
+                    <i *ngIf="fichiersEtudiant !== null && fichiersEtudiant.releveNote !== null && fichiersEtudiant.releveNote.indexOf('.pdf') == -1" style="font-size: 50px;" class="fa fa-picture-o"></i>
+                    <br>
+                    Relevé de note
+                  </a>
+                  <div class="form-group">
+                    <p style="font-size: 10px">format: ["jpeg", "jpg", "png", "pdf"]</p>
+                    <input style="font-size: 10px" type="file" id="releveBac" formControlName="releveBac" (change)="FileSelect($event,'releveBac')" required>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" mat-button style="background-color: coral; color: white;" class="waves-light" data-dismiss="modal"mdbWavesEffect>Fermer</button>
+            <button *ngIf="!spinner" type="button" (click)="ValiderPreinscriptionUpdate(fichiersEtudiant)" class="btn btn-success">Valider</button>
+            <div *ngIf="spinner">
+              <img src="assets/gif/spinner.gif" width="70" alt="">
+            </div>
+            <!-- <button *ngIf="action == 'Modification de l\'évaluation'" (click)="onUpdate()" type="button" mat-button style="background-color: #1e88e5; color: white;" class="relative waves-light" mdbWavesEffect>Modifier</button> -->
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

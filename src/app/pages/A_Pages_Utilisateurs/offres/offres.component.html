@@ -1,0 +1,214 @@
+<h1 class="text-center">Offre de stages</h1>
+<div class="container col-10 pl-2" *ngIf="!ShowListInteresse">
+  <button mat-raised-button (click)="backToHome()"><span class="material-icons">reply</span> Retour</button>
+</div>
+<div class="ml-2 text-center">
+  <button mat-raised-button color="primary" (click)="newOffre()">Ajouter une offre</button>
+</div>
+
+<div class="container col-10">
+  <button mat-raised-button (click)="ShowListInteresse = false" *ngIf="ShowListInteresse">
+  <span class="material-icons">
+    reply
+  </span>
+    retour
+  </button>
+</div>
+<div class="container col-10  shadow-sm p-2" *ngIf="!ShowListInteresse" >
+  <div class="bg-white p-2">
+    <div class="mb-3">
+      <div class="col-3">
+<!--        <img src="https://{{structureData.Data.logo}}" width="150" height="150" alt="">-->
+<!--        <h2><strong>{{structureData.sigle}}</strong></h2>-->
+      </div>
+    </div>
+
+<!--    <mat-form-field>-->
+<!--      <mat-label>Filtre directe</mat-label>-->
+<!--      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>-->
+<!--    </mat-form-field>-->
+
+    <div class="row">
+      <div class="col-4">
+        <div class="form-group">
+          <label for="libelleS">Libelle</label>
+          <input type="text" name="libelle" [(ngModel)]="libelle" id="libelleS" class="form-control custom_Input">
+        </div>
+      </div>
+
+      <div class="col-4">
+        <div class="form-group">
+          <label for="entrepriseS">Entréprise</label>
+          <input type="text" name="entreprise" [(ngModel)]="entreprise" id="entrepriseS" class="form-control custom_Input">
+        </div>
+      </div>
+
+      <div class="col-4">
+        <div class="form-group">
+          <label for="niveau">Niveau</label>
+          <select name="niveau" [(ngModel)]="niveau" id="niveau" class="form-control custom_Input">
+            <option value="L1">L1</option>
+            <option value="L2">L2</option>
+            <option value="L3">L3</option>
+            <option value="M1">M1</option>
+            <option value="M2">M2</option>
+          </select>
+        </div>
+        <div class="text-right">
+          <button mat-raised-button color="accent" (click)="GetStructureStages()"><i class="fa fa-search"></i> Recherche</button>
+        </div>
+      </div>
+    </div>
+
+    <table mat-table [dataSource]="dataSource">
+
+      <!-- Position Column -->
+      <ng-container matColumnDef="libelle">
+        <th mat-header-cell *matHeaderCellDef> Libelle </th>
+        <td mat-cell *matCellDef="let element"> {{element.libelle}} </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="entreprise">
+        <th mat-header-cell *matHeaderCellDef> Entreprise </th>
+        <td mat-cell *matCellDef="let element"> {{element.entreprise}} </td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="niveau">
+        <th mat-header-cell *matHeaderCellDef> Niveau </th>
+        <td mat-cell *matCellDef="let element"> {{element.niveauEtude}} </td>
+      </ng-container>
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="dateDebut">
+        <th mat-header-cell *matHeaderCellDef> Date de debut </th>
+        <td mat-cell *matCellDef="let element"> {{element.dateDebut}} </td>
+      </ng-container>
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="dateFin">
+        <th mat-header-cell *matHeaderCellDef> Date de Fin </th>
+        <td mat-cell *matCellDef="let element"> {{element.dateFin}} </td>
+      </ng-container>
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Action</th>
+        <td mat-cell *matCellDef="let element">
+
+<!--          <button mat-button [matMenuTriggerFor]="menu">Action</button>-->
+<!--          <mat-menu #menu="matMenu">-->
+<!--            <button mat-menu-item (click)="modif(element)">-->
+<!--              <span class="material-icons">-->
+<!--              edit-->
+<!--            </span> Modifier-->
+<!--            </button>-->
+<!--&lt;!&ndash;            <button mat-menu-item (click)="delete(element)">&ndash;&gt;-->
+<!--&lt;!&ndash;              <span class="material-icons">&ndash;&gt;-->
+<!--&lt;!&ndash;              delete&ndash;&gt;-->
+<!--&lt;!&ndash;            </span>&ndash;&gt;-->
+<!--&lt;!&ndash;            </button>&ndash;&gt;-->
+<!--          </mat-menu>-->
+
+          <button mat-raised-button (click)="Manifestion(element)">
+            <span class="material-icons">
+              hail
+            </span>
+          </button>
+
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+      </tr>
+    </table>
+
+  </div>
+</div>
+
+
+<!-- Modal RECLAMATION -->
+<div class="modal fade" id="OffreFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="!ShowListInteresse">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="exampleModalLabel">Formulaire d'offre de stage </h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="OffreForm" (ngSubmit)="action === 'new' ? CreatOffreSubmit() : EditOffreSubmit() ">
+          <div class="form-group">
+            <label for="libelle">Libelle <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom_Input" id="libelle" formControlName="libelle">
+          </div>
+          <div class="form-group">
+            <label for="entreprise">Entréprise <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom_Input" id="entreprise" formControlName="entreprise">
+          </div>
+          <div class="form-group">
+            <label for="email">Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control custom_Input" id="email" formControlName="email">
+          </div>
+
+          <div class="form-group">
+            <label for="structureID">Structure concernée <span class="text-danger">*</span></label>
+            <select class="form-control custom_Input" id="structureID" formControlName="structureID">
+              <option value=""></option>
+              <option value="{{strcture.id}}" *ngFor="let strcture of allStructure">{{strcture.nom}} ({{strcture.sigle}})</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="niveauEtude">Niveau d'etude visée <span class="text-danger">*</span></label>
+            <select class="form-control custom_Input" id="niveauEtude" formControlName="niveauEtude">
+              <option value=""></option>
+              <option value="L1">L1</option>
+              <option value="L2">L2</option>
+              <option value="L3">L3</option>
+              <option value="M1">M1</option>
+              <option value="M2">M2</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <div class="row">
+              <div class="col">
+                <label for="dateDebut">Debut: <span class="text-danger">*</span></label>
+                <input type="date" class="form-control custom_Input" id="dateDebut" formControlName="dateDebut">
+              </div>
+              <div class="col">
+                <label for="dateFin">Fin: <span class="text-danger">*</span></label>
+                <input type="date" class="form-control custom_Input" id="dateFin" formControlName="dateFin">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description<span class="text-danger">*</span></label>
+            <textarea class="form-control custom_Input" cols="30" rows="10" id="description" formControlName="description"></textarea>
+          </div>
+
+          <div class="form-group text-center">
+            <button type="submit" [disabled]="OffreForm.invalid" mat-raised-button>valider</button>
+          </div>
+
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-liste-interesse [Offre]=Offre_Select *ngIf="ShowListInteresse"></app-liste-interesse>`

@@ -1,0 +1,311 @@
+<div class="container">
+  <h3>Classement des etudiants</h3>
+</div>
+
+<div class="container">
+    <form [formGroup]="form" role="form">
+
+      <div class="row">
+  <div class="col-4">
+    <div class="ng-autocomplete form-group mt-1 mr-1">
+
+      <ng-autocomplete formControlName="idOption" id="idOption" class="text-danger"
+                       [data]="options"
+                       (selected)='optionSelectEvent2($event)'
+                       [searchKeyword]="keyword"
+                       [itemTemplate]="itemTemplate"
+                       [notFoundTemplate]="notFoundTemplate">
+      </ng-autocomplete>
+
+      <ng-template #itemTemplate let-item1 class="text-danger">
+        <a [innerHTML]="item1.nom"></a>
+      </ng-template>
+
+      <ng-template #notFoundTemplate let-notFound>
+        <div [innerHTML]="notFound">Pas de corespondance .</div>
+      </ng-template>
+<!--      <span class="small">{{nomSelect !== undefined ? nomSelect : ""}}</span>-->
+    </div>
+  </div>
+
+  <div class="col-4">
+    <mat-form-field appearance="fill">
+      <mat-label>Année scolaire</mat-label>
+      <mat-select formControlName="annee" placeholder="Année scolaire" name="annee" required>
+        <mat-option *ngFor="let an of anneeStructures;let i=index;" [value]="an.anneeScolaire">
+          {{an.anneeScolaire}} - {{an.statut}} - {{an.semestre}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="col-4">
+    <mat-form-field appearance="fill">
+      <mat-label>Niveau</mat-label>
+      <mat-select formControlName="niveau" placeholder="Niveau" name="niveau"  required>
+        <mat-option value="all">Tout</mat-option>
+        <mat-option value="L1">L1</mat-option>
+        <mat-option value="L2">L2</mat-option>
+        <mat-option value="L3">L3</mat-option>
+        <mat-option value="M1">M1</mat-option>
+        <mat-option value="M2">M2</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>
+
+
+      <div fxLayout="row" fxLayoutAlign="star center">
+        <button class="primary mr-2" [disabled]="!form.valid" (click)="classeEtudiant(form.value)" mat-raised-button>
+          <mat-icon> search </mat-icon> Afficher
+        </button>
+        <button class="accent" (click)="printData()" mat-raised-button *ngIf="etudiants">
+          <mat-icon> print </mat-icon> Imprimer
+        </button>
+      </div>
+
+
+
+    </form>
+
+
+  <hr>
+
+  <div class="row">
+    <div class="col-12">
+      <!--<div class="col-4">
+        <mat-form-field>
+          <mat-label>FILTRE</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+        </mat-form-field>
+      </div>-->
+      <table mat-table class="table-hover" [dataSource]="dataSource" id="idPrint">
+
+        <ng-container matColumnDef="idEtudiant" style="width: 25%">
+          <th mat-header-cell *matHeaderCellDef>Classement</th>
+          <td mat-cell *matCellDef="let element; let i=index"> {{ i + 1}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="prenom" style="width: 25%">
+          <th mat-header-cell *matHeaderCellDef>Prénom</th>
+          <td mat-cell *matCellDef="let element"> {{element.prenom}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nom" style="width: 25%">
+          <th mat-header-cell *matHeaderCellDef>Nom</th>
+          <td mat-cell *matCellDef="let element"> {{element.nom}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="moyenne" style="width: 25%">
+          <th mat-header-cell *matHeaderCellDef>Moyenne</th>
+          <td mat-cell *matCellDef="let element"> {{element.moyenne}} </td>
+        </ng-container>
+
+
+<!--        <ng-container matColumnDef="actions" >-->
+<!--          <th mat-header-cell *matHeaderCellDef></th>-->
+<!--          <td mat-cell *matCellDef="let element">-->
+<!--            <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>-->
+<!--            <mat-menu #action="matMenu">-->
+
+<!--              <button mat-menu-item (click)="getUeNotInCourse(element)">-->
+<!--                <i class="fa fa-list"></i>-->
+<!--                <span>&nbsp;&nbsp;Ues non liées</span>-->
+<!--              </button>-->
+
+<!--              <button mat-menu-item (click)="EditEtudiants(element)">-->
+<!--                <i class="fa fa-edit text-info"></i>-->
+<!--                Modifier-->
+<!--              </button>-->
+
+<!--            </mat-menu>-->
+<!--          </td>-->
+<!--        </ng-container>-->
+
+        <ng-container matColumnDef="loading">
+          <td mat-footer-cell *matFooterCellDef colspan="6">
+            Chargement des données...
+          </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="noData">
+          <td mat-footer-cell *matFooterCellDef colspan="6">
+            Pas de données...
+          </td>
+        </ng-container>
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator
+        [length]="length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions">
+
+      </mat-paginator>
+    </div>
+  </div>
+
+</div>
+
+
+<div class="modal" id="uesNotFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="exampleModalLabel">UEs non liées au parcours !</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+
+        <div *ngIf="CheckIfIsNull(EtudiantData)">
+          <h5><i class="fa fa-user-circle"></i> {{EtudiantData.prenom+" "+EtudiantData.nom}} :</h5>
+          <p><strong>{{EtudiantData.numEtudiant}}</strong></p>
+        </div>
+
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Année</th>
+              <th>Code UE</th>
+              <th>Note d'examen</th>
+              <th>Note final</th>
+              <th>Statut</th>
+              <th>action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ues of UesNotInCourse">
+              <td> {{ues.annee}}</td>
+              <td> {{ues.ue.codeUE}}</td>
+              <td> {{ues.noteExamen}}</td>
+              <td> {{ues.noteFinal}}</td>
+              <td> {{ues.statut}}</td>
+              <td>
+
+<!--                <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>-->
+<!--                <mat-menu #action="matMenu">-->
+<!--                  <button mat-menu-item (click)="showForm = true; fullEditForm(element)">-->
+<!--                    <i class="fa fa-edit"></i>-->
+<!--                    <span>&nbsp;&nbsp;Modifier</span>-->
+<!--                  </button>-->
+
+<!--                  <button mat-menu-item (click)="Delete_Evenement(element)">-->
+<!--                    <i class="fa fa-trash"></i>-->
+<!--                    <span>&nbsp;&nbsp;Supprimer</span>-->
+<!--                  </button>-->
+<!--                </mat-menu>-->
+
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--========================-->
+
+<div class="modal" id="EditEtudiantModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="exampl">Modification des informations</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <form [formGroup]="EtudiantForm" (ngSubmit)="saveEtudiantChange()">
+        <div class="modal-body">
+
+        <div *ngIf="CheckIfIsNull(EtudiantEditData)">
+          <h5><i class="fa fa-user-circle"></i> {{EtudiantEditData.prenom+" "+EtudiantEditData.nom}} :</h5>
+          <p><strong>{{EtudiantEditData.numEtudiant}}</strong></p>
+        </div>
+
+
+          <div class="container">
+<!--            <div class="row">-->
+<!--              <div class="col-6">-->
+<!--                <img src="{{_http}}{{EtudiantEditData.user.photo}}" alt="">-->
+<!--              </div>-->
+<!--              <div class="col-6">-->
+<!--                <div class="form-group">-->
+<!--                  <label for="photo">Photo</label>-->
+<!--                  <input type="file" class="form-control-file">-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+            <div class="row">
+              <div class="col-6 p-3">
+                <div class="p-2 shadow-sm">
+                  <div class="form-group">
+                    <label for="typeCandidat">Statut</label>
+                    <select formControlName="typeCandidat" class="form-control" id="typeCandidat">
+                      <option value=""></option>
+                      <option value="REGULIER">REGULIER</option>
+                      <option value="MALIEN_DE_L_EXTERIEUR">MALIEN DE L'EXTERIEUR</option>
+                      <option value="TITRE">TITRE</option>
+                      <option value="CANDIDAT_LIBRE">CANDIDAT_LIBRE</option>
+                      <option value="ADMIS_PAR_TRANSFERT_DE_CREDIT">ADMIS_PAR_TRANSFERT_DE_CREDIT</option>
+                      <option value="ETRANGER_UEMOA">ETRANGER_UEMOA</option>
+                      <option value="ETRANGER_HORS_UEMOA">ETRANGER_HORS_UEMOA</option>
+                      <option value="MASTER_BOURSIER">MASTER_BOURSIER</option>
+                      <option value="MASTER">MASTER</option>
+                      <option value="ANY">ANY</option>
+                    </select>
+                  </div>
+
+                </div>
+              </div>
+              <div class="col-6 p-3">
+                <div class="p-2 shadow-sm">
+                  <div class="form-group">
+                    <label for="statut">Type de candidat</label>
+                    <select class="form-control" id="statut" formControlName="statut">
+                      <option value=""></option>
+                      <option value="L1">L1</option>
+                      <option value="L2">L2</option>
+                      <option value="L3">L3</option>
+
+                      <option value="REDOUBLANT_L1">REDOUBLANT L1</option>
+                      <option value="REDOUBLANT_L2">REDOUBLANT L2</option>
+                      <option value="REDOUBLANT_L3">REDOUBLANT L3</option>
+                      <option value="ADMIS_CREDIT_L2">ADMIS CREDIT L2</option>
+                      <option value="ADMIS_CREDIT_L3">ADMIS CREDIT L3</option>
+                      <option value="ADMIS_PURS_S3">ADMIS PURS S3</option>
+                      <option value="ADMIS_PURS_L2">ADMIS PURS L2</option>
+                      <option value="ADMIS_PURS_L3">ADMIS PURS L3</option>
+
+                      <option value="ADMIS_EQUIVALENCE_L2">ADMIS EQUIVALENCE L2</option>
+                      <option value="ADMIS_EQUIVALENCE_L3">ADMIS EQUIVALENCE L3</option>
+
+                      <option value="M1">M1</option>
+                      <option value="REDOUBLANT_M1">REDOUBLANT M1</option>
+                      <option value="REDOUBLANT_M2">REDOUBLANT M2</option>
+                      <option value="ADMIS_CREDIT_M2">ADMIS CREDIT M2</option>
+                      <option value="ADMIS_PURS_M2">ADMIS PURS M2</option>
+
+                      <option value="EXCLU">EXCLU</option>
+                      <option value="ABANDON">ABANDON</option>
+
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+        <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Enregistrer !</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>

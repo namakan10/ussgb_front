@@ -1,0 +1,131 @@
+<h2 class="text-center mt-2">DELIVRANCE DE DOCUMENT UNIVERSITAIRE</h2>
+<mat-card>
+  <h3 class="text-center">ATTESTATION</h3>
+  <div class="col-8">
+    <form [formGroup]="releve_SearchForm" (ngSubmit)="releve_SearchForm_Submit()">
+      <div class="row">
+        <div class="col">
+          <label for="numEtudiant">N° Etudiant:</label>
+          <input type="text" id="numEtudiant" [(ngModel)]="numEtudiant" class="form-control custom_Input" formControlName="numEtudiant">
+        </div>
+        <div class="col">
+          <label for="annee">Année Scolaire:</label>
+          <select id="annee" class="form-control custom_Input" formControlName="anneeScolaire">
+            <option value=""></option>
+            <option value="{{annee}}" *ngFor="let annee of Annees">{{annee}}</option>
+          </select>
+        </div>
+<!--        <div class="col-2">-->
+<!--          <label for="Semestre">Semestre</label>-->
+<!--          <select id="Semestre" class="form-control custom_Input" formControlName="semestre">-->
+<!--            <option value=""></option>-->
+<!--            <option value="1">1</option>-->
+<!--            <option value="2">2</option>-->
+<!--            <option value="3">3</option>-->
+<!--            <option value="4">4</option>-->
+<!--            <option value="5">5</option>-->
+<!--            <option value="6">6</option>-->
+<!--          </select>-->
+<!--        </div>-->
+        <div class="col text-left ml-2 pt-4">
+          <button type="submit" [disabled]="releve_SearchForm.invalid" mat-raised-button color="primary">Soumettre</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <hr>
+</mat-card>
+
+<div class="container text-center p-4" *ngIf="search_spinner">
+   <span style="text-align: center;">
+      <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+   </span>
+</div>
+<div class="container center col-5 p-2" *ngIf="!doc_generated && !notFind">
+  <div class="bg-white p-4 shadow-sm text-center">
+    <h1 class="text-center" style="font-size: 20px">
+        <span class="material-icons">
+          find_in_page
+        </span>
+    </h1>
+    <h4>Renseignez les champs pour générer l'Attestation!</h4>
+  </div>
+</div>
+
+<!--height: 250mm;-->
+<div class="container col-12" *ngIf="doc_generated">
+  <mat-card class="pt-2 filigragme" style="border: black solid 5px" id="export-doc">
+    <div class="container mt-2" style="font-weight: bold;">
+      <div class="col mt-3 text-center" style="font-weight: bold;">
+        <h3 class="font-weight-bold">{{univ_Minist}}</h3>
+        <h3 class="font-weight-bold text-uppercase">{{univ_name}} (MALI)</h3>
+        <h6 class="text-center">**************</h6>
+      </div>
+      <br>
+      <div class="container p-3 col-10 bg-info d-flex justify-content-center text-white" style="font-weight: bold;">
+        <!--        <div class="col-8 d-flex justify-content-center align-self-center" style="font-weight: bold;">-->
+        <h2 class="font-weight-bold">{{user.structure.nom}} ({{user.structure.sigle}})</h2>
+        <!--        </div>-->
+      </div>
+      <br>
+
+      <h1 class="text-center font-weight-bold">ATTESTATION</h1>
+      <br>
+      <!--      <h2>ANNEE UNIVERSITAIRE :</h2>-->
+      <!--      <h2>-->
+      <!--        {{ReleveData.annee}}-->
+      <!--      </h2>-->
+      <!--      <br><br>-->
+
+      <h4>Je soussigné, M/Mm/Mlle. {{user.users.prenom}} {{user.users.nom}} Secrétaire Principal de la structure {{user.structure.nom}} <strong class="font-weight-bold">({{user.structure.sigle}})</strong> atteste que:</h4>
+      <br>
+      <h4>
+        {{ReleveData.etudiant.genre === 'Homme'? 'M': 'Mme/Mlle'}} <strong>{{ReleveData.etudiant.nom}} {{ReleveData.etudiant.prenom}} </strong>
+        né le: {{ReleveData.etudiant.dateDeNaissance | date: 'dd/MM/yyyy'}} à  {{ReleveData.etudiant.lieuDeNaissance}}
+        Numéro d'etudiant: <strong>{{numEtudiant}}</strong>.
+      </h4>
+      <br>
+      <h4>en classe de : <strong>{{ReleveData.etudiant.filiere.nom}} ({{ReleveData.etudiant.filiere.code}})</strong>, {{univ_opt}} : <strong>{{ReleveData.etudiant.option.nom}} ({{ReleveData.etudiant.option.code}})</strong></h4> <!--, niveau: {{ReleveData.etudiant.niveau}}-->
+      <br>
+      <h4>A été déclaré(e) définitivement admis(e) courant l'année scolaire  <strong>{{ReleveData.anneeScolaire}}</strong> </h4>
+      <br>
+      <h4>En foi de quoi, le présent attestation lui est délivré pour servir et valoir ce que de droit.</h4>
+      <br>
+      <div class="row">
+        <div class="col d-flex justify-content-start">
+          <ngx-qrcode qrc-element-type="text" [qrc-value]="CodeQR.qrCode">
+          </ngx-qrcode>
+<!--          <img src="../../../../assets/images/QRcode.png" alt="">-->
+
+        </div>
+        <div class="col d-flex justify-content-end">
+          <div style="text-align: center;">
+            <h3>Bamako, le {{Today | date:'dd/MM/yyyy'}} </h3>
+            <h3>Secrétaire Principal</h3>
+            <br><br>
+            <h4 style="">{{user.users.prenom}} {{user.users.nom}}</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="row pb-4">
+        <strong>NB:</strong>
+        <ul>
+          <li class="small">La présente attestation n'est délivrée qu'une seule fois. Il appartient à son titulaire d'en faire autant de copies certifiées conformes que de besoin</li>
+          <li class="small">Elle sera exigée lors du retrait du Diplôme correspondant.</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </mat-card>
+</div>
+
+<div class="container col-5" *ngIf="doc_generated">
+  <mat-card class="text-center p-3">
+      <span *ngIf="export_spinner" style="text-align: center;">
+                    <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+                </span>
+    <button mat-raised-button color="primary" (click)="exportpdf()" *ngIf="!export_spinner">Exporter en PDF</button>
+  </mat-card>
+</div>

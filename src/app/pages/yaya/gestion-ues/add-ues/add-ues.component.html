@@ -1,0 +1,101 @@
+<div class="container-fluid" id="container-wrapper">
+    <div class="card mb-4">
+      <div class="card-body">
+        <form [formGroup]="addUeForm" (ngSubmit)="enregistrerUes(addUeForm)">
+          <div class="col-12">
+            <div class="login-bg">
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="login-title">
+                    <h3>Ajouter une ue</h3><br>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Nom <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="login-input-area">
+                    <input type="text" formControlName="nomUe">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Code ue <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="login-input-area">
+                    <input type="text" formControlName="codeUe">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Semestre <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="login-input-area">
+                    <input type="text" formControlName="semestre">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>volumeHoraire <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="login-input-area">
+                    <input type="text" formControlName="volumeHoraire">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Crédit <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="login-input-area">
+                    <input type="text" formControlName="credit">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Chapitre <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="login-input-area">
+                    <input type="text" formControlName="chapitre">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                </div>
+                <div class="col-lg-8">
+                  <div class="login-button-pro">
+                    <button type="Submit" [disabled]="addUeForm.invalid" class="login-button login-button-lg btn btn-primary">Enregistrer</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,203 @@
+<div *ngIf="spinner1" style="text-align: center;">
+    <img style="margin-top: 50px;" src="assets/gif/livre.gif" width="500" alt="">
+</div>
+<div class="container-fluid" *ngIf='!spinner1'>
+    <div class="row">
+        <div class="col-sm-4">
+            <mat-accordion>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Statistiques par genre
+                  </mat-panel-title>
+                  
+                </mat-expansion-panel-header>
+                  <div *ngIf="hasRoleAdmin()">
+                    <mat-form-field appearance="fill">
+                    <mat-label>Structure</mat-label>
+                    <mat-select [(ngModel)]="id_structure" name="id_structure" aria-label="Default select example">
+                        <mat-option *ngFor="let structure of allStructure" [value]="structure.id">{{structure.sigle}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <br>
+                  <div>
+                    <ol>
+                      <li (click)="StatistiqueGenre('/', 'Graphique', 0)" style="cursor: pointer;">Globalement</li>
+                      <li (click)="StatistiqueGenre('/niveau/', 'Graphique', 0)" style="cursor: pointer; padding-bottom: 10px; padding-top: 10px;">Niveau</li>
+                      <li (click)="StatistiqueGenre('/type/', 'Graphique', 0)" style="cursor: pointer;">Type</li>
+                    </ol>
+                  </div>
+                  <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+                    {{error.error}}
+                  </div>
+                <div *ngIf="spinner" style="text-align: center;">
+                    <img style="margin-top: 20px;" src="assets/gif/spinner.gif" width="70" alt="">
+                </div>
+              </mat-expansion-panel>
+
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Statistiques par inscription
+                  </mat-panel-title>
+                 
+                </mat-expansion-panel-header>
+                  <div *ngIf="hasRoleAdmin()">
+                    <mat-form-field appearance="fill">
+                      <mat-label>Structure</mat-label>
+                      <mat-select (selectionChange)="getIformationByStructure($event.value)" [(ngModel)]="id_structure" name="id_structure" aria-label="Default select example">
+                          <mat-option *ngFor="let structure of allStructure" [value]="structure.id">{{structure.sigle}}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                  </div>
+                  <br *ngIf="anneeStructureTrouver">
+                  <div *ngIf="anneeStructureTrouver">
+                    <mat-form-field appearance="fill">
+                      <mat-label>Année scolaire</mat-label>
+                      <mat-select [(ngModel)]="annee_scolaire" name="annee_scolaire" aria-label="Default select example">
+                          <mat-option *ngFor="let annee of anneeStructure" [value]="annee.anneeScolaire">{{annee.anneeScolaire}}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                  </div>
+                  <br>
+                  <div>
+                    <ol>
+                      <li (click)="StatistiqueInscription('/niveau', 'Graphique', 0)" style="cursor: pointer;">Niveau</li>
+                      <li (click)="StatistiqueInscription('/niveau/age', 'Graphique', 0)" style="cursor: pointer; padding-bottom: 10px; padding-top: 10px;">Niveau et âge</li>
+                    </ol>
+                  </div>
+                  <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+                    {{error.error}}
+                  </div>
+                <div *ngIf="spinner" style="text-align: center;">
+                    <img style="margin-top: 20px;" src="assets/gif/spinner.gif" width="70" alt="">
+                </div>
+              </mat-expansion-panel>
+
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Statistiques par paiement
+                  </mat-panel-title>
+                 
+                </mat-expansion-panel-header>
+                  <div *ngIf="hasRoleAdmin()">
+                    <mat-form-field appearance="fill">
+                    <mat-label>Structure</mat-label>
+                    <mat-select [(ngModel)]="id_structure" name="id_structure" aria-label="Default select example">
+                        <mat-option *ngFor="let structure of allStructure" [value]="structure.id">{{structure.sigle}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <br>
+                  <div class="row">
+                    <div class="col-xs-12 col-12 col-sm-12 col-md-12 form-group">
+                        <mat-form-field appearance="fill">
+                          <mat-label>Date de début</mat-label>
+                          <input matInput [matDatepicker]="picker" [(ngModel)]="date_debut" name="date_debut">
+                          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                          <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xs-12 col-12 col-sm-12 col-md-12 form-group"  *ngIf="date_debut != undefined">
+                        <mat-form-field appearance="fill">
+                          <mat-label>Date de fin</mat-label>
+                          <input [min]="date_debut" matInput [matDatepicker]="picker1" [(ngModel)]="date_fin" name="date_fin" (ngModelChange)="statistiquePaiement(date_debut, date_fin)">
+                          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                          <mat-datepicker #picker1></mat-datepicker>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  <br>
+                  <div *ngIf="error && error.error" class="alert alert-danger" role="alert">
+                    {{error.error}}
+                  </div>
+                <div *ngIf="spinner" style="text-align: center;">
+                    <img style="margin-top: 20px;" src="assets/gif/spinner.gif" width="70" alt="">
+                </div>
+              </mat-expansion-panel>
+
+              </mat-accordion>
+              
+        </div>
+        <div class="col-sm-8" *ngIf="total != null">
+          <mat-card>
+              <h2 style="text-align: center;">Totale: <span style="color: red;">{{total | number}}</span> fcfa</h2>
+          </mat-card>
+        </div>
+        <div class="col-sm-8">
+          <mat-tab-group [(selectedIndex)]="index" [hidden]='affiState2 == 0'  (selectedTabChange)= "TypeDonnee($event)">
+            <mat-tab label="Graphique"></mat-tab>
+            <mat-tab label="Tableau"></mat-tab>
+          </mat-tab-group>
+          <br>
+          <div [hidden]='affiState2 != 1'>
+            <div id="chartContainer0" style="height: 370px; width: 100%; margin-left:auto;margin-right:auto;"></div> 
+            <div id="chartContainer1" style="height: 370px; width: 100%; margin-left:auto;margin-right:auto; margin-top: 50px;"></div> 
+            <div id="chartContainer2" style="height: 370px; width: 100%; margin-left:auto;margin-right:auto; margin-top: 50px;"></div> 
+            <div id="chartContainer3" style="height: 370px; width: 100%; margin-left:auto;margin-right:auto; margin-top: 50px;"></div> 
+            <div id="chartContainer4" style="height: 370px; width: 100%; margin-left:auto;margin-right:auto; margin-top: 50px;"></div> 
+            <div id="chartContainer5" style="height: 370px; width: 100%; margin-left:auto;margin-right:auto; margin-top: 50px;"></div> 
+            <div id="chartContainer6" style="height: 370px; width: 100%; margin-left:auto;margin-right:auto; margin-top: 50px;"></div> 
+            <div id="chartContainer7" style="height: 370px; width: 100%; margin-left:auto;margin-right:auto; margin-top: 50px;"></div> 
+            <div id="chartContainer8" style="height: 370px; width: 100%; margin-left:auto;margin-right:auto; margin-top: 50px;"></div> 
+            <div id="chartContainer9" style="height: 370px; width: 100%; margin-left:auto;margin-right:auto; margin-top: 50px;"></div> 
+            <div id="chartContainer10" style="height: 370px; width: 100%; margin-left:auto;margin-right:auto; margin-top: 50px;"></div> 
+          </div>
+          <div *ngIf='affiState2 == 2' id = "contentToConvert">
+            <h2>{{title}}</h2>
+            <div style="float: right;">
+              <mat-icon (click)="imprimer()" style="font-size: 40px; cursor: pointer;">print</mat-icon>
+            </div>
+            <mat-form-field>
+              <mat-label>Filtrer</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+            </mat-form-field>
+            
+            <div class="mat-elevation-z8">
+              <table mat-table [dataSource]="dataSource" matSort>
+            
+                <ng-container matColumnDef="niveau">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Niveau </th>
+                  <td mat-cell *matCellDef="let row"> {{row.niveau}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="type">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+                  <td mat-cell *matCellDef="let row" style="padding-right: 20px;"> {{row.type}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="age">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Age </th>
+                  <td mat-cell *matCellDef="let row"> {{row.age}} </td>
+                </ng-container>
+            
+                <ng-container matColumnDef="genre">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Genre </th>
+                  <td mat-cell *matCellDef="let row"> {{row.genre}} </td>
+                </ng-container>
+            
+                <ng-container matColumnDef="nombre">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
+                  <td mat-cell *matCellDef="let row"> {{row.nombre}} </td>
+                </ng-container>
+            
+                <ng-container matColumnDef="pourcentage">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Pourcentage </th>
+                  <td mat-cell *matCellDef="let row"> {{row.pourcentage}}% </td>
+                </ng-container>
+            
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="4">Pas de données</td>
+                </tr>
+              </table>
+              <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
+            </div>
+          </div>
+        </div>
+    </div>
+</div>

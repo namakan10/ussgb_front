@@ -1,0 +1,235 @@
+
+<mat-card>
+
+  <mat-card-content>
+    <div class="search-div">
+      <button class="mb-2" (click)="newDepartement()" mat-raised-button color="primary">
+        <i class="fa fa-plus"></i>&nbsp;&nbsp; Ajouter un département
+      </button>
+
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="col-5 p-2">
+          <mat-form-field>
+            <mat-label>FILTRE DE RECHERCHE</mat-label>
+            <input matInput (keyup)="applyFilter($event)" #input>
+          </mat-form-field>
+        </div>
+        <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+
+
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+            <td mat-cell *matCellDef="let element"> {{element.nom}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+            <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="contact">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Contact</th>
+            <td mat-cell *matCellDef="let element">
+              {{element.contact }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="chef">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Chef de DER</th>
+            <td mat-cell *matCellDef="let element">
+
+                            <span *ngIf="element.chefDepartement !== null">
+                                <span matTooltip="{{'tel: '+element.chefDepartement.contact+' email : '+element.chefDepartement.email}}"
+                                      matTooltipClass="example-tooltip-red"
+                                      class="example-button">
+                                    {{element.chefDepartement.prenom +' '+ element.chefDepartement.nom}}
+                                </span>
+                            </span>
+
+              <span *ngIf="element.chefDepartement === null">
+                                Aucun
+                            </span>
+
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-raised-button color="primary" [matMenuTriggerFor]="action">Action</button>
+              <mat-menu #action="matMenu">
+
+                <button mat-menu-item (click)="selectChefDER(element)">
+                  <i class="fa fa-user"></i>
+                  <span>&nbsp;&nbsp;{{element.chefDepartement === null ? 'Nommer le chef de DER' : 'Changer le chef de DER'}}</span>
+                </button>
+
+                <button mat-menu-item (click)="showForm = true; modifDepartement(element)">
+                  <i class="fa fa-edit text-info"></i>
+                  <span>&nbsp;&nbsp;Modifier</span>
+                </button>
+
+                <button mat-menu-item (click)="Delete_Departement(element)">
+                  <i class="fa fa-trash text-danger"></i>
+                  <span>&nbsp;&nbsp;Supprimer</span>
+                </button>
+
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="loading">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Chargement des données...
+            </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="noData">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Pas de données...
+            </td>
+          </ng-container>
+
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator
+          [length]="length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions">
+
+        </mat-paginator>
+      </div>
+    </div>
+
+  </mat-card-content>
+</mat-card>
+
+
+<!-- Modal -->
+<div class="modal fade" id="DepartementFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel"><span class="material-icons">history_toggle_off</span> Département</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="DepartementForm"
+              (ngSubmit)="action === 'creat'? creatDepartement(): update_Departement()" *ngIf="showForm">
+
+          <div class="row form-group">
+            <div class="col">
+              <label for="nom">Nom <span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom_Input" id="nom" formControlName="nom">
+              <div class="badge badge-danger"  *ngIf="DepartementForm.get('nom').touched &&
+                                DepartementForm.get('nom').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire
+              </div>
+            </div>
+
+            <div class="col">
+              <label for="email">Email <span class="text-danger">*</span></label>
+              <input type="text" class="form-control custom_Input" id="email" formControlName="email">
+              <div class="badge badge-danger"  *ngIf="DepartementForm.get('email').touched &&
+                                DepartementForm.get('email').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire
+              </div>
+            </div>
+
+          </div>
+
+          <div class="form-group">
+            <label for="type">Type <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom_Input" id="type" formControlName="type">
+            <div class="badge badge-danger" *ngIf="DepartementForm.get('type').touched &&
+                                DepartementForm.get('type').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="contact">Contact <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom_Input" id="contact" formControlName="contact">
+            <div class="badge badge-danger" *ngIf="DepartementForm.get('contact').touched &&
+                                DepartementForm.get('contact').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire
+            </div>
+          </div>
+         <div class="form-group">
+                  <label for="descriptionDer">Description</label>
+           <div class="badge badge-danger" *ngIf="DepartementForm.get('descriptionDer').touched &&
+                                      DepartementForm.get('descriptionDer').invalid"><i class="fa fa-info-circle"></i> Champs obligatoire
+           </div>
+                  <textarea class="form-control custom_Input" id="descriptionDer" formControlName="descriptionDer" cols="30" rows="10"></textarea>
+
+                </div>
+
+
+
+          <div class="text-center mt-2 mb-2">
+
+                        <span style="text-align: center;" *ngIf="_SpinnerDepBtn">
+                         <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+                         <span>Veuillez patienter ...</span>
+                        </span>
+
+            <button mat-raised-button color="primary" type="submit" [disabled]="DepartementForm.invalid" *ngIf="!_SpinnerDepBtn">
+              <i class="fa fa-save"></i>
+              {{action === "creat" ? 'ajouter':'Modifier'}}</button>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SELCTION DU CHEF DE DER -->
+<div class="modal fade" id="chefDERModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title font-weight-bold" id="exaabel">
+          <span class="material-icons">user</span>DER {{selectDerName}}</h5>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="DepartementForm" (ngSubmit)="ChangeChefDER()" *ngIf="Ens">
+          <mat-radio-group aria-label="Select an option" formControlName="chefDepartement">
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <th>Sélectionez le chef de DER</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let data of DepartementEnseignant">
+                <td>
+                  <mat-radio-button value="{{data.id}}">{{data.prenom}} {{data.nom}}</mat-radio-button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </mat-radio-group>
+
+          <div class="text-center mt-2">
+                        <span style="text-align: center;" *ngIf="_SpinnerChefBtn">
+                         <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+                         <span>Veuillez patienter ...</span>
+                        </span>
+            <button mat-raised-button color="primary" [disabled]="!checkIfIsNotNull(DepartementForm.get('chefDepartement').value)" *ngIf="!_SpinnerChefBtn">
+              Changer de chef</button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+

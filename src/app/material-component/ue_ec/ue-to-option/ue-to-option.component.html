@@ -1,0 +1,197 @@
+<div class="card">
+  <div class="card-header">
+ <h4>Affectation des UEs aux options</h4>
+  </div>
+    <div class="card-body">
+
+
+  <div class="row">
+
+
+  <!-- <div class="col-md-6">
+    <div class="form-group">
+        <label >Enseignant</label>
+        <select [(ngModel)]="idTeacher"   name="idTeacher" class="form-control" >
+            <option value="">Choisir enseignant</option>
+            <option *ngFor="let sup of teacher" value="{{sup.id}}">{{sup.user.nom }} {{ sup.user.prenom}}</option>
+        </select>
+    </div>
+  </div> -->
+  <div class="col-md-6">
+
+    <div class="ng-autocomplete">
+      <mat-label>Veuillez sélectionner l'UE concernée</mat-label>
+      <ng-autocomplete
+        [data]="allUe"
+
+        (selected)='UeSelectEvent($event)'
+        [searchKeyword]="Uekeyword"
+        placeholder="UE concernée"
+        [itemTemplate]="itemTemplateStatic"
+        [notFoundTemplate]="notFoundTemplate">
+      </ng-autocomplete>
+
+      <ng-template #itemTemplateStatic let-item>
+        <a [innerHTML]="item.nomUE"></a>
+      </ng-template>
+
+      <ng-template #notFoundTemplate let-notFound>
+        <div [innerHTML]="notFound"></div>
+      </ng-template>
+    </div>
+
+<!--    <mat-form-field appearance="fill">-->
+<!--      <mat-label>UE concernée</mat-label>-->
+<!--      <mat-select  [(ngModel)]="idUE" name="idUE">-->
+<!--        <mat-option *ngFor="let der of allUe" value="{{der.id}}"> {{der.nomUE }} {{ der.codeUE}}</mat-option>-->
+<!--      </mat-select>-->
+<!--    </mat-form-field>-->
+    </div>
+
+  </div>
+  <!-- <div class="ng-autocomplete">
+  <ng-autocomplete
+        [data]="allUe"
+        [searchKeyword]="keyword"
+        placeHolder="Nom de l'UE"
+        (selected)='selectEvent($event)'
+        (inputChanged)='onChangeSearch($event)'
+        (inputFocused)='onFocused($event)'
+        historyIdentifier="allUe"
+        [itemTemplate]="itemTemplate"
+        [notFoundTemplate]="notFoundTemplate">
+      </ng-autocomplete>
+
+      <ng-template #itemTemplate let-item>
+        <a [innerHTML]="item.nomUE"></a>
+         <a [innerHTML]="item.codeUE"></a>
+      </ng-template>
+
+      <ng-template #notFoundTemplate let-notFound>
+        <div [innerHTML]="notFound"></div>
+      </ng-template>
+    </div>
+
+   <div class="row">
+
+
+  <div class="col-md-12">
+   <div class="panel panel-default">
+     <div class="panel-heading" style="margin-left: 30px" ><h3>List des UEs</h3></div>
+     <div  class="panel-body">
+         <table *ngIf="sum" class="table table-sm table-strip">
+             <tr>
+
+               <th>NomUE</th>
+               <th>COdeUE</th>
+               <th>Semestre</th>
+               <th>Chapitre</th>
+               <th>Action</th>
+
+             </tr>
+         <tr *ngFor=" let tes of this.test let i=index">
+
+             <td>{{tes.nomUE}}</td>
+             <td>{{tes.codeUE}}</td>
+             <td>{{tes.semestre}}</td>
+             <td>{{tes.chapitre}}</td>
+
+             <td>
+              <a href="javascript:void(0);" class="btn btn-default" (click)="remove(i,tes.id)">x</a>
+
+       </td>
+
+
+
+         </tr>
+         <tr>
+             <td><input (click)="submit()" type="submit"  name="submit" value="Valider" class="btn btn-sm btn-primary" >
+
+           </td>
+
+         </tr>
+       </table>
+     </div>
+   </div>
+  </div>
+
+  </div>  -->
+   <div class="ng-autocomplete">
+    <mat-label>Veuillez sélectionner les options</mat-label>
+  <ng-autocomplete
+        [data]="option"
+        [searchKeyword]="keyword"
+        placeHolder="Nom de l'option"
+        (selected)='selectEvent($event)'
+        (inputChanged)='onChangeSearch($event)'
+        (inputFocused)='onFocused($event)'
+        historyIdentifier="option"
+        [itemTemplate]="itemTemplate"
+        [notFoundTemplate]="notFoundTemplate">
+      </ng-autocomplete>
+
+      <ng-template #itemTemplate let-item>
+        <a [innerHTML]="item.nom"></a>
+         <!-- <a [innerHTML]="item.categorie"></a>  -->
+      </ng-template>
+
+      <ng-template #notFoundTemplate let-notFound>
+        <div [innerHTML]="notFound"></div>
+      </ng-template>
+    </div>
+  <br><br>
+   <div class="row">
+
+
+  <div class="col-md-12">
+   <div class="panel panel-default">
+     <div class="panel-heading" style="margin-left: 30px" ><h3>Liste des options</h3></div>
+     <div *ngIf="sum" class="panel-body">
+         <table  class="table table-sm table-strip table-bordered">
+             <tr>
+
+               <!-- <th>NomUE</th>
+               <th>COdeUE</th>
+               <th>Semestre</th>
+               <th>Chapitre</th>
+               <th>Action</th> -->
+               <th>Nom</th>
+               <th>Code</th>
+
+
+               <th>Action</th>
+
+             </tr>
+         <tr *ngFor=" let tes of this.test let i=index">
+
+             <td>{{tes.nom}}</td>
+             <td>{{tes.codeOption}}</td>
+
+
+             <td>
+              <a href="javascript:void(0);" class="btn btn-default" (click)="remove(i,tes.id)">x</a>
+
+       </td>
+
+
+
+         </tr>
+
+       </table>
+       <div>
+        <div *ngIf="spinner">
+          <img src="assets/gif/spinner.gif" width="70" alt="">
+      </div>
+        <button (click)="submit()"  class="btn btn-primary btn-block" >Valider</button>
+    </div>
+     </div>
+   </div>
+  </div>
+
+  </div>
+
+
+  </div>
+  </div>
+
+

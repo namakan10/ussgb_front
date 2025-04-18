@@ -1,0 +1,186 @@
+<div class="container-fluid" id="container-wrapper">
+    <div class="card">
+
+        <div class="card-header">
+            <h5 class="card-title">Emargez une séance</h5>
+          </div>
+      <div class="card-body">
+        <div class="example-container">
+            <form [formGroup]="effectiviteForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+
+            <!-- mat-form-field hintLabel="Max 10 characters" appearance="fill">
+              <mat-label>Enter some input</mat-label>
+              <input matInput #input maxlength="10" placeholder="Ex. Nougat">
+              <mat-hint align="end">{{input.value?.length || 0}}/10</mat-hint>
+            </mat-form-field -->
+            <div class="col-sm-6">
+
+              <div>
+                <div class="ng-autocomplete form-group mt-1" style="width: 100%">
+                  <label for="idTeacher"><strong>Sélectionner l'enseignant</strong> <span class="text-danger">*</span></label>
+                  <ng-autocomplete formControlName="idTeacher" id="idTeacher"
+                                   [data]="EnseignantsVacataires"
+                                   [searchKeyword]="keyword"
+                                   (selected)='getUesByStructure($event)'
+                                   [itemTemplate]="itemTemplate"
+                                   [notFoundTemplate]="notFoundTemplate">
+                  </ng-autocomplete>
+
+                  <ng-template #itemTemplate let-item>
+                    <a [innerHTML]="item.prenom"></a>
+                  </ng-template>
+
+                  <ng-template #notFoundTemplate let-notFound>
+                    <div [innerHTML]="notFound">Pas de corespondance .</div>
+                  </ng-template>
+                </div>
+
+              </div>
+
+
+<!--              <mat-form-field appearance="fill">-->
+<!--                <mat-label>Sélectionnez l'enseignant</mat-label>-->
+<!--&lt;!&ndash;                (selectionChange)="getUesByStructure($event.value.id)"&ndash;&gt;-->
+<!--                <mat-select formControlName="idTeacher" >-->
+<!--                  <mat-option *ngFor="let ensegnants of EnseignantsVacataires" [value]="ensegnants">{{ensegnants.user.nom}} {{ensegnants.user.prenom}}</mat-option>-->
+
+<!--                </mat-select>-->
+
+<!--              </mat-form-field>-->
+
+
+          </div>
+          <div class="col-sm-6">
+            <mat-form-field appearance="fill">
+              <mat-label>Sélectionnez UE</mat-label>
+
+              <mat-select formControlName="UeId" (selectionChange)="checkeltscts($event.value)">
+
+                <mat-option *ngFor="let UEs of UEs" [value]="UEs">{{UEs.nomUE}}</mat-option>
+              </mat-select>
+
+            </mat-form-field>
+        </div>
+
+        <div class="col-sm-6" *ngIf="ecForUe!=null">
+          <mat-form-field appearance="fill">
+            <mat-label>Sélectionnez EC</mat-label>
+
+            <mat-select formControlName="EcId" >
+
+              <mat-option *ngFor="let ecForUe of ecForUe" [value]="ecForUe">{{ecForUe.codeEC}}</mat-option>
+            </mat-select>
+
+          </mat-form-field>
+      </div>
+
+        <div class="col-sm-6">
+            <mat-form-field appearance="fill">
+                <mat-label>Sélectionnez type de cours</mat-label>
+
+                <mat-select formControlName="motif">
+                  <mat-option value="CM"> CM</mat-option>
+                  <mat-option value="TD"> TD</mat-option>
+                  <mat-option value="TP"> TP</mat-option>
+
+                </mat-select>
+
+              </mat-form-field>
+        </div>
+        <div class="col-sm-6">
+            <div class="login-input-area">
+                <label for="datemg">Date emargement</label>
+                <input type="date" id="datemg" formControlName="dateEmg" style="width: 100%;">
+              </div>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="row">
+
+                <div class="col-sm-6">
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Heure de début</mat-label>
+
+                    <mat-select formControlName="heured">
+
+                      <mat-option *ngFor="let heure of heures"  value="{{heure}}"> {{heure}}H</mat-option>
+
+
+                    </mat-select>
+
+                  </mat-form-field>
+
+                </div>
+                <div class="col-sm-6">
+
+                      <mat-form-field appearance="fill">
+                        <mat-label>Minutes de début</mat-label>
+
+                        <mat-select formControlName="minud">
+
+                          <mat-option *ngFor="let minute of minutes"  value="{{minute}}"> {{minute}} mn</mat-option>
+
+
+                        </mat-select>
+
+                      </mat-form-field>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-sm-6">
+            <div class="row">
+
+                <div class="col-sm-6">
+
+                      <mat-form-field appearance="fill">
+                        <mat-label>Heure de fin</mat-label>
+
+                        <mat-select formControlName="heuref">
+
+                          <mat-option *ngFor="let heure of heures"  value="{{heure}}"> {{heure}}H</mat-option>
+
+
+                        </mat-select>
+
+                      </mat-form-field>
+                </div>
+                <div class="col-sm-6">
+
+                      <mat-form-field appearance="fill">
+                        <mat-label>Minutes de fin</mat-label>
+
+                        <mat-select formControlName="minuf">
+
+                          <mat-option *ngFor="let minute of minutes"  value="{{minute}}"> {{minute}} mn</mat-option>
+
+
+                        </mat-select>
+
+                      </mat-form-field>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-sm-12">
+            <span *ngIf="spinner">
+                <br>
+                <br>
+                <img src="/assets/gif/spinner.gif" width="70" alt="">
+              </span>
+            <button mat-raised-button [disabled]="effectiviteForm.invalid ||spinner" color="primary">Valider</button>
+
+        </div>
+
+          </div>
+        </form>
+
+      </div>
+    </div>
+    </div>
+</div>
+

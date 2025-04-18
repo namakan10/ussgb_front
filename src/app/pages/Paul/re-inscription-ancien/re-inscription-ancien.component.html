@@ -1,0 +1,149 @@
+<!-- VALABLE POUR LA FSEG UNIQUEMENT -->
+<!-- VALABLE POUR LA FSEG UNIQUEMENT -->
+<!-- VALABLE POUR LA FSEG UNIQUEMENT -->
+
+<h3 class="text-center font-weight-bold">
+  Inscription en classe supérieur de {{eventData.cursus}}
+</h3>
+
+<div class="container col-8 p-3 shadow-sm" *ngIf="!NotConnect" style="border-radius: 7px">
+
+  <div class="form-group">
+    <label for="numEtudiant"><strong>num Etudiant <span class="text-danger">*</span></strong></label>
+    <input type="text" class="form-control custom_Input" id="numEtudiant" [(ngModel)]="numEtudiant">
+  </div>
+
+  <div class="text-center">
+       <span *ngIf="spinner1" style="text-align: center;">
+        <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+       </span>
+    <button mat-raised-button color="accent" (click)="GetEtudiant()" *ngIf="!spinner1">
+      Soumettre <span class="material-icons">send</span>
+    </button>
+  </div>
+</div>
+<form [formGroup]="ReInscriptionForm" (ngSubmit)="SaveReInscription()" *ngIf="NotConnect">
+  <button type="button" mat-button color="accent" (click)="NotConnect = !NotConnect; numEtudiant = null"><span class="material-icons">reply</span> retour</button>
+
+
+  <div class="container">
+    <div class="alert alert-info mt-2">
+      <p><strong><i class="fa fa-info-circle text-danger"></i> NB:</strong> Si vous avez une erreur dans l'une de ces données ci-dessous,
+        vous pouvez la corriger avant de soumettre le formulaire </p>
+      <p>- Veuillez renseigner les champs avec une étoile rouge <span class="text-danger"><strong>*</strong></span></p>
+    </div>
+    <div class="row">
+      <div class="col p-3">
+        <div class="shadow-sm p-3" style="border-radius: 7px">
+
+          <div class="form-group">
+            <label for="genre">Genre <span class="text-danger">*</span> </label>
+            <select id="genre" formControlName="genre">
+              <option value=""></option>
+              <option value="homme">Homme</option>
+              <option value="femme">Femme</option>
+            </select>
+            <div class="badge badge-danger"  *ngIf="ReInscriptionForm.get('genre').touched && ReInscriptionForm.get('genre').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="nomS">Nom <span class="text-danger">*</span> </label>
+            <input type="text" id="nomS" class="form-control custom_Input" formControlName="nom" disabled>
+            <div class="badge badge-danger"  *ngIf="ReInscriptionForm.get('nom').touched &&
+                    ReInscriptionForm.get('nom').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="nomS">Prénom <span class="text-danger">*</span> </label>
+            <input type="text" id="prenomS" class="form-control custom_Input" formControlName="prenom" disabled>
+            <div class="badge badge-danger"  *ngIf="ReInscriptionForm.get('prenom').touched &&
+                    ReInscriptionForm.get('prenom').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email <span class="text-danger">*</span> </label>
+            <input type="text" id="email" class="form-control custom_Input" formControlName="email">
+            <div class="badge badge-danger"  *ngIf="ReInscriptionForm.get('email').touched &&
+                    ReInscriptionForm.get('email').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="dateDeNaissanceS">Date de naissance <span class="text-danger">*</span> </label>
+            <input type="date" id="dateDeNaissanceS" class="form-control custom_Input" formControlName="dateDeNaissance">
+            <div class="badge badge-danger"  *ngIf="ReInscriptionForm.get('dateDeNaissance').touched &&
+                    ReInscriptionForm.get('dateDeNaissance').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="lieuDeNaissanceS">Lieu de naissance <span class="text-danger">*</span> </label>
+            <input type="text" id="lieuDeNaissanceS" class="form-control custom_Input" formControlName="lieuDeNaissance">
+            <div class="badge badge-danger"  *ngIf="ReInscriptionForm.get('lieuDeNaissance').touched &&
+                    ReInscriptionForm.get('lieuDeNaissance').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="col p-3">
+        <div class="shadow-sm p-3" style="border-radius: 7px">
+          <div class="form-group">
+            <label for="ville">Ville <span class="text-danger">*</span></label>
+            <input type="text" id="ville" class="form-control custom_Input" formControlName="ville">
+            <div class="badge badge-danger"  *ngIf="ReInscriptionForm.get('ville').touched &&
+                    ReInscriptionForm.get('ville').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="quartier">Quartier <span class="text-danger">*</span></label>
+            <input type="text" id="quartier" class="form-control custom_Input" formControlName="quartier">
+            <div class="badge badge-danger"  *ngIf="ReInscriptionForm.get('quartier').touched &&
+                    ReInscriptionForm.get('quartier').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="porte">Porte <span class="text-danger"></span></label>
+            <input type="text" id="porte" class="form-control custom_Input" formControlName="porte">
+            <div class="badge badge-danger"  *ngIf="ReInscriptionForm.get('porte').touched &&
+                    ReInscriptionForm.get('porte').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="rue">Rue <span class="text-danger"></span></label>
+            <input type="text" id="rue" class="form-control custom_Input" formControlName="rue">
+            <div class="badge badge-danger"  *ngIf="ReInscriptionForm.get('rue').touched &&
+                    ReInscriptionForm.get('rue').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="telephone">Téléphone <span class="text-danger"></span></label>
+            <input type="text" id="telephone" class="form-control custom_Input" formControlName="telephone">
+            <div class="badge badge-danger"  *ngIf="ReInscriptionForm.get('telephone').touched &&
+                    ReInscriptionForm.get('telephone').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+          </div>
+
+          <div class="form-group">
+            <label for="telephoneTuteur">Téléphone Tuteur <span class="text-danger">*</span></label>
+            <input type="text" id="telephoneTuteur" class="form-control custom_Input" formControlName="telephoneTuteur">
+          </div>
+
+          <div class="form-group">
+            <label for="nationalite">Nationalite <span class="text-danger">*</span></label>
+            <input type="text" id="nationalite" class="form-control custom_Input" formControlName="nationalite" disabled>
+            <div class="badge badge-danger"  *ngIf="ReInscriptionForm.get('nationalite').touched &&
+                    ReInscriptionForm.get('nationalite').invalid"><i class="fa fa-info-circle"></i> Obligatoire</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="text-center p-1">
+    <span *ngIf="spinner2" style="text-align: center;">
+        <img src="../../../../assets/gif/spinner.gif" width="65" alt="">
+       </span>
+    <button type="submit" mat-raised-button color="accent" [disabled]="ReInscriptionForm.invalid" *ngIf="!spinner2">
+      <i class="fa fa-save"></i> Enregistrer</button>
+  </div>
+</form>

@@ -1,0 +1,16 @@
+
+.multiple-fields {
+  display: flex !important;
+  flex-wrap: nowrap;
+  justify-content: left !important;
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100% !important;
+}
+
+.multiple-fields mat-form-field:not(:last-child) {
+  margin-right: 2%;
+}
+

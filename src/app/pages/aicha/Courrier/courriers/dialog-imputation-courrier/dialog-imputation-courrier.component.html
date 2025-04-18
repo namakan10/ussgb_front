@@ -1,0 +1,89 @@
+
+<h2>Imputation courrier : {{courrier.numeroCourrier}}</h2>
+<p>Expediteur : {{courrier.expediteur}}</p>
+
+<form [formGroup]="form" novalidate="" role="form">
+
+  <div class="multiple-fields">
+    <mat-form-field appearance="fill">
+      <mat-label>Service</mat-label>
+      <mat-select formControlName="services_id" (selectionChange)="setService($event.value)"
+                  name="services_id" placeholder="Selectionnez les services" required multiple [disabled]="courrier.imputation">
+        <mat-option *ngFor="let d of services; index as i;" [value]="d.id">
+          {{d.nom}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <table style="width:100%;">
+    <tr>
+      <td style="width:50%;text-align: left">
+
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin" formControlName="attribution" [disabled]="courrier.imputation">Pour Attribution</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin" formControlName="classe" [disabled]="courrier.imputation">A Classer</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin" formControlName="photoCopier" [disabled]="courrier.imputation">Photocopier</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin"  formControlName="urgent" [disabled]="courrier.imputation">Urgent</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin"  formControlName="parler" [disabled]="courrier.imputation">M'en Parler</mat-checkbox>
+        </div>
+
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin"  formControlName="suiteDonnee" [disabled]="courrier.imputation">Pour Suite à Donner</mat-checkbox>
+        </div>
+
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin"  formControlName="remise" [disabled]="courrier.imputation">Remise à l'intéressé</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin"  formControlName="disposition" [disabled]="courrier.imputation">Disposition à prendre</mat-checkbox>
+        </div>
+      </td>
+      <td style="width:50%;text-align: left;">
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin" formControlName="diffusion" [disabled]="courrier.imputation">A Diffuser</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin"  formControlName="suivre" [disabled]="courrier.imputation">A Suivre</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin" formControlName="etudeAvis" [disabled]="courrier.imputation">Pour Etude et Avis</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin" formControlName="information" [disabled]="courrier.imputation">Pour Imformation</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin"  formControlName="projetDeResponse" [disabled]="courrier.imputation">Projet de Reponse</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin"  formControlName="instance" [disabled]="courrier.imputation">Instance</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin"  formControlName="exploitation" [disabled]="courrier.imputation">Pour Exploitation</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin"  formControlName="reprendre" [disabled]="courrier.imputation">A réprendre</mat-checkbox>
+        </div>
+        <div class="multiple-fields">
+          <mat-checkbox class="example-margin" formControlName="rapport" [disabled]="courrier.imputation">En Rapport Avec</mat-checkbox>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+<div  class="multiple-fields">
+  <button (click)="imputater(form.value)" class="btn btn-block btn-primary mt-3" type="submit" *ngIf="!courrier.imputation">Imputer le courrier</button>
+  <button (click)="triater(form.value)" class="btn btn-block btn-primary mt-3" type="submit" *ngIf="courrier.imputation">Traiter le courrier</button>
+  <button (click)="dialogRef.close()"  class="btn btn-block btn-warning mt-3" type="submit">Annuler</button>
+</div>
+
+</form>
+

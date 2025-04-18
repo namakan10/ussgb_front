@@ -1,0 +1,182 @@
+
+
+<div class="ml-2 ">
+  <button mat-raised-button color="primary" (click)="CreatStructure()"> <i class="fa fa-plus-circle"></i> Créer une Structure</button>
+</div>
+<div class="conntainer mt-3">
+
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="logo">
+      <th mat-header-cell *matHeaderCellDef> Logo </th>
+      <td mat-cell *matCellDef="let element" class="p-1">
+        <img src="{{_HTTP}}{{element.logo}}" style="height: 60px; width: 60px;"  alt="">
+
+      </td>
+    </ng-container>
+    <!-- Position Column -->
+    <ng-container matColumnDef="sigle">
+      <th mat-header-cell *matHeaderCellDef> Sigle </th>
+      <td mat-cell *matCellDef="let element"> <strong>{{element.sigle}}<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></strong> </td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="nom">
+      <th mat-header-cell *matHeaderCellDef> Nom </th>
+      <td mat-cell *matCellDef="let element"> {{element.nom}} <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td>
+    </ng-container>
+
+    <!-- Weight Column -->
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef> Type </th>
+      <td mat-cell *matCellDef="let element"> {{element.type}} <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td>
+    </ng-container>
+
+    <!-- Weight Column -->
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef> Action </th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-raised-button color="primary" [matMenuTriggerFor]="actionmenu">Actions</button>
+        <mat-menu #actionmenu>
+          <button mat-menu-item (click)="modifStructure(element)"> <i class="fa fa-edit text-info"></i> Editer</button>
+          <button mat-menu-item (click)="DeleteStructure(element)"><i class="fa fa-edit fa-trash text-danger"></i>  Supprimer</button>
+        </mat-menu>
+      </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <div class="text-center">
+        <span style="text-align: center;" *ngIf="_initSpinner">
+         <img src="../../../../assets/media/loading/squard.gif" width="25" alt="">
+		 <span>Chargement des données ...</span>
+        </span>
+
+  </div>
+</div>
+
+<!-- Modal CREATION DE STRUCTURE -->
+<div class="modal fade" id="StructureFormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary">
+        <h5 class="modal-title font-weight-bold text-white" id="exampleModalLabel"><span class="material-icons">building</span> Strucure</h5>
+        <button type="button" mat-button data-dismiss="modal" aria-label="Close" (click)="_initSpinnerBtn = false"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="StructureForm" (ngSubmit)="creat_Ation?AddNewStructure():EditeStructure()">
+          <div class="col-12">
+            <div class="login-bg">
+              <div class="row mt-2">
+                <div class="col-lg-12">
+                  <div class="login-title">
+                    <h1>{{creat_Ation?'Création d\'une structure':'Modification d\'une structure'}}</h1><br>
+                  </div>
+                </div>
+              </div>
+
+              <div class="container">
+                <div class="d-flex justify-content-center">
+                  <img [src]="url" width="150">
+                </div>
+                <input type="file" class="btn btn-default" formControlName="logo" (change)="onselectFile($event)">
+
+              </div>
+
+              <div class="row mt-2">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Nom <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="login-input-area">
+                    <input type="text" class="form-control custom_Input" formControlName="nom">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mt-2">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Sigle <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="login-input-area">
+                    <input type="text" class="form-control custom_Input" formControlName="sigle">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mt-2">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Type<span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="login-input-area">
+                    <select class="form-control custom_Input" formControlName="type">
+                      <option value="FACULTE">Faculté</option>
+                      <option value="INSTITUT">Institut</option>
+                      <!--                                            <option value="RECTORAT">Rectorat</option>-->
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="row mt-2">
+                <div class="col-lg-4">
+                  <div class="login-input-head">
+                    <p>Adresse <span style="color: red">*</span></p>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="login-input-area">
+                    <input type="text" class="form-control custom_Input" formControlName="adresse">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email <span style="color: red"></span></label>
+                <input type="email" class="form-control custom_Input" id="email" formControlName="email">
+              </div>
+
+              <div class="form-group">
+                <label for="telephone">Numéro de Téléphone <span style="color: red"></span></label>
+                <input type="text" class="form-control custom_Input" id="telephone" formControlName="telephone">
+              </div>
+
+              <div class="form-group">
+                <label for="description">Description detaillée <span style="color: red"></span></label>
+                <textarea class="form-control custom_Input" cols="30" rows="10" id="description" formControlName="description"></textarea>
+              </div>
+
+              <div class="text-center">
+                  <span style="text-align: center;" *ngIf="_initSpinnerBtn">
+                       <img src="../../../../assets/gif/spinner.gif" width="55" alt="">
+                       <span>Veuillez patienter ...</span>
+                  </span>
+                <button type="Submit" mat-raised-button color="primary" [disabled]="StructureForm.invalid" class="btn btn-primary" *ngIf="!_initSpinnerBtn">{{creat_Ation?'Créer':'Modifier'}}</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" mat-raised-button color="warn" data-dismiss="modal" (click)="_initSpinnerBtn = false">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+

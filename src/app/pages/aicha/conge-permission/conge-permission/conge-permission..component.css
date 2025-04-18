@@ -1,0 +1,47 @@
+.formPanel {
+  width: 100%;
+  height: 100%;
+}
+
+
+
+.multiple-fields {
+  display: flex !important;
+  flex-wrap: nowrap;
+  justify-content: space-between !important;
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100% !important;
+}
+
+.multiple-fields mat-form-field:not(:last-child) {
+  margin-right: 2%;
+}
+
+.ui-button {
+  margin-top: 3em;
+}
+
+.filter-container {
+  text-align: center;
+}
+
+@media (max-width: 40em) {
+  .car-details, .search-icon {
+    text-align: center;
+    margin-top: 0;
+  }
+
+  .filter-container {
+    text-align: left;
+  }
+}
+
+
+table {
+  width: 100%;
+}
+
+

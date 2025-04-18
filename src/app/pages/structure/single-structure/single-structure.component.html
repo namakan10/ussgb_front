@@ -1,0 +1,99 @@
+
+<mat-card>
+  <mat-card-header>
+    <img src="https://{{user.structure.logo}}" height="100" width="100" alt="">
+  </mat-card-header>
+  <mat-card-content>
+    <h3 class="text-center">Liste des Departements</h3>
+    <div class="search-div">
+      <button (click)="ajouterDepartement()" mat-raised-button>
+        <i class="fa fa-plus"></i>&nbsp;&nbsp;Ajouter
+      </button>
+      <mat-form-field class="search-form-field" floatLabel="never">
+        <input matInput [(ngModel)]="searchKey" placeholder="Recherche" autocomplete="off" (keyup)="applyFilter()">
+        <button mat-button matSuffix mat-icon-button aria-label="Clear"  (click)="onSearchClear()">
+          <i class="fa fa-times"></i>
+        </button>
+      </mat-form-field>
+    </div>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+
+      <!--- Note that these columns can be defined in any order.
+            The actual rendered columns are set as a property on the row definition" -->
+
+
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+        <td mat-cell *matCellDef="let element"> {{element.nom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type Departement</th>
+        <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="contact">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Contact</th>
+        <td mat-cell *matCellDef="let element"> {{element.contact}} </td>
+      </ng-container>
+
+      <span>&nbsp;&nbsp;</span>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+        <td mat-cell *matCellDef="let element">
+
+          <button mat-raised-button color="primary" [matMenuTriggerFor]="menu">Action</button>
+          <mat-menu #menu="matMenu">
+
+          <button mat-menu-item (click)="modifDepartement(element)">
+              <i class="fa fa-edit text-primary"></i>
+                <span>&nbsp;&nbsp;Modifier</span>
+          </button>
+
+
+          <button mat-menu-item  (click)="Delete_Departement(element)">
+            <i class="fa fa-trash text-danger"></i>
+            <span>&nbsp;&nbsp;Supprimer</span>
+          </button>
+          </mat-menu>
+
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator [length]="100"
+                   [pageSize]="25"
+                   [pageSizeOptions]="[25, 50, 100]" showFirstLastButtons>
+    </mat-paginator>
+  </mat-card-content>
+</mat-card>
+
+<!-- <ngx-batiments></ngx-batiments>
+<ngx-enseignant></ngx-enseignant>
+
+
+Paul-->
+
+
+
+
+<!--<div class="col-lg-4" *ngFor = "let departement of departements;">
+  <div class="widget-text-box">
+    <h4>{{ departement?.nom }}</h4>
+    <p>Email: {{ departement?.email }}</p>
+    <p>Contact: {{ departement?.contact }}</p>
+    <p>Type de Departement{{ departement?.type }}</p>
+    <div class="text-right like-love-list">
+      <a class="btn btn-default" (click)="afficheDepartement(departement?.id )">Afficher</a>
+      <a class="btn btn-default" (click)="modifDepartement(departement?.id )"><i class="fa fa-edit"></i></a>
+      <a class="btn btn-default" (click)="supprimerDepartement(departement?.id)"><i class="fa fa-trash-alt"></i></a>
+    </div>
+  </div>
+</div>-->

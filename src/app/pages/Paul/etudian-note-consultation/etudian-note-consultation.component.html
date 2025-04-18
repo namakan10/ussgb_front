@@ -1,0 +1,198 @@
+<h2 class="text-center">Mes notes</h2>
+
+
+<div class="col-3">
+  <label for="annee">Année</label>
+  <select class="form-control custom_Input" id="annee" [(ngModel)]="dateSelect" (change)="DateSelect()">
+    <option value=""></option>
+    <option value="{{annee.anneeScolaire}}" *ngFor="let annee of structureAnnees">{{annee.anneeScolaire}}</option>
+  </select>
+  <span *ngIf="_spinner" style="text-align: center;">
+       <img src="../../../../assets/gif/spinner.gif" width="35" alt="">
+    chargement en cour ...
+   </span>
+</div>
+<h4 class="text-center text-info">{{dateSelect}} : {{type === "NotesGenerales" ? "Notes générales" : "Notes par evaluation"}}</h4>
+<mat-tab-group animationDuration="2000ms" (selectedTabChange)="tabClick($event)">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="list">list </mat-icon>
+      Notes générales
+    </ng-template>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="col-4">
+          <mat-form-field>
+            <mat-label>FILTRE</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="RECHERCHE" #input>
+          </mat-form-field>
+        </div>
+        <table mat-table class="table-hover" [dataSource]="dataSource" matSort>
+
+          <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+          <ng-container matColumnDef="ue">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>UE</th>
+            <td mat-cell *matCellDef="let element"> {{element.ue.codeUE}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="elementConstitutif">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+            <td mat-cell *matCellDef="let element"> {{checkIfIsNotNull(element.elementConstitutif) ? element.elementConstitutif.nom : '-'}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="noteDevoir">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>note de devoir</th>
+            <td mat-cell *matCellDef="let element"> {{checkIfIsNotNull(element.noteDevoir) ? element.noteDevoir : '-'}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="noteTP">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>note de TP</th>
+            <td mat-cell *matCellDef="let element"> {{checkIfIsNotNull(element.noteTP) ? element.noteTP : '-'}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="noteExamen">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>note de Examen</th>
+            <td mat-cell *matCellDef="let element"> {{checkIfIsNotNull(element.noteExamen) ? element.noteExamen : '-'}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="noteFinal">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>note de Final</th>
+            <td mat-cell *matCellDef="let element"> {{checkIfIsNotNull(element.noteFinal) ? element.noteFinal : '-'}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="coeffDev">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>coeff Dev</th>
+            <td mat-cell *matCellDef="let element"> {{checkIfIsNotNull(element.coeffDev) ? element.coeffDev : '-'}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="coeffTP">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>coeff TP</th>
+            <td mat-cell *matCellDef="let element"> {{checkIfIsNotNull(element.coeffTP) ? element.coeffTP : '-'}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="coeffEx">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>coeff Exam</th>
+            <td mat-cell *matCellDef="let element"> {{checkIfIsNotNull(element.coeffEx) ? element.coeffEx : '-'}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="session">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Session</th>
+            <td mat-cell *matCellDef="let element"> {{checkIfIsNotNull(element.session) ? element.session : '-'}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+            <td mat-cell *matCellDef="let element"> {{checkIfIsNotNull(element.statut) ? element.statut : '-'}} </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="loading">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Chargement des données...
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="noData">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Pas de données...
+            </td>
+          </ng-container>
+
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator
+          [length]="length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions">
+        </mat-paginator>
+      </div>
+    </div>
+
+
+  </mat-tab>
+<!--2-->
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="list">list </mat-icon>
+      Notes par evaluation
+    </ng-template>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="col-4">
+          <mat-form-field>
+            <mat-label>FILTRE</mat-label>
+            <input matInput (keyup)="applyFilter2($event)" placeholder="RECHERCHE" #input>
+          </mat-form-field>
+        </div>
+        <table mat-table class="table-hover" [dataSource]="dataSource2" matSort>
+
+          <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+
+          <ng-container matColumnDef="dateEvaluation">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>date de l'evaluation</th>
+            <td mat-cell *matCellDef="let element"> {{element.evaluation.dateEvaluation | date: "dd/MM/yyyy"}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+            <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="ue">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>UE</th>
+            <td mat-cell *matCellDef="let element"> {{element.ue.codeUE}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="elementConstitutif">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+            <td mat-cell *matCellDef="let element"> {{checkIfIsNotNull(element.elementConstitutif) ? element.elementConstitutif.nom : '-'}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="note">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Note</th>
+            <td mat-cell *matCellDef="let element"> {{element.note}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="dateNote">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Noté le</th>
+            <td mat-cell *matCellDef="let element"> {{element.date | date: "dd/MM/yyyy"}} </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="loading">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Chargement des données...
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="noData">
+            <td mat-footer-cell *matFooterCellDef colspan="6">
+              Pas de données...
+            </td>
+          </ng-container>
+
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+        </table>
+        <mat-paginator
+          [length]="length2"
+          [pageSize]="pageSize2"
+          [pageSizeOptions]="pageSizeOptions2">
+        </mat-paginator>
+      </div>
+    </div>
+
+  </mat-tab>
+
+</mat-tab-group>
+
+

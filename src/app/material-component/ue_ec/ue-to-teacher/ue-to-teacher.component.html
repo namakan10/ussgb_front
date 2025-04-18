@@ -1,0 +1,152 @@
+<div class="card">
+  <div class="card-header">
+    <h4>Affectation des UEs aux enseignants ou vacataires</h4>
+  </div>
+  <div class="card-body">
+
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="">
+          <mat-label>Veuillez sélectionner l'UE</mat-label>
+          <ng-autocomplete #ngAutoCompleteStatic
+                           [data]="allUe"
+                           searchKeyword="nomUE"
+                           name="UE"
+                           [(ngModel)]="UE"
+                           placeHolder="UEs"
+                           (selected)='selectEventUe($event)'
+                           (inputChanged)='onChangeSearchUe($event)'
+                           (inputFocused)='onFocusedUe($event)'
+                           historyIdentifier="allUe"
+                           [itemTemplate]="itemTemplateStatic"
+                           [notFoundTemplate]="notFoundTemplate"
+          >
+          </ng-autocomplete>
+
+          <ng-template #itemTemplateStatic let-item>
+            <a  href="javascript:void(0)">
+              <span [innerHTML]="item.nomUE"></span>&nbsp;
+              <span [innerHTML]="item.codeUE"></span>&nbsp;
+
+            </a>
+            <!-- <a [innerHTML]="item.categorie"></a>  -->
+          </ng-template>
+
+          <ng-template #notFoundTemplate let-notFound>
+            <div [innerHTML]="notFound"></div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- <div class="col-md-6">
+        <mat-form-field appearance="fill">
+          <mat-label>UE concernée</mat-label>
+          <mat-select  [(ngModel)]="UE" name="UE" (selectionChange)="getTeacherByDer($event.value)">
+            <mat-option  *ngFor="let der of allUe" [value]="der"> {{der.nomUE }} {{ der.codeUE}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        </div> -->
+
+      <div class="col-md-6" *ngIf="(allEc != null && allEc.length > 0)">
+
+        <p *ngIf="!checkEcSelect" ><input type="checkbox"  (change)="changeValue('A')" />Affecter EC à un enseignants (L'UE sélectionné contient des ECs)</p>
+        <div class="form-group" *ngIf="checkEcSelect">
+
+
+          <mat-form-field appearance="fill">
+            <mat-label>Eléments constitutifs</mat-label>
+            <mat-select  [(ngModel)]="idEc" name="idEc" >
+              <mat-option  *ngFor="let ec of allEc" [value]="ec"> {{ec.codeEC }} {{ ec.nomEC}}</mat-option>
+            </mat-select>
+            <mat-hint><p><input type="checkbox"  (change)="changeValue('B')" />Non Je veux affecter l'UE</p></mat-hint>
+          </mat-form-field>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-2">
+      <button [className]="typeChoix ==='ROLE_ENSEIGNANT' ? 'btn btn-info' : 'btn btn-outline-info'" (click)="GetEnseignants('ROLE_ENSEIGNANT')">Enseignants</button> |
+      <button [className]="typeChoix !=='ROLE_ENSEIGNANT' ? 'btn btn-info' : 'btn btn-outline-info'"  (click)="GetVaccataires()">Vacataires</button>
+    </div>
+
+    <div class="ng-autocomplete">
+      <mat-label>Veuillez sélectionner les {{typeChoix ==='ROLE_ENSEIGNANT' ? 'enseignants' : 'vacataires'}} </mat-label>
+      <ng-autocomplete #ngAutoCompleteStatic
+                       [data]="teacher"
+                       searchKeyword="prenom"
+                       (selected)='selectEvent($event)'
+                       (inputChanged)='onChangeSearch($event)'
+                       (inputFocused)='onFocused($event)'
+                       historyIdentifier="teacher"
+                       [itemTemplate]="itemTemplate"
+                       [notFoundTemplate]="notFoundTemplate"
+      >
+      </ng-autocomplete>
+
+      <ng-template #itemTemplate let-item>
+        <a  href="javascript:void(0)">
+          <span [innerHTML]="item.user.nom"></span>&nbsp;
+          <span [innerHTML]="item.user.prenom"></span>&nbsp;
+          <span [innerHTML]="item.corps"></span>
+        </a>
+        <!-- <a [innerHTML]="item.categorie"></a>  -->
+      </ng-template>
+
+      <ng-template #notFoundTemplate let-notFound>
+        <div [innerHTML]="notFound"></div>
+      </ng-template>
+    </div>
+    <br><br>
+    <div class="row">
+
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading" style="margin-left: 30px" ><h3>Liste des {{typeChoix ==='ROLE_ENSEIGNANT' ? 'enseignants' : 'vacataires'}}</h3></div>
+          <div *ngIf="sum" class="panel-body">
+            <table  class="table table-sm table-strip table-bordered">
+              <tr>
+
+                <!-- <th>NomUE</th>
+                <th>COdeUE</th>
+                <th>Semestre</th>
+                <th>Chapitre</th>
+                <th>Action</th> -->
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Corps</th>
+                <!-- <th>Chapitre</th> -->
+                <th>Action</th>
+
+              </tr>
+              <tr *ngFor=" let tes of this.test let i=index">
+
+                <td>{{tes.user.prenom}}</td>
+                <td>{{tes.user.nom}}</td>
+                <td>{{tes.corps}}</td>
+                <!-- <td>{{tes.}}</td> -->
+
+                <td>
+                  <a href="javascript:void(0);" class="btn btn-default" (click)="remove(i,tes.id)">x</a>
+
+                </td>
+              </tr>
+
+            </table>
+            <div>
+              <div *ngIf="spinner">
+                <img src="assets/gif/spinner.gif" width="70" alt="">
+              </div>
+              <button (click)="submit()"  class="btn btn-sm btn-primary btn-block" >Valider</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+</div>
+

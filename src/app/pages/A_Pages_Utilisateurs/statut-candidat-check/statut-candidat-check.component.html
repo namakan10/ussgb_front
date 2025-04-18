@@ -1,0 +1,167 @@
+<button mat-button (click)="backToPreinscriptioPage()"><i class="fa fa-arrow-left"></i> Retour</button>
+
+
+<!--  <div class="text-center"><strong>{{structureType ==='Institut'?'Candidature ':'Pré-inscription '}}</strong><h5><strong>{{structureSigle}}</strong></h5></div>-->
+<!--  <div class="text-right"> Sélection du mode d'Admission</div>-->
+
+
+
+  <div class="row">
+    <div class="col-5">
+
+      <h1 class="text-center font-weight-bold">{{structureData.Data.sigle}}</h1>
+      <h6 class="text-center">
+        {{structureData.Data.nom}}
+      </h6>
+
+      <div class="p-2 shadow-sm d-flex justify-content-center" style="border-radius: 7px">
+        <img src="http://{{ScrLogo}}" width="170" height="170" alt="">
+      </div>
+
+    </div>
+    <div class="col-7">
+      <div class="container col-10">
+        <div class="mb-2">
+          <h3 class="text-center font-weight-bold">
+            Quel est votre profil ?
+          </h3>
+          <h6 class="text-center"> <span class="text-info"> Soyez sûre de votre mode d'amission !</span></h6>
+        </div>
+        <mat-card>
+          <mat-card-content>
+            <form [formGroup]="AdmissionModeForm" (ngSubmit)="structureType==='Institut' && postuleCas=== true ? Postuler('fullRegister') : checkCandidat()">
+              <div class="form-group">
+                <label for="modeAdmission">Mode d'admission <span class="text-danger">*</span></label>
+                <select id="modeAdmission" class="form-control custom_Input custom_Input" formControlName="modeAdmission" (change)="GenerFormInput()">
+                  <option value="null"></option>
+                  <option value="NOUVEAU_BACHELIER" *ngIf="eventData.cursus === 'LICENCE' && eventData.type !== 'CANDIDATURE'">Nouveau bachelier</option>
+                  <option value="BT2" *ngIf="eventData.cursus === 'LICENCE'">BT2</option>
+                  <option value="MALIEN_DE_L_EXTERIEUR" *ngIf="eventData.cursus === 'LICENCE'">Malien de l'exterieur</option>
+                  <!--                    <option value="CANDIDAT_LIBRE" *ngIf="eventData.cursus === 'LICENCE'">Candidat libre</option>-->
+                  <option value="ETRANGER_UEMOA" *ngIf="eventData.cursus === 'LICENCE'">Étranger UEMOA</option>
+                  <option value="ETRANGER_HORS_UEMOA" *ngIf="eventData.cursus === 'LICENCE'">Étranger hors UEMOA</option>
+                  <option value="ADMIS_SUR_TITRE" *ngIf="eventData.cursus === 'LICENCE'">Admis sur titre</option>
+                  <option value="ADMIS_SUR_TITRE_RECTORAT" *ngIf="eventData.cursus === 'LICENCE'">Décision du Rectorat</option>
+                  <option value="PROFESSIONNEL" *ngIf="eventData.cursus === 'LICENCE'">Professionnel</option>
+                  <option value="ADMIS_PAR_TRANSFERT_DE_CREDIT" *ngIf="eventData.cursus === 'LICENCE'">Admis par transfert de credit</option>
+<!--                  <option value="TRANSFERT" *ngIf="eventData.cursus === 'LICENCE'">Transfert</option>-->
+
+                  <option value="MASTER" *ngIf="eventData.cursus === 'MASTER'">Master</option>
+                  <option value="MASTER_BOURSIER" *ngIf="eventData.cursus === 'MASTER'">Master Bourssier</option>
+
+
+                </select>
+                <div class="badge badge-danger"  *ngIf="AdmissionModeForm.get('modeAdmission').touched &&
+                    AdmissionModeForm.get('modeAdmission').invalid">Champ obligatoire</div>
+
+              </div>
+              <div *ngIf="showNumAdmission && statutOk">
+                <div class="form-group">
+                  <div class="alert alert-info">
+                    <label for="numAdmission">N° d'admission <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control custom_Input" id="numAdmission" formControlName="numAdmission">
+                    <!--<div class="badge badge-danger"  *ngIf="AdmissionModeForm.get('numAdmission').touched &&-->
+                    <!--AdmissionModeForm.get('numAdmission').invalid">Champ obligatoire</div>-->
+                    <p><strong><i class="fa fa-info-circle"></i>NB:</strong> Si vous ne possédé pas de
+                      numéro d'admission veuillez cliquer sur le bouton <strong>"postuler"</strong></p>
+
+                    <!--                      <button type="button" mat-raised-button color="accent"-->
+                    <!--                              [disabled]="AdmissionModeForm.get('numAdmission').valid"-->
+                    <!--                              (click)="Postuler('registerOnly')">Postuler</button>-->
+
+                    <button type="button" mat-raised-button color="accent"
+                            [disabled]="AdmissionModeForm.get('numAdmission').valid"
+                            (click)="Postuler('registerOnly')">Postuler</button>
+                  </div>
+
+
+                </div>
+              </div>
+
+              <div *ngIf="newBac">
+                <div class="alert alert-info">Veuillez renseigner les champs ci-desous!</div>
+                <div class="form-group">
+                  <label for="nom">Nom <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control custom_Input" id="nom" formControlName="nom">
+                  <div class="badge badge-danger"  *ngIf="AdmissionModeForm.get('nom').touched &&
+                    AdmissionModeForm.get('nom').invalid">Champ obligatoire</div>
+                </div>
+
+                <div class="form-group">
+                  <label for="prenom">Prénom <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control custom_Input" id="prenom" formControlName="prenom">
+                  <div class="badge badge-danger"  *ngIf="AdmissionModeForm.get('prenom').touched &&
+                    AdmissionModeForm.get('prenom').invalid">Champ obligatoire</div>
+                </div>
+
+                <div class="form-group">
+                  <label for="dateDeNaissance">Date de naissance <span class="text-danger">*</span></label>
+                  <input type="date" class="form-control custom_Input" id="dateDeNaissance" formControlName="dateDeNaissance">
+                  <div class="badge badge-danger"  *ngIf="AdmissionModeForm.get('dateDeNaissance').touched &&
+                    AdmissionModeForm.get('dateDeNaissance').invalid">Champ obligatoire</div>
+                </div>
+
+                <div class="form-group">
+                  <label for="numPlace">Numéro de place <span class="text-danger">*</span></label>
+                  <input type="tel" class="form-control custom_Input" id="numPlace" pattern="[0-9]*" formControlName="numPlace">
+                  <div class="badge badge-danger"  *ngIf="AdmissionModeForm.get('numPlace').touched &&
+                    AdmissionModeForm.get('numPlace').invalid">Champ obligatoire</div>
+
+                  <div class="badge badge-info ml-1"  *ngIf="AdmissionModeForm.get('numPlace').touched &&
+                    AdmissionModeForm.get('numPlace').invalid"><i class="fa fa-info-circle"></i> Seul les chiffres sont autorisés</div>
+                </div>
+
+                <div class="form-group">
+                  <label for="annee">Annee Scolaire d'obtention du diplôme <span class="text-danger">*</span></label>
+                  <div class="row">
+                    <div class="col-5">
+                      <select class="form-control custom_Input" formControlName="annee1" (change)="selectSecondYears()">
+                        <option *ngFor="let ans of Annees" value="{{ans}}">{{ans}}</option>
+                      </select>
+                    </div>
+                    <div class="col-2"><h6 class="text-center">-</h6></div>
+                    <div class="col-5">
+                      <input type="text" class="form-control custom_Input" formControlName="annee2" value="{{annee2}}">
+                    </div>
+                  </div>
+                  <div class="badge badge-danger"  *ngIf="AdmissionModeForm.get('annee1').touched &&
+                      AdmissionModeForm.get('anneeScolaire').invalid">Champ obligatoire</div>
+                  <input type="text" class="form-control custom_Input" id="annee" formControlName="anneeScolaire" value="{{anneeScol}}" >
+                </div>
+
+                <div class="form-group">
+                  <label for="academie">Academie <span class="text-danger">*</span></label>
+                  <select id="academie" class="form-control custom_Input" formControlName="academie">
+                    <option value="{{academie.nom}}" *ngFor="let academie of Academies">{{academie.nom}}</option>
+                  </select>
+                  <div class="badge badge-danger"  *ngIf="AdmissionModeForm.get('academie').touched &&
+                    AdmissionModeForm.get('academie').invalid">Champ obligatoire</div>
+                </div>
+
+                <div class="form-group">
+                  <label for="specialite">Spécialité <span class="text-danger">*</span></label>
+                  <select id="specialite" class="form-control custom_Input" formControlName="specialite">
+                    <option value="{{specialite.id}}" *ngFor="let specialite of CandidatSpecialites">{{specialite.nom}}</option>
+                  </select>
+                  <div class="badge badge-danger"  *ngIf="AdmissionModeForm.get('specialite').touched &&
+                    AdmissionModeForm.get('specialite').invalid">Champ obligatoire</div>
+                </div>
+              </div>
+
+              <div class="form-group text-right">
+
+                <button type="Submit" [disabled]="AdmissionModeForm.invalid" class="btn btn-primary">
+                  Vérifier
+                  <i class="fa fa-arrow-right"></i>
+                </button>
+
+              </div>
+
+
+
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>

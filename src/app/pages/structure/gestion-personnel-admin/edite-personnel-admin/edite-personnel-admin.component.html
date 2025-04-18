@@ -1,0 +1,153 @@
+<div class="card mb-4">
+    <!--<button class="btn btn-success" (click)=""></button>-->
+    <div class="card-body">
+        <div class="container col-11 mb-4 mt-3 p-4 shadow-sm">
+            <div class="text-right mt-2 mr-2">
+                <button class="btn btn-danger" style="height: 25px; width: 25px; border-radius: 50%;">
+                    Annuler
+                </button>
+            </div>
+
+            <h5  class="text-center">Créer un personnel administratif</h5>
+            <div>
+                <!--<h5><i class="fa fa-building"></i> <strong>{{DepartementName}}</strong></h5>-->
+                <!--<p>Type : <strong></strong></p>{{DepartementType}}-->
+            </div>
+            <hr>
+            <form [formGroup]="PersonnelAdminForm" (ngSubmit)="update_PersonnelAdmin()">
+
+                <div class="form-group" hidden>
+                    <label for="id">id <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="id" formControlName="id">
+                </div>
+
+                <div class="form-group" hidden>
+                    <label for="id">Département <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="departement" formControlName="departement">
+                </div>
+
+                <div class="form-group" hidden>
+                    <label for="idUser"> idUser <span class="text-danger">*</span></label>
+                    <input type="text" id="idUser" class="form-control" formControlName="idUser">
+                </div>
+
+                <div class="form-group" hidden>
+                    <label for="rue">Photo <span class="text-danger">*</span></label>
+                    <input type="text" id="photo" class="form-control" formControlName="photo">
+                </div>
+
+
+                <div class="row">
+                    <div class="col-6 p-2">
+                        <div class="form-group">
+                            <label for="nom"> Nom <span class="text-danger">*</span></label>
+                            <input type="text" id="nom" class="form-control" formControlName="nom">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prenom"> Prénom <span class="text-danger">*</span></label>
+                            <input type="text" id="prenom" class="form-control" formControlName="prenom">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dateDeNaissance"> Date de naissance <span class="text-danger">*</span></label>
+                            <input type="date" id="dateDeNaissance" class="form-control" formControlName="dateDeNaissance">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="lieuDeNaissance">Lieu de naissance <span class="text-danger">*</span></label>
+                            <input type="text" id="lieuDeNaissance" class="form-control" formControlName="lieuDeNaissance">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="id">Date d'embauche <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="dateEmbauche" formControlName="dateEmbauche">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fonction">Fonction <span class="text-danger">*</span></label>
+                            <!-- <select id="fonction" class="form-control" formControlName="fonction">
+                                <option value="{{fonct.id}}" *ngFor="let fonct of Fonctions">{{fonct.nom}}</option>
+                            </select> -->
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email"> Email <span class="text-danger">*</span></label>
+                            <input type="email" id="email" class="form-control" formControlName="email">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pays"> Pays <span class="text-danger">*</span></label>
+                            <!-- <select id="pays" class="form-control" formControlName="pays">
+                                <option value="{{pays}}" *ngFor="let pays of Pays">{{pays}}</option>
+                            </select> -->
+
+                        </div>
+                    </div>
+
+                    <!--===========================**** End First ****====================================-->
+                    <!--===========================****  Second ****====================================-->
+                    <div class="col-6 p-2">
+                        <!--Utilisateur-->
+                        <div class="form-group">
+                            <label for="typeUtilisateur">Type utilisateur <span class="text-danger">*</span></label>
+                            <select id="typeUtilisateur" class="form-control" formControlName="typeUtilisateur">
+                                <option value="Personnel administratif">Personnel administratif</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ville">Ville <span class="text-danger">*</span></label>
+                            <input type="text" id="ville" class="form-control" formControlName="ville">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rue">Rue <span class="text-danger"></span></label>
+                            <input type="text" id="rue" class="form-control" formControlName="rue">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rue">Numéro matricule <span class="text-danger">*</span></label>
+                            <input type="text" id="numMatricule" class="form-control" formControlName="numMatricule">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="telephone">Téléphone <span class="text-danger">*</span></label>
+                            <input type="number" id="telephone" class="form-control" formControlName="telephone">
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label for="quartier"> Quartier <span class="text-danger">*</span></label>
+                            <input type="text" id="quartier" class="form-control" formControlName="quartier">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="genre"> Genre <span class="text-danger">*</span></label>
+                            <select id="genre" class="form-control" formControlName="genre">
+                                <option value="homme">Homme</option>
+                                <option value="femme">Femme</option>
+                            </select>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label for="porte"> Porte <span class="text-danger"></span></label>
+                            <input type="text" id="porte" class="form-control" formControlName="porte">
+                        </div>
+                    </div>
+                    <!--===========================****End Second****====================================-->
+                </div>
+
+
+                <div class="text-right mt-2">
+                    <button type="submit" class="btn btn-light" [disabled]="PersonnelAdminForm.invalid"><i class="fa fa-save"></i> Valider</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
